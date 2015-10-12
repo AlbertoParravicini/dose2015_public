@@ -5,8 +5,8 @@ note
 		the rule applied to reach a given state.
 		]"
 	library: "Eiffel AI Search Library"
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	copyright: "Copyright (c) 2015"
+	license: "MIT License (see https://opensource.org/licenses/MIT)"
 	author: "DOSE 2015 Teams"
 	date: "$Date: 2015-08-22 03:18:00 -0300$"
 	revision: "$Revision: 0.1 $"
@@ -43,10 +43,5 @@ feature -- Status setting
 		ensure
 			rule_applied = rule
 		end
-
-
-note
-	copyright: "Copyright (c) 2015"
-	license: "MIT License (see http://...)"
 
 end

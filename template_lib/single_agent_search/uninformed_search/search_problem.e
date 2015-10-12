@@ -6,8 +6,8 @@ note
 				capturing the states involved in the search problem.
 				]"
 	library: "Eiffel AI Search Library"
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	copyright: "Copyright (c) 2015"
+	license: "MIT License (see https://opensource.org/licenses/MIT)"
 	author: "DOSE 2015 Teams"
 	date: "$Date: 2015-08-22 10:39:00 -0300$"
 	revision: "$Revision: 0.1 $"
@@ -45,9 +45,5 @@ feature -- State space routines
 			s /= Void
 		deferred
 		end
-
-note
-	copyright: "Copyright (c) 2015"
-	license: "MIT License (see http://...)"
 
 end

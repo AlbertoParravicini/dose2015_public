@@ -6,8 +6,8 @@ note
 				captures the rules that produce reconfigurations from a state to its successors.
 				]"
 	library: "Eiffel AI Search Library"
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
+	copyright: "Copyright (c) 2015"
+	license: "MIT License (see https://opensource.org/licenses/MIT)"
 	author: "DOSE 2015 Teams"
 	date: "$Date: 2015-08-30 19:20:00 -0300$"
 	revision: "$Revision: 0.1 $"
