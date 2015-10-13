@@ -14,11 +14,8 @@
 				<exclude>/CVS$</exclude>
 				<exclude>/.svn$</exclude>
 			</file_rule>
-			<cluster name="uninformed-search" location=".\single_agent_search\uninformed_search\"/>
-			<cluster name="heuristic-search" location=".\single_agent_search\heuristic_search\"/>
-			<cluster name="single-agent-engines" location=".\single_agent_search\single_agent_search_engines\"/>
-			<cluster name="heuristic-engines" location=".\single_agent_search\single_agent_search_engines\heuristic_engines"/>
-			<cluster name="uninformed-engines" location=".\single_agent_search\single_agent_search_engines\uninformed_engines"/>
+			<cluster name="single-agent-search" location=".\single_agent_search\"/>
+			<cluster name="single-agent-search-engines" location=".\single_agent_search\single_agent_search_engines\"/>
 			<cluster name="examples" location=".\examples"/>
 		</cluster>
 	</target>

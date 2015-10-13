@@ -8,7 +8,8 @@ class
 	WATER_JAR_PUZZLE
 
 inherit
-	SEARCH_PROBLEM[STRING,WATER_JAR_PUZZLE_STATE]
+	HEURISTIC_SEARCH_PROBLEM[STRING,WATER_JAR_PUZZLE_STATE]
+	STATE_COST_SEARCH_PROBLEM[STRING,WATER_JAR_PUZZLE_STATE]
 
 create
 	make
@@ -129,5 +130,45 @@ feature
 		do
 			Result := state.contents_a = 10 and state.contents_b = 10
 		end
+
+feature {ANY} -- Heuristic search related routines
+
+	heuristic_value (state: WATER_JAR_PUZZLE_STATE): REAL
+			-- Distance from jars A and B having 20
+			-- The larger the value, the better the state.
+		local
+			distance_A, distance_B: INTEGER
+		do
+			distance_A := absolute_value (10 - state.contents_A)
+			distance_B := absolute_value (10 - state.contents_B)
+			Result := 20 - (distance_A + distance_B)
+		end
+
+feature {ANY} -- State Cost related routines
+
+	cost (state: WATER_JAR_PUZZLE_STATE): REAL
+			-- Cost of rule leading to current state.
+			-- Cost will be 0 for the root, and 1
+			-- for any other state.
+		do
+			if state.parent = Void then
+				Result := 0
+			else
+				Result := 1
+			end
+		end
+
+
+feature {NONE} -- Auxiliary features
+
+	absolute_value (x: INTEGER): INTEGER
+		do
+			if x >= 0 then
+				Result := x
+			else
+				Result := -x
+			end
+		end
+
 
 end

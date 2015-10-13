@@ -101,6 +101,7 @@ feature
 			Result := (contents_A = other.contents_A and contents_B = other.contents_B and contents_C = other.contents_C)
 		end
 
+
 	out: STRING
 	do
 		Result := "("+contents_A.out+", "+contents_B.out+", " +contents_C.out+")"
