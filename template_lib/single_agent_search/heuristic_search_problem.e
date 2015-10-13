@@ -26,6 +26,7 @@ feature {ANY} -- Search related routines
 			-- on the state. It returns a real number value, which should be an
 			-- approximation of the length of the shortest path from s to a
 			-- successful state.
+			-- That is, the smaller the value, the fitter the state.
 		require
 			s /= Void
 		deferred

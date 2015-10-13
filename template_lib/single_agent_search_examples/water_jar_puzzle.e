@@ -6,7 +6,7 @@ note
 	author: "DOSE 2015 Teams"
 	date: "$Date: 2015-08-30 19:20:00 -0300$"
 	revision: "$Revision: 0.1 $"
-	
+
 class
 	WATER_JAR_PUZZLE
 
@@ -138,13 +138,13 @@ feature {ANY} -- Heuristic search related routines
 
 	heuristic_value (state: WATER_JAR_PUZZLE_STATE): REAL
 			-- Distance from jars A and B having 20
-			-- The larger the value, the better the state.
+			-- The smaller the value, the better the state.
 		local
 			distance_A, distance_B: INTEGER
 		do
 			distance_A := absolute_value (10 - state.contents_A)
 			distance_B := absolute_value (10 - state.contents_B)
-			Result := 20 - (distance_A + distance_B)
+			Result := (distance_A + distance_B)
 		end
 
 feature {ANY} -- State Cost related routines

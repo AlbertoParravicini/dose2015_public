@@ -26,6 +26,7 @@ feature {ANY} -- Search related routines
 			-- Cost will usually be associated with the rule that led to the
 			-- state. Routine returns a real number value, which should be an
 			-- approximation of the cost of the rule performed leading to s.
+			-- Intuitively, the smaller the cost, the better.
 		require
 			s /= Void
 		deferred
