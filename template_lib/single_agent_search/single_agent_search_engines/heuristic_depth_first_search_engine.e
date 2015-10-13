@@ -1,9 +1,11 @@
 note
 	description: "[
-		Best first search engine. This is a generic implementation of best first search, that
-		can be applied to any heuristic search problem. The engine is parameterized with a heuristic
-		search problem, the search state for the problem, and the rules associated with
-		state change.
+		Heuristic depth first search engine. This is a generic implementation of heuristic depth
+		first search, that can be applied to any heuristic search problem. The engine is 
+		parameterized with a heuristic search problem, the search state for the problem, and the 
+		rules associated with state change.
+		This engine performs a depth first search, but in each step prioritizes the successors to visit
+		by their heuristic value.
 		]"
 	library: "Eiffel AI Search Library"
 	copyright: "Copyright (c) 2015"
@@ -13,7 +15,7 @@ note
 	revision: "$Revision: 0.1 $"
 
 class
-	BEST_FIRST_SEARCH_ENGINE[RULE -> ANY, S -> SEARCH_STATE[RULE], P -> HEURISTIC_SEARCH_PROBLEM [RULE, S]]
+	HEURISTIC_DEPTH_FIRST_SEARCH_ENGINE[RULE -> ANY, S -> SEARCH_STATE[RULE], P -> HEURISTIC_SEARCH_PROBLEM [RULE, S]]
 
 inherit
 	SEARCH_ENGINE [RULE, S, P]
@@ -25,7 +27,7 @@ feature -- Creation
 
 	make (other_problem: P)
 			-- Constructor of the class. It initialises a
-			-- DEPTH_FIRST_SEARCH_ENGINE with a problem
+			-- HEURISTIC_DEPTH_FIRST_SEARCH_ENGINE with a problem
 		require
 			other_problem /= Void
 		do
@@ -38,7 +40,7 @@ feature -- Creation
 feature -- Search Execution
 
 	perform_search
-			-- Starts the search using a best first search
+			-- Starts the search using a heuristic depth first search
 			-- strategy. 
 			-- The result of the search is indicated in
 			-- is_search_successful.
