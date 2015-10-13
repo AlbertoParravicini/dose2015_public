@@ -1,8 +1,11 @@
 note
 	description: "Summary description for {TICTACTOE_GAMEPLAY}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	library: "Eiffel AI Search Library"
+	copyright: "Copyright (c) 2015"
+	license: "MIT License (see https://opensource.org/licenses/MIT)"
+	author: "DOSE 2015 Teams"
+	date: "$Date: 2015-08-30 19:20:00 -0300$"
+	revision: "$Revision: 0.1 $"
 
 class
 	TICTACTOE_GAMEPLAY
@@ -38,15 +41,5 @@ feature -- Initialisation
 			end
 		end
 
-note
-	copyright: "Copyright (c) 2015, UNRC"
-	license: "MIT License (see http://...)"
-	source: "[
-		Dpto. de Computacion, FCEFQyN
-		Universidad Nacional de Rio Cuarto
-		Ruta Nacional No. 36 Km 601
-		Rio Cuarto (5800), Cordoba, Argentina
-		Telephone +54 358 4676235
-	]"
 
 end

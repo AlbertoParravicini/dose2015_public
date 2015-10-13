@@ -1,9 +1,12 @@
 note
 	description: "Summary description for {WATER_JAR_PUZZLE}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
-
+	library: "Eiffel AI Search Library"
+	copyright: "Copyright (c) 2015"
+	license: "MIT License (see https://opensource.org/licenses/MIT)"
+	author: "DOSE 2015 Teams"
+	date: "$Date: 2015-08-30 19:20:00 -0300$"
+	revision: "$Revision: 0.1 $"
+	
 class
 	WATER_JAR_PUZZLE
 

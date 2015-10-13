@@ -1,8 +1,8 @@
 note
 	description: "[
-		Best first search engine. This is a generic implementation of best first search, that
+		Hill climbing engine. This is a generic implementation of hill climbing, that
 		can be applied to any heuristic search problem. The engine is parameterized with a heuristic
-		search problem, the search state for the problem, and the rules associated with
+		search problem, the search state corresponding to the problem, and the rules associated with
 		state change.
 		]"
 	library: "Eiffel AI Search Library"
@@ -13,7 +13,7 @@ note
 	revision: "$Revision: 0.1 $"
 
 class
-	BEST_FIRST_SEARCH_ENGINE[RULE -> ANY, S -> SEARCH_STATE[RULE], P -> HEURISTIC_SEARCH_PROBLEM [RULE, S]]
+	HILL_CLIMBING_ENGINE[RULE -> ANY, S -> SEARCH_STATE[RULE], P -> HEURISTIC_SEARCH_PROBLEM [RULE, S]]
 
 inherit
 	SEARCH_ENGINE [RULE, S, P]

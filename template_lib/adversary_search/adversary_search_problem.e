@@ -1,11 +1,12 @@
 note
-	description: "Abstract class characterising abstract search problems."
+	description: "Abstract class characterising abstract adversary search problems."
 	library: "Eiffel AI Search Library"
-	legal: "See notice at end of class."
-	status: "See notice at end of class."
-	author: "N. Aguirre, R. Degiovanni, S. Gutierrez, N. Ricci"
-	date: "$Date: 2015-08-22 10:39:00 -0300$"
+	copyright: "Copyright (c) 2015"
+	license: "MIT License (see https://opensource.org/licenses/MIT)"
+	author: "DOSE 2015 Teams"
+	date: "$Date: 2015-08-30 19:20:00 -0300$"
 	revision: "$Revision: 0.1 $"
+
 
 deferred class
 	ADVERSARY_SEARCH_PROBLEM [RULE -> ANY, S -> ADVERSARY_SEARCH_STATE[RULE]]

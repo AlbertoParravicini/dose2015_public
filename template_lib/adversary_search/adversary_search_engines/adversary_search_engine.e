@@ -1,9 +1,15 @@
 note
-	description: "Abstract class which defines the basic elements necessary for implementing a search engine for adversary search problems."
-	author: "Nazareno Aguirre"
-	date: "$Date$"
-	revision: "$Revision$"
-
+	description: "[
+					Abstract class which defines the basic elements necessary for implementing a 
+	              search engine for adversary search problems.
+	              ]"
+	library: "Eiffel AI Search Library"
+	copyright: "Copyright (c) 2015"
+	license: "MIT License (see https://opensource.org/licenses/MIT)"
+	author: "DOSE 2015 Teams"
+	date: "$Date: 2015-08-30 19:20:00 -0300$"
+	revision: "$Revision: 0.1 $"
+	
 deferred class
 	ADVERSARY_SEARCH_ENGINE[RULE -> ANY, S -> ADVERSARY_SEARCH_STATE[RULE], P -> ADVERSARY_SEARCH_PROBLEM[RULE, S]]
 
