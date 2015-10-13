@@ -1,5 +1,5 @@
 # dose2015
-This folder contains the source code of the AI library.
+This folder contains the source code of the Games (Assignment 3).
 The code is organized in folders:
 group1
 ...
