@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-13-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-13-0 http://www.eiffel.com/developers/xml/configuration-1-13-0.xsd" name="eiffel-ai-search" uuid="C7C425FB-CC6A-4F1D-A3D3-7765C54B8A0C">
+	<target name="eiffel-ai-search">
+		<root cluster="examples" class="WATER_JAR_PUZZLE_SOLVER" feature="make"/>
+		<option warning="true" is_attached_by_default="false" void_safety="none">
+			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+		</option>
+		<setting name="console_application" value="true"/>
+		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
+		<cluster name="eiffel-ai-search" location=".\">
+			<file_rule>
+				<exclude>/EIFGENs$</exclude>
+				<exclude>/CVS$</exclude>
+				<exclude>/.svn$</exclude>
+			</file_rule>
+			<cluster name="uninformed-search" location=".\single_agent_search\uninformed_search\"/>
+			<cluster name="heuristic-search" location=".\single_agent_search\heuristic_search\"/>
+			<cluster name="single-agent-engines" location=".\single_agent_search\single_agent_search_engines\"/>
+			<cluster name="heuristic-engines" location=".\single_agent_search\single_agent_search_engines\heuristic_engines"/>
+			<cluster name="uninformed-engines" location=".\single_agent_search\single_agent_search_engines\uninformed_engines"/>
+			<cluster name="examples" location=".\examples"/>
+		</cluster>
+	</target>
+</system>
