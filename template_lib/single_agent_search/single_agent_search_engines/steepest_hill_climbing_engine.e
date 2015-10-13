@@ -1,9 +1,9 @@
 note
 	description: "[
-		Hill climbing engine. This is a generic implementation of hill climbing, that
-		can be applied to any heuristic search problem. The engine is parameterized with a heuristic
-		search problem, the search state corresponding to the problem, and the rules associated with
-		state change.
+		Steepest ascent Hill climbing engine. This is a generic implementation of steepest ascent
+		hill climbing, that can be applied to any heuristic search problem. The engine is parameterized
+		with a heuristic search problem, the search state corresponding to the problem, and the rules 
+		associated with state change.
 		]"
 	library: "Eiffel AI Search Library"
 	copyright: "Copyright (c) 2015"
@@ -13,7 +13,7 @@ note
 	revision: "$Revision: 0.1 $"
 
 class
-	HILL_CLIMBING_ENGINE[RULE -> ANY, S -> SEARCH_STATE[RULE], P -> HEURISTIC_SEARCH_PROBLEM [RULE, S]]
+	STEEPEST_HILL_CLIMBING_ENGINE[RULE -> ANY, S -> SEARCH_STATE[RULE], P -> HEURISTIC_SEARCH_PROBLEM [RULE, S]]
 
 inherit
 	SEARCH_ENGINE [RULE, S, P]
@@ -25,7 +25,7 @@ feature -- Creation
 
 	make (other_problem: P)
 			-- Constructor of the class. It initialises a
-			-- HILL_CLIMBING_ENGINE with a problem
+			-- STEEPEST_HILL_CLIMBING_ENGINE with a problem
 		require
 			other_problem /= Void
 		do
@@ -38,7 +38,7 @@ feature -- Creation
 feature -- Search Execution
 
 	perform_search
-			-- Starts the search using a hill climbing
+			-- Starts the search using a steepest ascent hill climbing
 			-- strategy. This search strategy is non exhaustive.
 			-- The result of the search is indicated in
 			-- is_search_successful.
