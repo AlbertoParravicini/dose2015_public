@@ -9,7 +9,7 @@
   * Parravicini Alberto
   * Stornaiuolo Luca
   
-* **Pontificia Universidade Catolica do Rio Grande do Sul:**
+* **Universidad Nacional de Río Cuarto:**
   * Andruvetto Daniel
   * Lanzoni Lucas Fermin
   * Castagneris Nazareno
