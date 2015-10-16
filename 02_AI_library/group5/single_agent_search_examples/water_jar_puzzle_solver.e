@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		local
 			jar_puzzle: WATER_JAR_PUZZLE
-			engine: BOUNDED_DEPTH_FIRST_SEARCH_ENGINE[STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
+			engine: BOUNDED_BREADTH_FIRST_SEARCH_ENGINE[STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
 			curr_depth: INTEGER
 			found: BOOLEAN
 			i: INTEGER
