@@ -78,7 +78,8 @@ feature -- Status setting
 		require
 			new_bound >= 0
 		do
-			-- TODO: add your code here
+			maximum_depth := new_bound
+				-- Could cause issue if not called appropriately (during the search?)
 		ensure
 			maximum_depth = new_bound
 		end
@@ -87,8 +88,18 @@ feature -- Status Report
 
 	path_to_obtained_solution: LIST [S]
 			-- Returns the path to the solution obtained from performed search.
+		local
+			current_state: S
 		do
-			-- TODO: add your code here
+			from
+				current_state := obtained_solution
+				Result.put(current_state)
+			until
+				current_state = void
+			loop
+				Result.put(current_state.parent)
+				current_state := current_state.parent
+			end
 		end
 
 	obtained_solution: detachable S
