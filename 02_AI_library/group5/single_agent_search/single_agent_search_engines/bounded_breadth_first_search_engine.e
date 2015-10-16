@@ -25,6 +25,13 @@ inherit
 create
 	make
 
+feature {NONE} -- Implementation
+	queue: LINKED_QUEUE[TUPLE[state: S; depth: INTEGER]]
+		-- Queue containing the states which haven't been fully explored, and their depth;
+	fully_explored_states: LINKED_QUEUE[S]
+		-- List of the states which have been fully explored
+
+
 feature -- Creation
 
 	make (other_problem: P)
@@ -32,11 +39,19 @@ feature -- Creation
 			-- BREADTH_FIRST_SEARCH_ENGINE with a problem
 		require
 			other_problem /= Void
+			-- TODO: more requires
 		do
-			-- TODO: add your code here
+			set_problem(other_problem)
+			search_performed := false
+			is_search_successful := false
+			nr_of_visited_states := 0
+			maximum_depth := 0
+			create stack.make
+			create fully_explored_states.make
 		ensure
 			problem = other_problem
 			not search_performed
+			-- TODO: more ensures
 		end
 
 feature -- Search Execution
@@ -90,8 +105,5 @@ feature -- Status Report
 
 	nr_of_visited_states: INTEGER
 			-- Number of states visited in the performed search.
-
-feature {NONE} -- Implementation
-	-- TODO: add a stack and a list of already visited states
 
 end
