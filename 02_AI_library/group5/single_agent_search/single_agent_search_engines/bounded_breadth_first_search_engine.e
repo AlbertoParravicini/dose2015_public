@@ -70,16 +70,18 @@ feature -- Search Execution
 			current_successors: LINKED_LIST [S]
 			current_tuple: TUPLE [depth: INTEGER; state: S]
 		do
+
+			create current_successors.make
 			current_state := problem.initial_state
-			current_depth := 0
+			--current_depth := 0
 			queue.put ([current_depth, current_state])
 				-- What if the first state is already successful?
 			nr_of_visited_states := nr_of_visited_states + 1
+
 			marked_states.put (current_state)
 
 			if problem.is_successful (current_state) then
 				is_search_successful := true
-				search_performed := true
 				successful_state := current_state
 			end
 
@@ -87,8 +89,9 @@ feature -- Search Execution
 			from
 
 			until
-				queue.is_empty or is_search_successful or search_performed
+				queue.is_empty or is_search_successful
 			loop
+
 				current_successors.wipe_out
 				-- Remove the first state of the queue, add it to the marked states list			
 				current_tuple := queue.item
@@ -100,7 +103,6 @@ feature -- Search Execution
 				-- Check if the removed state is successful
 				if (problem.is_successful (current_state)) then
 					is_search_successful := true
-					search_performed := true
 					successful_state := current_state
 
 				-- Get the successors of the state, if the removed state isn't successful
@@ -113,13 +115,13 @@ feature -- Search Execution
 					loop
 					-- Check if the current successor is marked
 						if (not marked_states.has (current_successors.item)) then
+							--print (nr_of_visited_states.out + "%N")
 							marked_states.put (current_successors.item)
 							nr_of_visited_states := nr_of_visited_states + 1
 							-- Check if the current successor is successful
 							if problem.is_successful (current_successors.item) then
 								is_search_successful := true
-								search_performed := true
-								successful_state := current_state
+								successful_state := current_successors.item
 							else
 								-- Put it in the queue if it isn't successful
 								queue.put ([current_depth + 1, current_successors.item])
@@ -130,6 +132,7 @@ feature -- Search Execution
 				end
 			end -- End of the main loop
 			search_performed := true
+			print("all done " + is_search_successful.out + "%N")
 		end
 
 	reset_engine
@@ -162,16 +165,19 @@ feature -- Status Report
 			-- Returns the path to the solution obtained from performed search.
 		local
 			current_state: S
+			list: LINKED_LIST[S]
 		do
 			from
 				current_state := obtained_solution
-				Result.put (current_state)
+				create list.make
+				list.put (current_state)
 			until
 				current_state = void
 			loop
-				Result.put (current_state.parent)
+				list.put (current_state.parent)
 				current_state := current_state.parent
 			end
+			Result := (list)
 		end
 
 	obtained_solution: detachable S
@@ -179,6 +185,7 @@ feature -- Status Report
 		do
 			if is_search_successful and search_performed then
 				Result := successful_state
+			else Result := problem.initial_state
 			end
 		end
 

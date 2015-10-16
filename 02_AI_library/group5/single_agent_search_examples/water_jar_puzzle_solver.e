@@ -26,7 +26,7 @@ feature {NONE} -- Initialization
 			path: LIST[WATER_JAR_PUZZLE_STATE]
 		do
 			from
-				curr_depth := 12
+				curr_depth := 3
 				create jar_puzzle.make
 				create engine.make (jar_puzzle)
 				engine.set_max_depth (curr_depth)
