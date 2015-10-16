@@ -91,5 +91,7 @@ feature -- Status Report
 	nr_of_visited_states: INTEGER
 			-- Number of states visited in the performed search.
 
+feature {NONE} -- Implementation
+	-- TODO: add a stack and a list of already visited states
 
 end
