@@ -67,10 +67,10 @@ feature -- Search Execution
 			create current_successors.make
 			current_state := problem.initial_state
 			current_depth := 0
-			already_in_queue := false
 			queue.put ([current_depth, current_state])
 			marked_states.extend (current_state)
-			nr_of_visited_states := nr_of_visited_states + 1
+			-- Activate it if you want to include the original state as "visited state"
+			-- nr_of_visited_states := nr_of_visited_states + 1
 
 				-- What if the first state is already successful?
 			if problem.is_successful (current_state) then
@@ -96,7 +96,7 @@ feature -- Search Execution
 					successful_state := current_state
 
 						-- Get the successors of the state, if the removed state isn't successful
-				elseif (current_depth <= maximum_depth) then
+				elseif (current_depth < maximum_depth) then
 					current_successors.append (problem.get_successors (current_state))
 					from
 						current_successors.start
