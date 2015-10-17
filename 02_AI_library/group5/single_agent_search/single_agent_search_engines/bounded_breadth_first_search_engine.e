@@ -36,19 +36,18 @@ feature {NONE} -- Implementation
 
 feature {NONE} -- Implementation functions
 
-	reverse_list (a_list: LIST[S]) : LIST[S]
-
+	reverse_list (a_list: LIST [S]): LIST [S]
 		local
-			m_list: LINKED_LIST[S]
+			m_list: LINKED_LIST [S]
 		do
 			create m_list.make
-			across a_list as i loop
-				m_list.put_front(i.item)
+			across
+				a_list as i
+			loop
+				m_list.put_front (i.item)
 			end
 			Result := m_list
 		end
-
-
 
 feature -- Creation
 
@@ -60,17 +59,11 @@ feature -- Creation
 			-- TODO: more requires
 		do
 			set_problem (other_problem)
-			create queue.make
-			create marked_states.make
-			search_performed := false
-			is_search_successful := false
-			nr_of_visited_states := 0
-		    set_max_depth (0)
-
+			reset_engine
 		ensure
+			-- Also ensures the post-conditions of reset_engine
 			problem = other_problem
 			not search_performed
-				-- TODO: more ensures
 		end
 
 feature -- Search Execution
@@ -86,16 +79,13 @@ feature -- Search Execution
 			current_successors: LINKED_LIST [S]
 			current_tuple: TUPLE [depth: INTEGER; state: S]
 		do
-
 			create current_successors.make
 			current_state := problem.initial_state
-			--current_depth := 0
+			current_depth := 0
 			queue.put ([current_depth, current_state])
 				-- What if the first state is already successful?
 			nr_of_visited_states := nr_of_visited_states + 1
-
 			marked_states.put (current_state)
-
 			if problem.is_successful (current_state) then
 				is_search_successful := true
 				successful_state := current_state
@@ -103,25 +93,22 @@ feature -- Search Execution
 
 				-- Main loop
 			from
-
 			until
 				queue.is_empty or is_search_successful
 			loop
-
 				current_successors.wipe_out
-				-- Remove the first state of the queue, add it to the marked states list			
+					-- Remove the first state of the queue, add it to the marked states list
 				current_tuple := queue.item
 				current_state := current_tuple.state
 				current_depth := current_tuple.depth
-
 				queue.remove
 
-				-- Check if the removed state is successful
+					-- Check if the removed state is successful
 				if (problem.is_successful (current_state)) then
 					is_search_successful := true
 					successful_state := current_state
 
-				-- Get the successors of the state, if the removed state isn't successful
+						-- Get the successors of the state, if the removed state isn't successful
 				elseif (current_depth < maximum_depth) then
 					current_successors.append (problem.get_successors (current_state))
 					from
@@ -129,16 +116,16 @@ feature -- Search Execution
 					until
 						current_successors.exhausted or is_search_successful
 					loop
-					-- Check if the current successor is marked
+							-- Check if the current successor is marked
 						if (not marked_states.has (current_successors.item)) then
 							marked_states.extend (current_successors.item)
 							nr_of_visited_states := nr_of_visited_states + 1
-							-- Check if the current successor is successful
+								-- Check if the current successor is successful
 							if problem.is_successful (current_successors.item) then
 								is_search_successful := true
 								successful_state := current_successors.item
 							else
-								-- Put it in the queue if it isn't successful
+									-- Put it in the queue if it isn't successful
 								queue.put ([current_depth + 1, current_successors.item])
 							end
 						end
@@ -152,12 +139,19 @@ feature -- Search Execution
 	reset_engine
 			-- Resets engine, so that search can be restarted.
 		do
+			set_max_depth (0)
 			create queue.make
 			create marked_states.make
 			search_performed := false
 			is_search_successful := false
-			set_max_depth (0)
 			nr_of_visited_states := 0
+		ensure then
+			maximum_depth = 0
+			queue.count = 0
+			marked_states.count = 0
+			search_performed = false
+			is_search_successful = false
+			nr_of_visited_states = 0
 		end
 
 feature -- Status setting
@@ -179,23 +173,28 @@ feature -- Status Report
 			-- Returns the path to the solution obtained from performed search.
 		local
 			current_state: S
-			list: LINKED_LIST[S]
+			list: LINKED_LIST [S]
 		do
-			from
-				current_state := obtained_solution
-				create list.make
-				list.extend (current_state)
-			until
-				current_state.parent = void
-			loop
-				list.extend (current_state.parent)
-				current_state := current_state.parent
+			if (is_search_successful) then
+					-- Starting from the successful state, get the parent of each state
+					--		by travelling backwards in the hierarchy, and add it to a list
+				from
+					current_state := obtained_solution
+					create list.make
+					list.extend (current_state)
+				until
+					current_state.parent = void
+				loop
+					list.extend (current_state.parent)
+					current_state := current_state.parent
+				end
+
+					-- The list should be reversed, so it goes:
+					-- 		Starting State --> Successful State
+				Result := reverse_list (list)
 			end
-
-			-- The list should be reversed, so it goes:
-			-- 		Starting State --> Successful State
-
-			Result := reverse_list(list)
+		ensure then
+			if_result_exists_not_void: is_search_successful implies Result /= void
 		end
 
 	obtained_solution: detachable S
@@ -204,6 +203,8 @@ feature -- Status Report
 			if is_search_successful and search_performed then
 				Result := successful_state
 			end
+		ensure then
+			if_result_exists_not_void: (is_search_successful and search_performed) implies Result = successful_state
 		end
 
 	is_search_successful: BOOLEAN
