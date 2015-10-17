@@ -121,7 +121,6 @@ feature -- Search Execution
 	reset_engine
 			-- Resets engine, so that search can be restarted.
 		do
-				-- TODO: add your code here
 			create stack.make
 			create visited_states.make
 			stack.put (0, problem.initial_state)
@@ -144,7 +143,6 @@ feature -- Status setting
 		require
 			new_bound >= 0
 		do
-				-- TODO: add your code here
 			maximum_depth := new_bound
 		ensure
 			maximum_depth = new_bound
