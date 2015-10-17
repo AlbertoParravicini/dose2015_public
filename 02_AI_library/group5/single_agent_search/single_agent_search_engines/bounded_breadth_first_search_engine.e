@@ -34,21 +34,6 @@ feature {NONE} -- Implementation
 
 	successful_state: S
 
-feature {NONE} -- Implementation functions
-
-	reverse_list (a_list: LIST [S]): LIST [S]
-		local
-			m_list: LINKED_LIST [S]
-		do
-			create m_list.make
-			across
-				a_list as i
-			loop
-				m_list.put_front (i.item)
-			end
-			Result := m_list
-		end
-
 feature -- Creation
 
 	make (other_problem: P)
@@ -110,7 +95,7 @@ feature -- Search Execution
 					successful_state := current_state
 
 						-- Get the successors of the state, if the removed state isn't successful
-				elseif (current_depth < maximum_depth) then
+				elseif (current_depth <= maximum_depth) then
 					current_successors.append (problem.get_successors (current_state))
 					from
 						current_successors.start
@@ -182,17 +167,15 @@ feature -- Status Report
 				from
 					current_state := obtained_solution
 					create list.make
-					list.extend (current_state)
+					list.put_front (current_state)
 				until
 					current_state.parent = void
 				loop
-					list.extend (current_state.parent)
+					list.put_front (current_state.parent)
 					current_state := current_state.parent
 				end
 
-					-- The list should be reversed, so it goes:
-					-- 		Starting State --> Successful State
-				Result := reverse_list (list)
+				Result := list
 			end
 		ensure then
 			if_result_exists_not_void: is_search_successful implies Result /= void

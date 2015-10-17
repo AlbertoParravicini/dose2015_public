@@ -31,7 +31,7 @@ feature {NONE} -- Initialization
 				create engine.make (jar_puzzle)
 				engine.set_max_depth (curr_depth)
 			until
-				found or curr_depth=20
+				found or curr_depth=5
 			loop
 				engine.perform_search
 				if (engine.is_search_successful) then
