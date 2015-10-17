@@ -63,10 +63,12 @@ feature -- Search Execution
 			current_depth: INTEGER
 			current_successors: LINKED_LIST [S]
 			current_tuple: TUPLE [depth: INTEGER; state: S]
+		
 		do
 			create current_successors.make
 			current_state := problem.initial_state
 			current_depth := 0
+			already_in_queue := false
 			queue.put ([current_depth, current_state])
 			marked_states.extend (current_state)
 			nr_of_visited_states := nr_of_visited_states + 1
@@ -102,7 +104,8 @@ feature -- Search Execution
 					until
 						current_successors.exhausted or is_search_successful
 					loop
-							-- Check if the current successor is marked
+							-- Check if the current successor is marked,
+							-- 		if so just go to the next iteration of the loop
 						if (not marked_states.has (current_successors.item)) then
 							marked_states.extend (current_successors.item)
 							nr_of_visited_states := nr_of_visited_states + 1
@@ -112,7 +115,10 @@ feature -- Search Execution
 								successful_state := current_successors.item
 							else
 									-- Put it in the queue if it isn't successful
-								queue.put ([current_depth + 1, current_successors.item])
+
+
+									queue.put ([current_depth + 1, current_successors.item])
+
 							end
 						end
 						current_successors.forth
