@@ -69,7 +69,7 @@ feature -- Search Execution
 				current_tuple := stack.item
 				current_state := current_tuple.state
 				current_depth := current_tuple.depth
-				current_successors := void
+				create current_successors.make
 				stack.remove
 					-- Is it a successfull state?
 				if (current_state /= void and then problem.is_successful (current_state)) then
@@ -101,11 +101,11 @@ feature -- Search Execution
 							current_successors.forth
 						end
 					end
-					visited_states.put (current_state)
+					visited_states.extend (current_state)
 					nr_of_visited_states := nr_of_visited_states + 1
 				end
 			end
-			search_performed:=true
+			search_performed := true
 		end
 
 	reset_engine
@@ -140,16 +140,24 @@ feature -- Status Report
 			-- Returns the path to the solution obtained from performed search.
 		local
 			current_state: S
+			path: LINKED_LIST [S]
+
 		do
 			from
 				current_state := obtained_solution
-				Result.put (current_state)
+				create path.make
 			until
 				current_state = void
 			loop
-				Result.put (current_state.parent)
+				path.put_front (current_state)
 				current_state := current_state.parent
 			end
+			Result := path
+		ensure then
+			--TODO: postconditions
+			--First member of the list is the starting state, ending position of the list is the searched state
+			first_state_is_consistent: Result = void or else Result.first = problem.initial_state
+			last_state_is_consistent: Result = void or else problem.is_successful (Result.last)
 		end
 
 	obtained_solution: detachable S
@@ -171,7 +179,7 @@ feature -- Status Report
 
 feature
 
-	stack: LINKED_LIST [TUPLE [depth: INTEGER; state: S]]
+	stack: LINKED_STACK [TUPLE [depth: INTEGER; state: S]]
 			-- Where the states will be saved
 
 	visited_states: LINKED_LIST [S]
