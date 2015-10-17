@@ -46,7 +46,7 @@ feature -- Creation
 			set_problem (other_problem)
 			reset_engine
 		ensure
-			-- Also ensures the post-conditions of reset_engine
+				-- Also ensures the post-conditions of reset_engine
 			problem = other_problem
 			not search_performed
 		end
@@ -63,7 +63,6 @@ feature -- Search Execution
 			current_depth: INTEGER
 			current_successors: LINKED_LIST [S]
 			current_tuple: TUPLE [depth: INTEGER; state: S]
-		
 		do
 			create current_successors.make
 			current_state := problem.initial_state
@@ -73,7 +72,7 @@ feature -- Search Execution
 			marked_states.extend (current_state)
 			nr_of_visited_states := nr_of_visited_states + 1
 
-							-- What if the first state is already successful?		
+				-- What if the first state is already successful?
 			if problem.is_successful (current_state) then
 				is_search_successful := true
 				successful_state := current_state
@@ -115,10 +114,7 @@ feature -- Search Execution
 								successful_state := current_successors.item
 							else
 									-- Put it in the queue if it isn't successful
-
-
-									queue.put ([current_depth + 1, current_successors.item])
-
+								queue.put ([current_depth + 1, current_successors.item])
 							end
 						end
 						current_successors.forth
@@ -180,14 +176,13 @@ feature -- Status Report
 					list.put_front (current_state.parent)
 					current_state := current_state.parent
 				end
-
 				Result := list
 			end
 		ensure then
 			if_result_exists_not_void: is_search_successful implies Result /= void
-			 --First member of the list is the starting state, ending position of the list is the searched state
- 			first_state_is_consistent: Result = void or equal(Result.first, problem.initial_state)
- 			last_state_is_consistent: Result = void or else problem.is_successful (Result.last)
+				--First member of the list is the starting state, ending position of the list is the searched state
+			first_state_is_consistent: Result = void or equal (Result.first, problem.initial_state)
+			last_state_is_consistent: Result = void or else problem.is_successful (Result.last)
 		end
 
 	obtained_solution: detachable S
