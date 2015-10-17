@@ -21,7 +21,8 @@
 #### General Contacts:
   *  Group 5 - Mailing List: se-dose-group5@lists.inf.ethz.ch 
   *  Global Mailing List: se-dose-students@lists.inf.ethz.ch
-####--------------------------------------------------------------------------------------------------------
+  
+#### --------------------------------------------------------------------------------------------------------
 
 
 Welcome to the 2015 edition of the DOSE course.
