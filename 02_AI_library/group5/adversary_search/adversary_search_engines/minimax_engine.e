@@ -27,7 +27,8 @@ feature
 		require
 			new_problem /= Void
 		do
-			-- TODO: add your code here
+			set_problem(new_problem)
+			search_performed := False
 		end
 
 	make_with_depth (new_problem: P; new_max_depth: INTEGER)
@@ -35,25 +36,79 @@ feature
 			new_problem /= Void
 			new_max_depth >= 0
 		do
-			-- TODO: add your code here
+			set_problem (new_problem)
+			set_max_depth (new_max_depth)
 		end
 
 feature
 
 	reset_engine
-	do
-			-- TODO: add your code here
-	end
+		do
+			search_performed := False
+		end
 
 	perform_search (initial_state: S)
-	do
-			-- TODO: add your code here
-	end
+		local
+			current_successors : LIST [S]
+			value_to_compare : INTEGER
+		do
+			current_successors := problem.get_successors (initial_state)
+			if not current_successors.is_empty then
+				from
+				    current_successors.start
+					obtained_successor := current_successors.item
+					obtained_value := compute_value (obtained_successor, 0)
+				until
+					current_successors.exhausted
+				loop
+					value_to_compare := compute_value (current_successors.item, 0)
+					if (value_to_compare > obtained_value)  then
+						obtained_successor := current_successors.item
+						obtained_value := value_to_compare
+					end
+					current_successors.forth
+				end
+			end
+			search_performed := True
+		end
+
+	compute_value (initial_state : S; current_depth : INTEGER) : INTEGER
+		local
+			max_value : INTEGER
+			min_value : INTEGER
+			current_successors : LIST [S]
+		do
+			if (problem.is_end (initial_state) or current_depth >= max_depth) then
+				Result := problem.value (initial_state)
+			else
+				max_value := problem.min_value
+				min_value := problem.max_value
+				current_successors := problem.get_successors (initial_state)
+				from
+					current_successors.start
+				until
+					current_successors.exhausted
+				loop
+					if initial_state.is_max then
+						max_value := max_value.max (compute_value (current_successors.item, current_depth+1))
+					else
+						min_value := min_value.min (compute_value (current_successors.item, current_depth+1))
+					end
+					current_successors.forth
+				end
+				if initial_state.is_max then
+					Result := max_value
+				else
+					Result := min_value
+				end
+			end
+		end
+
 
 	set_max_depth (new_max_depth: INTEGER)
-	do
-			-- TODO: add your code here
-	end
+		do
+			max_depth := new_max_depth
+		end
 
 	obtained_value: INTEGER
 
