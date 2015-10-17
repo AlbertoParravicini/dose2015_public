@@ -156,7 +156,7 @@ feature -- Status Report
 		ensure then
 			--TODO: postconditions
 			--First member of the list is the starting state, ending position of the list is the searched state
-			first_state_is_consistent: Result = void or else Result.first = problem.initial_state
+			first_state_is_consistent: Result = void or else equal(Result.first,problem.initial_state)
 			last_state_is_consistent: Result = void or else problem.is_successful (Result.last)
 		end
 
