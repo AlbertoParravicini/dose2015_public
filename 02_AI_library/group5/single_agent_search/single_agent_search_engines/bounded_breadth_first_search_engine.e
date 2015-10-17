@@ -83,9 +83,10 @@ feature -- Search Execution
 			current_state := problem.initial_state
 			current_depth := 0
 			queue.put ([current_depth, current_state])
-				-- What if the first state is already successful?
+			marked_states.extend (current_state)
 			nr_of_visited_states := nr_of_visited_states + 1
-			marked_states.put (current_state)
+
+							-- What if the first state is already successful?		
 			if problem.is_successful (current_state) then
 				is_search_successful := true
 				successful_state := current_state
@@ -103,7 +104,7 @@ feature -- Search Execution
 				current_depth := current_tuple.depth
 				queue.remove
 
-					-- Check if the removed state is successful
+					-- Check if the removed state is successful, if so don't start the main loop
 				if (problem.is_successful (current_state)) then
 					is_search_successful := true
 					successful_state := current_state

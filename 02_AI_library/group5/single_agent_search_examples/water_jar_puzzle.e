@@ -24,12 +24,14 @@ feature -- Initialisation
 		end
 
 feature
-
+	-- A_max = 19
+	-- B_max = 13
+	-- C_max = 7
 	initial_state: WATER_JAR_PUZZLE_STATE
 	local
 		new_state: WATER_JAR_PUZZLE_STATE
 	do
-		create new_state.make_with_contents (9, 8, 3)
+		create new_state.make_with_contents (4, 9, 7)
 		Result := new_state
 	end
 
@@ -114,7 +116,7 @@ feature
 		if state.contents_c>0 and state.contents_b<13 then
 			from
 				create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
-				create rule.make_from_string ("A->B")
+				create rule.make_from_string ("C->B")
 				successor.set_rule_applied (rule)
 
 			until
