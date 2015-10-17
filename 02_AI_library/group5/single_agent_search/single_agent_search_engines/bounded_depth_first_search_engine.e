@@ -195,7 +195,7 @@ feature -- Status Report
 	nr_of_visited_states: INTEGER
 			-- Number of states visited in the performed search.
 
-feature
+feature {NONE}
 
 	stack: LINKED_STACK [TUPLE [depth: INTEGER; state: S]]
 			-- Where the states will be saved
