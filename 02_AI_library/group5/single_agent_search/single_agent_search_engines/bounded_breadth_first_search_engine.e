@@ -179,6 +179,9 @@ feature -- Status Report
 			end
 		ensure then
 			if_result_exists_not_void: is_search_successful implies Result /= void
+			 --First member of the list is the starting state, ending position of the list is the searched state
+ 			first_state_is_consistent: Result = void or equal(Result.first, problem.initial_state)
+ 			last_state_is_consistent: Result = void or else problem.is_successful (Result.last)
 		end
 
 	obtained_solution: detachable S
