@@ -34,6 +34,22 @@ feature {NONE} -- Implementation
 
 	successful_state: S
 
+feature {NONE} -- Implementation functions
+
+	reverse_list (a_list: LIST[S]) : LIST[S]
+
+		local
+			m_list: LINKED_LIST[S]
+		do
+			create m_list.make
+			across a_list as i loop
+				m_list.put_front(i.item)
+			end
+			Result := m_list
+		end
+
+
+
 feature -- Creation
 
 	make (other_problem: P)
@@ -115,8 +131,7 @@ feature -- Search Execution
 					loop
 					-- Check if the current successor is marked
 						if (not marked_states.has (current_successors.item)) then
-							--print (nr_of_visited_states.out + "%N")
-							marked_states.put (current_successors.item)
+							marked_states.extend (current_successors.item)
 							nr_of_visited_states := nr_of_visited_states + 1
 							-- Check if the current successor is successful
 							if problem.is_successful (current_successors.item) then
@@ -132,7 +147,6 @@ feature -- Search Execution
 				end
 			end -- End of the main loop
 			search_performed := true
-			print("all done " + is_search_successful.out + "%N")
 		end
 
 	reset_engine
@@ -170,14 +184,18 @@ feature -- Status Report
 			from
 				current_state := obtained_solution
 				create list.make
-				list.put (current_state)
+				list.extend (current_state)
 			until
-				current_state = void
+				current_state.parent = void
 			loop
-				list.put (current_state.parent)
+				list.extend (current_state.parent)
 				current_state := current_state.parent
 			end
-			Result := (list)
+
+			-- The list should be reversed, so it goes:
+			-- 		Starting State --> Successful State
+
+			Result := reverse_list(list)
 		end
 
 	obtained_solution: detachable S
@@ -185,7 +203,6 @@ feature -- Status Report
 		do
 			if is_search_successful and search_performed then
 				Result := successful_state
-			else Result := problem.initial_state
 			end
 		end
 
