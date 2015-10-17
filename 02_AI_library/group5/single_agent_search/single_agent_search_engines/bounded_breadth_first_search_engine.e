@@ -46,7 +46,7 @@ feature -- Creation
 			set_problem (other_problem)
 			reset_engine
 		ensure
-				-- Also ensures the post-conditions of reset_engine
+			-- Also ensures the post-conditions of reset_engine
 			problem = other_problem
 			not search_performed
 		end
@@ -70,7 +70,7 @@ feature -- Search Execution
 			queue.put ([current_depth, current_state])
 			marked_states.extend (current_state)
 			-- Activate it if you want to include the original state as "visited state"
-			-- nr_of_visited_states := nr_of_visited_states + 1
+			nr_of_visited_states := nr_of_visited_states + 1
 
 				-- What if the first state is already successful?
 			if problem.is_successful (current_state) then
@@ -122,6 +122,10 @@ feature -- Search Execution
 				end
 			end -- End of the main loop
 			search_performed := true
+
+		ensure then
+			unsuccessful_state_with_non_empty_queue: (not is_search_successful) implies queue.is_empty
+			no_visited_states: nr_of_visited_states > old nr_of_visited_states
 		end
 
 	reset_engine
@@ -135,8 +139,8 @@ feature -- Search Execution
 			nr_of_visited_states := 0
 		ensure then
 			maximum_depth = 0
-			queue.count = 0
-			marked_states.count = 0
+			queue /= void and then queue.count = 0
+			marked_states /= void and then marked_states.count = 0
 			search_performed = false
 			is_search_successful = false
 			nr_of_visited_states = 0
@@ -150,7 +154,7 @@ feature -- Status setting
 			new_bound >= 0
 		do
 			maximum_depth := new_bound
-				-- Could cause issue if not called appropriately (during the search?)
+				-- Could cause issues if not called appropriately (during the search?)
 		ensure
 			maximum_depth = new_bound
 		end
@@ -179,10 +183,10 @@ feature -- Status Report
 				Result := list
 			end
 		ensure then
-			if_result_exists_not_void: is_search_successful implies Result /= void
 				--First member of the list is the starting state, ending position of the list is the searched state
-			first_state_is_consistent: Result = void or equal (Result.first, problem.initial_state)
-			last_state_is_consistent: Result = void or else problem.is_successful (Result.last)
+			first_state_is_consistent: Result.is_empty or else equal (Result.first, problem.initial_state)
+			last_state_is_consistent: Result.is_empty or else problem.is_successful (Result.last)
+			empty_list_is_consistent: (Result.is_empty implies (not is_search_successful)) and ((not is_search_successful) implies Result.is_empty)
 		end
 
 	obtained_solution: detachable S
@@ -193,6 +197,8 @@ feature -- Status Report
 			end
 		ensure then
 			if_result_exists_not_void: (is_search_successful and search_performed) implies Result = successful_state
+			successful_search: is_search_successful implies problem.is_successful (Result)
+			unsuccessful_search: (not is_search_successful) implies Result = void
 		end
 
 	is_search_successful: BOOLEAN
@@ -204,4 +210,12 @@ feature -- Status Report
 	nr_of_visited_states: INTEGER
 			-- Number of states visited in the performed search.
 
+
+invariant
+	queue_is_void: queue /= void
+	marked_states_is_void: marked_states /= void
+	nr_of_visited_states_is_negative: nr_of_visited_states >= 0
+	successful_state_is_inconsistent: search_performed implies (is_search_successful implies problem.is_successful (successful_state))
+	successful_state_is_inconsistent: search_performed implies ((successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful)
+	successful_state_not_belonging_to_marked_states: is_search_successful implies marked_states.has (successful_state)
 end
