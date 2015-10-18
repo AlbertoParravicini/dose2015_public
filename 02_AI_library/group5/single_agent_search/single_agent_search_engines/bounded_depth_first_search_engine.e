@@ -96,7 +96,7 @@ feature -- Search Execution
 							current_successors.exhausted or is_search_successful
 						loop
 								-- Add new states to stack if they are new state, check if they are succesfull
-							if (not visited_states.has (current_successors.item)) then
+						--	if (not partial_path (current_state).has (current_successors.item)) then
 									-- If I haven't visited this state already
 								if (problem.is_successful (current_successors.item)) then
 										-- If it is the desired state, add the state to the visited ones and set the search successfull
@@ -106,11 +106,11 @@ feature -- Search Execution
 									is_search_successful := true
 								else
 										-- Add the state to the stack
-									if (not stack.has ([current_depth + 1, current_successors.item])) then
+									--if (not stack.has ([current_depth + 1, current_successors.item])) then
 										stack.put ([current_depth + 1, current_successors.item])
-									end
+									--end
 								end
-							end
+						--	end
 							current_successors.forth
 						end
 					end
@@ -213,6 +213,26 @@ feature {NONE}
 
 	successful_state: S
 			-- Searched state
+
+	partial_path(state: S): LIST [S]
+			-- Returns the path to the solution obtained from performed search.
+			-- If there is no path, an empty list is returned
+		local
+			current_state: S
+			path: LINKED_LIST [S]
+		do
+			from
+				current_state := state
+				create path.make
+			until
+				current_state = void
+			loop
+				path.put_front (current_state)
+				current_state := current_state.parent
+			end
+			Result := path
+		end
+
 
 invariant
 	stack_is_void: stack /= void
