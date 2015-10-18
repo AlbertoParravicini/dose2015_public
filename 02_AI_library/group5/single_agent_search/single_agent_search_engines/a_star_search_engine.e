@@ -114,7 +114,7 @@ feature -- Status Report
 
 feature {NONE} -- Implementation routines / procedures
 
-	path_cost (state: S): REAL
+	path_cost (a_state: S): REAL
 			-- Calculate the cost of state s from the starting state
 		local
 			current_cost: REAL
@@ -122,20 +122,42 @@ feature {NONE} -- Implementation routines / procedures
 		do
 			from
 				current_cost := 0
-				current_state := state
+				current_state := a_state
 			until
-				state = void
+				a_state = void
 			loop
 				Result := Result + problem.cost (current_state)
 				current_state := current_state.parent
 			end
 		end
 
-	total_cost (state: S): REAL
+	total_cost (a_state: S): REAL
 			-- Calculate the A* cost of a state,
 			-- 		i.e. the path cost to "state" + the heuristic cost from "state" to the goal
 		do
-			Result := path_cost (state) + problem.heuristic_value (state)
+			Result := path_cost (a_state) + problem.heuristic_value (a_state)
+		end
+
+	--TODO: order the open list
+
+	already_seen_with_lower_cost (a_state: S): BOOLEAN
+		-- Check if a state is already present in closed with a lower cost, if so replace it
+		local
+			state_substituted: BOOLEAN
+		do
+			state_substituted := false
+
+			from
+				closed.start
+			until
+				closed.exhausted or state_substituted = true
+			loop
+				if (equal (closed.item.state, a_state) and (closed.item.cost > total_cost(a_state))) then
+					closed.replace ([a_state, total_cost (a_state)])
+				end
+			end
+		ensure
+			closed_size_not_changed: closed.count = old closed.count
 		end
 
 feature {NONE} -- Implementation attributes
