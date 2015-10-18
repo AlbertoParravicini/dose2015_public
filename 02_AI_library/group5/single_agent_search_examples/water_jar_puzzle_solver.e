@@ -20,13 +20,14 @@ feature {NONE} -- Initialization
 		local
 			jar_puzzle: WATER_JAR_PUZZLE
 			engine: BOUNDED_BREADTH_FIRST_SEARCH_ENGINE[STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
+			engine2: A_STAR_SEARCH_ENGINE[STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
 			curr_depth: INTEGER
 			found: BOOLEAN
 			i: INTEGER
 			path: LIST[WATER_JAR_PUZZLE_STATE]
 		do
 			from
-				curr_depth := 12
+				curr_depth := 4
 				create jar_puzzle.make
 				create engine.make (jar_puzzle)
 				engine.set_max_depth (curr_depth)
