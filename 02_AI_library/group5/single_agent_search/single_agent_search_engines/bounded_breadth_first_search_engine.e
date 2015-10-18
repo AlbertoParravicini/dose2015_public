@@ -137,6 +137,8 @@ feature -- Search Execution
 			search_performed := false
 			is_search_successful := false
 			nr_of_visited_states := 0
+			queue.compare_objects
+			marked_states.compare_objects
 		ensure then
 			maximum_depth = 0
 			queue /= void and then queue.count = 0
