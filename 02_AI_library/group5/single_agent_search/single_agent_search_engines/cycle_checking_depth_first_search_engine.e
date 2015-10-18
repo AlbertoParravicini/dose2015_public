@@ -67,6 +67,7 @@ feature -- Search Execution
 			current_state: S
 			current_depth: INTEGER
 			current_successors: LINKED_LIST[S]
+			current_partial_path: LIST[S]
 		do
 			from
 
@@ -99,7 +100,9 @@ feature -- Search Execution
 						-- 1) check if already visited
 						-- 2) check if successful
 						-- 3) if successful, set the result
-						if (not visited_states.has (current_successors.item)) then
+						current_partial_path:=partial_path (current_state)
+						current_partial_path.compare_objects
+						if (not current_partial_path.has (current_successors.item)) then
 							-- The state hasn't been visited
 							if (problem.is_successful(current_successors.item)) then
 								-- If it is a successful state
@@ -109,12 +112,12 @@ feature -- Search Execution
 								is_search_successful:=true
 							else
 								-- Add the state to the stack, in order to visit it later, if it isn't already in stack
-								if (not stack.has (current_successors.item)) then
+								--if (not stack.has (current_successors.item)) then
 									stack.put(current_successors.item)
-								else
+								--else
 									-- DEBUG
 									--print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
-								end
+								--end
 								-- Debug
 								--print("stack: "+stack.count.out+" nr_of_visited_states: "+nr_of_visited_states.out+"%N")
 							end
@@ -200,6 +203,24 @@ feature {NONE}
 		-- List of all the states that have been visited
 	successful_state: S
 		-- Searched state
+	partial_path(state: S): LIST [S]
+			-- Returns the path to the solution obtained from performed search.
+			-- If there is no path, an empty list is returned
+		local
+			current_state: S
+			path: LINKED_LIST [S]
+		do
+			from
+				current_state := state
+				create path.make
+			until
+				current_state = void
+			loop
+				path.put_front (current_state)
+				current_state := current_state.parent
+			end
+			Result := path
+		end
 
 invariant
 	-- List of all class invariants
