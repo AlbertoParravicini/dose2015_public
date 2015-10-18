@@ -113,14 +113,14 @@ feature -- Search Execution
 									stack.put(current_successors.item)
 								else
 									-- DEBUG
-									print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
+									--print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
 								end
 								-- Debug
-								print("stack: "+stack.count.out+" nr_of_visited_states: "+nr_of_visited_states.out+"%N")
+								--print("stack: "+stack.count.out+" nr_of_visited_states: "+nr_of_visited_states.out+"%N")
 							end
 						else
 							--Debug
-							print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
+							--print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
 						end
 						current_successors.forth
 					end
