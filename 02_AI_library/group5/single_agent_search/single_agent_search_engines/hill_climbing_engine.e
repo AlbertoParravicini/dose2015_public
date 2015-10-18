@@ -98,7 +98,7 @@ feature -- Search Execution
 
 			end
 
-				-- Now current state is a local maximum or a "flat" local maximum.
+				-- Now current state is a local maximum or a "flat" local maximum or a shoulder.
 			maximum_state := current_state;
 
 				-- If maximum state is a successful state then it is also the global maximum and the search is successful.
