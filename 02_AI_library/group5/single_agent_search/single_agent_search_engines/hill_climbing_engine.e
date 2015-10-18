@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Implementation
 
-		-- State with better heuristic value than its neighbors.
+		-- State with heuristic value better than its neighbors.
 	maximum_state: S
 
 feature -- Creation
@@ -51,7 +51,7 @@ feature -- Search Execution
 
 		local
 
-				-- State with better heuristic value than its parents.
+				-- State with heuristic value better than its parents.
 			current_state: S
 
 				-- List of successors of the current state.
@@ -83,7 +83,8 @@ feature -- Search Execution
 				from
 					neighbors_list.start
 				until
-					neighbors_list.exhausted
+						-- Exit the nested loop as soon as found a neighbor with better heuristic value or when there aren't more neighbors.
+					not is_maximum_state_reached or neighbors_list.exhausted
 				loop
 						-- If a successor has heuristic value better than the current state then update current state.
 					if problem.heuristic_value (neighbors_list.item) < problem.heuristic_value (current_state) then
