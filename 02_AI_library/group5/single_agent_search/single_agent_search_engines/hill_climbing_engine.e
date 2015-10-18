@@ -79,6 +79,7 @@ feature -- Search Execution
 					-- Assume that there aren't neighbors with heuristic value better than the current state.
 				is_maximum_state_reached := true
 
+
 					-- Nested loop: for each successor compare the heuristic value to find the best one.
 				from
 					neighbors_list.start
@@ -93,12 +94,15 @@ feature -- Search Execution
 					end
 					nr_of_visited_states := nr_of_visited_states + 1
 					neighbors_list.forth
+				end -- End nested loop.
+
+
+					-- Now if is_maximum_state_reached is TRUE then current state is a global maximum or a local maximum or a "flat" local maximum or a shoulder.
+				if is_maximum_state_reached then
+					maximum_state := current_state;
 				end
 
-			end
-
-				-- Now current state is a global maximum or a local maximum or a "flat" local maximum or a shoulder.
-			maximum_state := current_state;
+			end -- End main loop.
 
 				-- End of the search.
 			is_search_successful := true
