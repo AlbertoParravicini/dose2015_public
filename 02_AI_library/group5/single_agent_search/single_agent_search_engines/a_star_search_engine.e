@@ -88,8 +88,6 @@ feature -- Search Execution
 				closed.extend (current_tuple)
 				nr_of_visited_states := nr_of_visited_states + 1
 
-				print (current_state_path_cost.out + "%N")
-
 				-- End if the current state is successful;
 				if problem.is_successful (current_state) then
 					is_search_successful := true
@@ -108,11 +106,13 @@ feature -- Search Execution
 						--		if so, replace it in the "closed" list;
 						already_in_close := replace_list_state (closed, current_successors.item)
 						if already_in_close = true then
-						-- what if the state is already included with an higher cost? i include it anyway, but  i shouldnt
 							if problem.is_successful (current_successors.item) then
 								is_search_successful := true
 								successful_state := current_successors.item
 							else
+								-- Check if the current successor is already in the queue with a higher cost:
+								--		if so, replace it in the "open" list; if it is not present, add it;
+
 								already_in_close := false
 								already_in_close := replace_list_state (open, current_successors.item)
 								if already_in_close = true then
@@ -121,8 +121,6 @@ feature -- Search Execution
 
 							end
 						end
-
-
 						current_successors.forth
 					end
 
@@ -218,13 +216,13 @@ feature {NONE} -- Implementation routines / procedures
 	total_cost (a_state: S): REAL
 			-- Calculate the A* cost of a state,
 			-- 		i.e. the path cost to "a_state" from the parent of "a_state"
-			--			+ the heuristic cost from "a_state" to the goal
+			--			+ the heuristic cost from "a_state" to the goal;
 		do
 			Result := problem.cost (a_state) + problem.heuristic_value (a_state)
 		end
 
 	replace_list_state (list: LINKED_LIST[TUPLE[state: S; cost: REAL]]; a_state: S): BOOLEAN
-			-- Check if a state is already present in closed with a lower cost, if so replace it
+			-- Check if a state is already present in closed with a lower cost, if so replace it;
 		local
 			state_substituted: BOOLEAN
 			a_state_cost: REAL
@@ -241,7 +239,6 @@ feature {NONE} -- Implementation routines / procedures
 				if equal (list.item.state, a_state) then
 					already_present := true
 					if list.item.cost > a_state_cost then
-						print ("substituted state of cost:" + list.item.cost.out + " with one of cost: " + a_state_cost.out + "%N")
 						list.replace ([a_state, a_state_cost])
 						state_substituted := true
 					end
@@ -255,8 +252,8 @@ feature {NONE} -- Implementation routines / procedures
 
 
 		sort_list_with_tuples (my_list: LIST [TUPLE [state: S; value: REAL]])
-			-- sorts the given list from the state with the lowest value to the one with the highest value
-			-- insertion sort
+			-- Sorts the given list from the state with the lowest value to the one with the highest value
+			-- insertion sort;
 		local
 			i, j: INTEGER
 			temp_tuple: TUPLE [state: S; value: REAL]
@@ -287,12 +284,12 @@ feature {NONE} -- Implementation routines / procedures
 feature {NONE} -- Implementation attributes
 
 	open: LINKED_LIST [TUPLE [state: S; cost: REAL]]
-			-- List of the frontier, the states that can be expanded and visited, with their costs
+			-- List of the frontier, the states that can be expanded and visited, with their costs;
 
 	closed: LINKED_LIST [TUPLE [state: S; cost: REAL]]
-			-- List of the states that have been already visited, and the minimum cost associated to them
+			-- List of the states that have been already visited, and the minimum cost associated to them;
 
 	successful_state: S
-			-- the successful state, the result of the search
+			-- The successful state, the result of the search;
 
 end
