@@ -39,10 +39,12 @@ feature -- Creation
 			set_problem(other_problem)
 			create stack.make
 			create visited_states.make
-			stack.put(0, problem.initial_state)
+			stack.put( problem.initial_state)
 			search_performed:=false
 			is_search_successful:=false
 			nr_of_visited_states:=0
+			stack.compare_objects
+			visited_states.compare_objects
 		ensure
 			make_parameter_value_error: problem = other_problem
 			search_performed_value_error: not search_performed
@@ -65,16 +67,14 @@ feature -- Search Execution
 			current_state: S
 			current_depth: INTEGER
 			current_successors: LINKED_LIST[S]
-			current_tuple: TUPLE[depth: INTEGER; state: S]
 		do
 			from
 
 			until
 				is_search_successful or stack.is_empty
 			loop
-				current_tuple := stack.item
-				current_state:= current_tuple.state
-				current_depth:= current_tuple.depth
+
+				current_state:= stack.item
 				create current_successors.make
 				stack.remove
 				-- is it a successful state?
@@ -99,7 +99,7 @@ feature -- Search Execution
 						-- 1) check if already visited
 						-- 2) check if successful
 						-- 3) if successful, set the result
-						if (not visited_states.has (current_successors.item) then
+						if (not visited_states.has (current_successors.item)) then
 							-- The state hasn't been visited
 							if (problem.is_successful(current_successors.item)) then
 								-- If it is a successful state
@@ -108,9 +108,19 @@ feature -- Search Execution
 								successful_state := current_successors.item
 								is_search_successful:=true
 							else
-								-- Add the state to the stack, in order to visit it later
-								stack.put([current_depth+1, current_successors.item])
+								-- Add the state to the stack, in order to visit it later, if it isn't already in stack
+								if (not stack.has (current_successors.item)) then
+									stack.put(current_successors.item)
+								else
+									-- DEBUG
+									print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
+								end
+								-- Debug
+								print("stack: "+stack.count.out+" nr_of_visited_states: "+nr_of_visited_states.out+"%N")
 							end
+						else
+							--Debug
+							print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
 						end
 						current_successors.forth
 					end
@@ -126,7 +136,7 @@ feature -- Search Execution
 		do
 			create stack.make
 			create visited_states.make
-			stack.put (0, problem.initial_state)
+			stack.put (problem.initial_state)
 			search_performed := false
 			is_search_successful := false
 			nr_of_visited_states := 0
@@ -184,7 +194,7 @@ feature -- Status Report
 
 feature {NONE}
 	-- Local variables
-	stack: LINKED_STACK [TUPLE[depth: INTEGER; state : S]]
+	stack: LINKED_STACK [S]
 		-- Stack of the states that will be visited, LIFO
 	visited_states: LINKED_LIST[S]
 		-- List of all the states that have been visited
