@@ -63,7 +63,7 @@ feature -- Search Execution
 			current_depth: INTEGER
 			current_successors: LINKED_LIST [S]
 			current_partial_path: LIST [S]
-			current_successors_with_heuristic_value: LINKED_LIST[TUPLE[state: S; value: REAL]]
+			current_successors_with_heuristic_value: LINKED_LIST [TUPLE [state: S; value: REAL]]
 		do
 			from
 			until
@@ -86,22 +86,22 @@ feature -- Search Execution
 					visited_states.extend (current_state)
 					nr_of_visited_states := nr_of_visited_states + 1
 
-					-- Fill current_successors_with_heuristic_value according to their heuristic value
+						-- Fill current_successors_with_heuristic_value according to their heuristic value
 					create current_successors_with_heuristic_value.make
 					from
 						current_successors.start
 					until
 						current_successors.exhausted
 					loop
-						current_successors_with_heuristic_value.extend([current_successors.item, problem.heuristic_value(current_successors.item)])
+						current_successors_with_heuristic_value.extend ([current_successors.item, problem.heuristic_value (current_successors.item)])
 						current_successors.forth
 					end
 
-					-- Reorder current_successors_with_heuristic_value from lower to higher heuristic value
+						-- Reorder current_successors_with_heuristic_value from lower to higher heuristic value
 
-					sort_list_with_tuples(current_successors_with_heuristic_value)
+					sort_list_with_tuples (current_successors_with_heuristic_value)
 
-					-- Perform real search
+						-- Perform real search
 
 					from
 						current_successors_with_heuristic_value.finish
@@ -123,19 +123,10 @@ feature -- Search Execution
 								successful_state := current_successors_with_heuristic_value.item.state
 								is_search_successful := true
 							else
-									-- Add the state to the stack, in order to visit it later, if it isn't already in stack
-									--if (not stack.has (current_successors.item)) then
+									-- Add the state to the stack, in order to visit it later
+
 								stack.put (current_successors_with_heuristic_value.item.state)
-									--else
-									-- DEBUG
-									--print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
-									--end
-									-- Debug
-									--print("stack: "+stack.count.out+" nr_of_visited_states: "+nr_of_visited_states.out+"%N")
 							end
-						else
-								--Debug
-								--print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
 						end
 						current_successors_with_heuristic_value.back
 					end
@@ -239,34 +230,32 @@ feature {NONE}
 			end
 			Result := path
 		end
-	sort_list_with_tuples (my_list: LIST[TUPLE[state: S; value: REAL]])
-		-- sorts the given list from the state with the highest value to the one with the lowest value
+
+	sort_list_with_tuples (my_list: LIST [TUPLE [state: S; value: REAL]])
+			-- sorts the given list from the state with the highest value to the one with the lowest value
+			-- insertion sort
 		local
 			i, j: INTEGER
-			temp_tuple: TUPLE[state: S; value: REAL]
-			temp_tuple2: TUPLE[state: S; value: REAL]
+			temp_tuple: TUPLE [state: S; value: REAL]
+			temp_tuple2: TUPLE [state: S; value: REAL]
 		do
 			from
-				i:=2
+				i := 2
 			until
-				i=my_list.count+1
+				i = my_list.count + 1
 			loop
-				temp_tuple:= my_list.i_th(i)
-				j:= i-1
-
-
+				temp_tuple := my_list.i_th (i)
+				j := i - 1
 				from
-
 				until
-					j<1 or my_list.i_th(j).value <= temp_tuple.value
+					j < 1 or my_list.i_th (j).value <= temp_tuple.value
 				loop
-					temp_tuple2:= my_list.i_th(j)
-					my_list.i_th(j+1):=temp_tuple2
-					j:=j-1
+					temp_tuple2 := my_list.i_th (j)
+					my_list.i_th (j + 1) := temp_tuple2
+					j := j - 1
 				end
-
-				my_list.i_th(j+1):=temp_tuple
-				i:=i+1
+				my_list.i_th (j + 1) := temp_tuple
+				i := i + 1
 			end
 		end
 
