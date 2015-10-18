@@ -77,6 +77,8 @@ feature -- Search Execution
 				if (current_state /= void and then problem.is_successful (current_state)) then
 					successful_state := current_state
 					is_search_successful := true
+					visited_states.extend (current_state)
+					nr_of_visited_states := nr_of_visited_states + 1
 				end
 				if (not is_search_successful) then
 						-- Have I reached max depth?
