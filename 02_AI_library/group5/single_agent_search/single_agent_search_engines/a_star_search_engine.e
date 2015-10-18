@@ -113,7 +113,12 @@ feature -- Search Execution
 								is_search_successful := true
 								successful_state := current_successors.item
 							else
-								open.extend ([current_successors.item, current_state_path_cost + total_cost(current_successors.item)])
+								already_in_close := false
+								already_in_close := replace_list_state (open, current_successors.item)
+								if already_in_close = true then
+									open.extend ([current_successors.item, current_state_path_cost + total_cost(current_successors.item)])
+								end
+
 							end
 						end
 
