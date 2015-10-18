@@ -55,15 +55,15 @@ feature -- Search Execution
 			current_state: S
 
 				-- List of successors of the current state.
-			neightbors_list: LINKED_LIST [S]
+			neightbors_list: LIST [S]
 
 				-- TRUE if the neightbors have heuristic value less or equal to the current state.
 			is_maximum_state_reached: BOOLEAN
 
 		do
 				-- Initialize local variables.
-			create current_state.make
-			create neightbors_list.make
+			--create current_state.make
+			--create neightbors_list.make
 			is_maximum_state_reached := false
 
 				-- Start search from initial state.
@@ -115,7 +115,7 @@ feature -- Status setting
 	reset_engine
 			-- Resets engine, so that search can be restarted.
 		do
-			create maximum_state.make
+			--create maximum_state.make
 			search_performed := false
 			is_search_successful := false
 			nr_of_visited_states := 0
@@ -133,7 +133,7 @@ feature -- Status Report
 				if search_performed and is_search_successful then
 
 						-- Initialize local variables.
-					create current_state.make
+					--create current_state.make
 					create list.make
 
 						-- Get parent state for each state from maximum_state to initial state and put_front in the list.
