@@ -40,6 +40,8 @@ feature -- Creation
 			is_search_successful := false
 			set_max_depth (0)
 			nr_of_visited_states := 0
+			stack.compare_objects
+			visited_states.compare_objects
 		ensure
 			make_parameter_value_error: problem = other_problem
 			search_performed_value_error: not search_performed
@@ -104,7 +106,9 @@ feature -- Search Execution
 									is_search_successful := true
 								else
 										-- Add the state to the stack
-									stack.put ([current_depth + 1, current_successors.item])
+									if (not stack.has ([current_depth + 1, current_successors.item])) then
+										stack.put ([current_depth + 1, current_successors.item])
+									end
 								end
 							end
 							current_successors.forth
@@ -130,6 +134,8 @@ feature -- Search Execution
 			is_search_successful := false
 			set_max_depth (0)
 			nr_of_visited_states := 0
+			stack.compare_objects
+			visited_states.compare_objects
 		ensure then
 			is_search_successful_value_error: not is_search_successful
 			stack_value_error: stack /= void and then stack.count = 1
