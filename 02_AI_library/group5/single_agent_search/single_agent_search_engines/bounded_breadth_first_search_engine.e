@@ -29,7 +29,7 @@ feature {NONE} -- Implementation
 	queue: LINKED_QUEUE [TUPLE [depth: INTEGER; state: S]]
 			-- Queue containing the states which haven't been fully explored, and their depth;
 
-	marked_states: LINKED_QUEUE [S]
+	marked_states: LINKED_LIST [S]
 			-- List of the states which have been fully explored
 
 	successful_state: S

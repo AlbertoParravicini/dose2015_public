@@ -156,6 +156,7 @@ feature {NONE} -- Implementation routines / procedures
 					closed.replace ([a_state, total_cost (a_state)])
 				end
 			end
+			closed.forth
 		ensure
 			closed_size_not_changed: closed.count = old closed.count
 		end
