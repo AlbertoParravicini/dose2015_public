@@ -95,22 +95,28 @@ feature -- Search Execution
 						until
 							current_successors.exhausted or is_search_successful
 						loop
-								-- Add new states to stack if they are new state, check if they are succesfull
-						--	if (not partial_path (current_state).has (current_successors.item)) then
-									-- If I haven't visited this state already
-								if (problem.is_successful (current_successors.item)) then
-										-- If it is the desired state, add the state to the visited ones and set the search successfull
-									visited_states.extend (current_successors.item)
-									nr_of_visited_states := nr_of_visited_states + 1
-									successful_state := current_successors.item
-									is_search_successful := true
-								else
-										-- Add the state to the stack
-									--if (not stack.has ([current_depth + 1, current_successors.item])) then
-										stack.put ([current_depth + 1, current_successors.item])
-									--end
-								end
-						--	end
+								-- Add new states to stack if they are new state, check if they are succesful
+								----------------------------------------------------------------------
+								----------------------------------------------------------------------
+								-- UNCOMMENT THE FOLLOWING COMMENTED LINES TO ENABLE CYCLE CHECKING --
+								-- And add current_partial_path as a local variable                 --
+								----------------------------------------------------------------------
+								----------------------------------------------------------------------
+								--  current_partial_path:=partial_path(current_state)
+								--  current_partial_path.compare_objects
+								--	if (not current_partial_path.has (current_successors.item)) then
+								-- If I haven't visited this state already
+							if (problem.is_successful (current_successors.item)) then
+									-- If it is the desired state, add the state to the visited ones and set the search successfull
+								visited_states.extend (current_successors.item)
+								nr_of_visited_states := nr_of_visited_states + 1
+								successful_state := current_successors.item
+								is_search_successful := true
+							else
+									-- Add the state to the stack
+								stack.put ([current_depth + 1, current_successors.item])
+							end
+								--	end
 							current_successors.forth
 						end
 					end
@@ -214,7 +220,7 @@ feature {NONE}
 	successful_state: S
 			-- Searched state
 
-	partial_path(state: S): LIST [S]
+	partial_path (state: S): LIST [S]
 			-- Returns the path to the solution obtained from performed search.
 			-- If there is no path, an empty list is returned
 		local
@@ -232,7 +238,6 @@ feature {NONE}
 			end
 			Result := path
 		end
-
 
 invariant
 	stack_is_void: stack /= void
