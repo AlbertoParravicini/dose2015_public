@@ -51,14 +51,17 @@ feature -- Search Execution
 			current_state: S
 			current_state_path_cost: REAL
 			current_tuple: TUPLE[state: S; cost: REAL]
+			current_successors: LINKED_LIST[S]
+			already_in_close: BOOLEAN
 		do
+			create current_successors.make
 			current_state := problem.initial_state
 			current_state_path_cost := path_cost (current_state)
-			current_tuple := [current_state, current_state_path_cost]
+			current_tuple := [current_state, current_state_path_cost + total_cost(current_state)]
 			open.extend (current_tuple)
 			nr_of_visited_states := nr_of_visited_states + 1
 
-			-- End if the first state is successful
+			-- End if the first state is successful;
 			if problem.is_successful (current_state) then
 				is_search_successful := true
 				successful_state := current_state
@@ -69,29 +72,57 @@ feature -- Search Execution
 			until
 				open.is_empty or is_search_successful = true
 			loop
+				current_successors.wipe_out
 				-- Sort the "open" list, so that the state with the lowest cost, the most promising, is first;
 				sort_list_with_tuples (open)
 
 				-- Get the first state (the most promising) from the "open" list;
 				current_tuple := open.first
 				current_state := current_tuple.state
-				current_state_path_cost := current_tuple.cost
+					-- Calculate how far the current_state is from the start, optimization useful at a later stage;
+				current_state_path_cost := path_cost(current_state)
 				open.go_i_th (1)
 				open.remove
 
-				-- End if the current state is successful
+				-- Add the current state to the list of visited states;
+				closed.extend (current_tuple)
+				nr_of_visited_states := nr_of_visited_states + 1
+
+				print (current_state_path_cost.out + "%N")
+
+				-- End if the current state is successful;
 				if problem.is_successful (current_state) then
 					is_search_successful := true
 					successful_state := current_state
 				else
-					
+					current_successors.append (problem.get_successors (current_state))
+
+					-- Examinate the successors of the current state;
+					from
+						current_successors.start
+					until
+						current_successors.exhausted or is_search_successful = true
+					loop
+						already_in_close := false
+						-- Check if the current successor was already visited with a higher cost:
+						--		if so, replace it in the "closed" list;
+						already_in_close := replace_list_state (closed, current_successors.item)
+						if already_in_close = true then
+						-- what if the state is already included with an higher cost? i include it anyway, but  i shouldnt
+							if problem.is_successful (current_successors.item) then
+								is_search_successful := true
+								successful_state := current_successors.item
+							else
+								open.extend ([current_successors.item, current_state_path_cost + total_cost(current_successors.item)])
+							end
+						end
 
 
+						current_successors.forth
+					end
+
+				end
 			end
-
-
-
-
 			search_performed := true
 		end
 
@@ -162,15 +193,20 @@ feature {NONE} -- Implementation routines / procedures
 		local
 			current_cost: REAL
 			current_state: S
+			first_state_found: BOOLEAN
 		do
 			from
 				current_cost := 0
 				current_state := a_state
 			until
-				a_state = void
+				first_state_found = true
 			loop
 				Result := Result + problem.cost (current_state)
-				current_state := current_state.parent
+				if current_state.parent = void then
+					first_state_found := true
+				else
+					current_state := current_state.parent
+				end
 			end
 		end
 
@@ -182,26 +218,34 @@ feature {NONE} -- Implementation routines / procedures
 			Result := problem.cost (a_state) + problem.heuristic_value (a_state)
 		end
 
-	replace_list_state (list: LINKED_LIST[TUPLE[state: S; cost: REAL]]; a_state: S)
+	replace_list_state (list: LINKED_LIST[TUPLE[state: S; cost: REAL]]; a_state: S): BOOLEAN
 			-- Check if a state is already present in closed with a lower cost, if so replace it
 		local
 			state_substituted: BOOLEAN
 			a_state_cost: REAL
+			already_present: BOOLEAN
 		do
-			state_substituted := false
 			from
+				state_substituted := false
 				list.start
 				a_state_cost := path_cost (a_state) + total_cost (a_state)
+				already_present := false
 			until
 				list.exhausted or state_substituted = true
 			loop
-				if (equal (list.item.state, a_state) and (list.item.cost > a_state_cost)) then
-					list.replace ([a_state, a_state_cost])
+				if equal (list.item.state, a_state) then
+					already_present := true
+					if list.item.cost > a_state_cost then
+						print ("substituted state of cost:" + list.item.cost.out + " with one of cost: " + a_state_cost.out + "%N")
+						list.replace ([a_state, a_state_cost])
+						state_substituted := true
+					end
 				end
+				list.forth
 			end
-			list.forth
+			Result := not already_present or state_substituted
 		ensure
-			list_size_not_changed: list.count = old list.count
+			list_size_not_changed: old list.count = list.count
 		end
 
 
