@@ -47,8 +47,51 @@ feature -- Search Execution
 			-- of the path leading to them, and the heuristic values of states.
 			-- The result of the search is indicated in
 			-- is_search_successful.
+		local
+			current_state: S
+			current_state_path_cost: REAL
+			current_tuple: TUPLE[state: S; cost: REAL]
 		do
-				-- TODO: add your code here
+			current_state := problem.initial_state
+			current_state_path_cost := path_cost (current_state)
+			current_tuple := [current_state, current_state_path_cost]
+			open.extend (current_tuple)
+			nr_of_visited_states := nr_of_visited_states + 1
+
+			-- End if the first state is successful
+			if problem.is_successful (current_state) then
+				is_search_successful := true
+				successful_state := current_state
+			end
+
+			from
+
+			until
+				open.is_empty or is_search_successful = true
+			loop
+				-- Sort the "open" list, so that the state with the lowest cost, the most promising, is first;
+				sort_list_with_tuples (open)
+
+				-- Get the first state (the most promising) from the "open" list;
+				current_tuple := open.first
+				current_state := current_tuple.state
+				current_state_path_cost := current_tuple.cost
+				open.go_i_th (1)
+				open.remove
+
+				-- End if the current state is successful
+				if problem.is_successful (current_state) then
+					is_search_successful := true
+					successful_state := current_state
+				else
+					
+
+
+			end
+
+
+
+
 			search_performed := true
 		end
 
@@ -115,7 +158,7 @@ feature -- Status Report
 feature {NONE} -- Implementation routines / procedures
 
 	path_cost (a_state: S): REAL
-			-- Calculate the cost of state s from the starting state
+			-- Calculate the cost of "a_state" from the starting state
 		local
 			current_cost: REAL
 			current_state: S
@@ -133,33 +176,64 @@ feature {NONE} -- Implementation routines / procedures
 
 	total_cost (a_state: S): REAL
 			-- Calculate the A* cost of a state,
-			-- 		i.e. the path cost to "state" + the heuristic cost from "state" to the goal
+			-- 		i.e. the path cost to "a_state" from the parent of "a_state"
+			--			+ the heuristic cost from "a_state" to the goal
 		do
-			Result := path_cost (a_state) + problem.heuristic_value (a_state)
+			Result := problem.cost (a_state) + problem.heuristic_value (a_state)
 		end
 
-	--TODO: order the open list
-
-	already_seen_with_lower_cost (a_state: S): BOOLEAN
-		-- Check if a state is already present in closed with a lower cost, if so replace it
+	replace_list_state (list: LINKED_LIST[TUPLE[state: S; cost: REAL]]; a_state: S)
+			-- Check if a state is already present in closed with a lower cost, if so replace it
 		local
 			state_substituted: BOOLEAN
+			a_state_cost: REAL
 		do
 			state_substituted := false
-
 			from
-				closed.start
+				list.start
+				a_state_cost := path_cost (a_state) + total_cost (a_state)
 			until
-				closed.exhausted or state_substituted = true
+				list.exhausted or state_substituted = true
 			loop
-				if (equal (closed.item.state, a_state) and (closed.item.cost > total_cost(a_state))) then
-					closed.replace ([a_state, total_cost (a_state)])
+				if (equal (list.item.state, a_state) and (list.item.cost > a_state_cost)) then
+					list.replace ([a_state, a_state_cost])
 				end
 			end
-			closed.forth
+			list.forth
 		ensure
-			closed_size_not_changed: closed.count = old closed.count
+			list_size_not_changed: list.count = old list.count
 		end
+
+
+		sort_list_with_tuples (my_list: LIST [TUPLE [state: S; value: REAL]])
+			-- sorts the given list from the state with the lowest value to the one with the highest value
+			-- insertion sort
+		local
+			i, j: INTEGER
+			temp_tuple: TUPLE [state: S; value: REAL]
+			temp_tuple2: TUPLE [state: S; value: REAL]
+		do
+			from
+				i := 2
+			until
+				i = my_list.count + 1
+			loop
+				temp_tuple := my_list.i_th (i)
+				j := i - 1
+				from
+				until
+					j < 1 or my_list.i_th (j).value <= temp_tuple.value
+				loop
+					temp_tuple2 := my_list.i_th (j)
+					my_list.i_th (j + 1) := temp_tuple2
+					j := j - 1
+				end
+				my_list.i_th (j + 1) := temp_tuple
+				i := i + 1
+			end
+		end
+
+
 
 feature {NONE} -- Implementation attributes
 
