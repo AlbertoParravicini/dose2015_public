@@ -23,7 +23,7 @@ create
 
 feature {NONE} -- Implementation
 
-		-- State with heuristic value higher than its neightbors.
+		-- State with better heuristic value than its neighbors.
 	maximum_state: S
 
 feature -- Creation
@@ -51,19 +51,17 @@ feature -- Search Execution
 
 		local
 
-				-- State with heuristic value higher than its parents.
+				-- State with better heuristic value than its parents.
 			current_state: S
 
 				-- List of successors of the current state.
-			neightbors_list: LIST [S]
+			neighbors_list: LIST [S]
 
-				-- TRUE if the neightbors have heuristic value less or equal to the current state.
+				-- TRUE if the neighbors have heuristic value worse or equal than the current state.
 			is_maximum_state_reached: BOOLEAN
 
 		do
 				-- Initialize local variables.
-			--create current_state.make
-			--create neightbors_list.make
 			is_maximum_state_reached := false
 
 				-- Start search from initial state.
@@ -76,37 +74,33 @@ feature -- Search Execution
 				is_maximum_state_reached
 			loop
 					-- Get successors of the current state.
-				neightbors_list := problem.get_successors (current_state)
+				neighbors_list := problem.get_successors (current_state)
 
-					-- Assume that there aren't neightbors with heuristic value higher than the current state.
+					-- Assume that there aren't neighbors with heuristic value better than the current state.
 				is_maximum_state_reached := true
 
-					-- Nested loop: for each successor compare the heuristic value to find the highest one.
+					-- Nested loop: for each successor compare the heuristic value to find the best one.
 				from
-					neightbors_list.start
+					neighbors_list.start
 				until
-					neightbors_list.exhausted
+					neighbors_list.exhausted
 				loop
-						-- If a successor has heuristic value higher than the current state then update current state.
-					if problem.heuristic_value (neightbors_list.item) > problem.heuristic_value (current_state) then
-						current_state := neightbors_list.item
+						-- If a successor has heuristic value better than the current state then update current state.
+					if problem.heuristic_value (neighbors_list.item) < problem.heuristic_value (current_state) then
+						current_state := neighbors_list.item
 						is_maximum_state_reached := false
 					end
 					nr_of_visited_states := nr_of_visited_states + 1
-					neightbors_list.forth
+					neighbors_list.forth
 				end
 
 			end
 
-				-- Now current state is a local maximum or a "flat" local maximum or a shoulder.
+				-- Now current state is a global maximum or a local maximum or a "flat" local maximum or a shoulder.
 			maximum_state := current_state;
 
-				-- If maximum state is a successful state then it is also the global maximum and the search is successful.
-			if problem.is_successful (maximum_state) then
-				is_search_successful := true
-			end
-
 				-- End of the search.
+			is_search_successful := true
 			search_performed := true
 		end
 
@@ -115,7 +109,6 @@ feature -- Status setting
 	reset_engine
 			-- Resets engine, so that search can be restarted.
 		do
-			--create maximum_state.make
 			search_performed := false
 			is_search_successful := false
 			nr_of_visited_states := 0
@@ -133,7 +126,6 @@ feature -- Status Report
 				if search_performed and is_search_successful then
 
 						-- Initialize local variables.
-					--create current_state.make
 					create list.make
 
 						-- Get parent state for each state from maximum_state to initial state and put_front in the list.
