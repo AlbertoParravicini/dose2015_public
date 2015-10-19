@@ -227,6 +227,8 @@ feature {NONE} -- Implementation routines / procedures
 					current_state := current_state.parent
 				end
 			end
+		ensure
+			Result >= 0
 		end
 
 	total_cost (a_state: S): REAL
