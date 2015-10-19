@@ -62,9 +62,16 @@ feature
 					current_successors.exhausted
 				loop
 					value_to_compare := compute_value (current_successors.item, 0)
-					if (value_to_compare > obtained_value)  then
-						obtained_successor := current_successors.item
-						obtained_value := value_to_compare
+					if initial_state.is_max then
+						if (value_to_compare > obtained_value)  then
+							obtained_successor := current_successors.item
+							obtained_value := value_to_compare
+						end
+					else
+						if (value_to_compare < obtained_value)  then
+							obtained_successor := current_successors.item
+							obtained_value := value_to_compare
+						end
 					end
 					current_successors.forth
 				end
@@ -76,6 +83,7 @@ feature
 		local
 			max_value : INTEGER
 			min_value : INTEGER
+			computed_value : INTEGER
 			current_successors : LIST [S]
 		do
 			if (problem.is_end (initial_state) or current_depth >= max_depth) then
@@ -89,10 +97,11 @@ feature
 				until
 					current_successors.exhausted
 				loop
+					computed_value := (compute_value (current_successors.item, current_depth+1))
 					if initial_state.is_max then
-						max_value := max_value.max (compute_value (current_successors.item, current_depth+1))
+						max_value := max_value.max (computed_value)
 					else
-						min_value := min_value.min (compute_value (current_successors.item, current_depth+1))
+						min_value := min_value.min (computed_value)
 					end
 					current_successors.forth
 				end
