@@ -137,7 +137,7 @@ feature -- Search Execution
 			no_visited_states: nr_of_visited_states > old nr_of_visited_states
 			at_least_one_state_visited: marked_states.count > old marked_states.count
 			search_successful_nec: is_search_successful implies problem.is_successful (successful_state)
-			search_successful_suc: (successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful
+			search_successful_suc: (search_performed and successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful
 		end
 
 	reset_engine
