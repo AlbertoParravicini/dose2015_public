@@ -132,7 +132,7 @@ feature -- Search Execution
 			no_visited_states: nr_of_visited_states > old nr_of_visited_states
 			at_least_one_state_visited: closed.count > old closed.count
 			search_successful_nec: is_search_successful implies problem.is_successful (successful_state)
-			search_successful_suc: problem.is_successful (successful_state) implies is_search_successful
+			search_successful_suc: (search_performed = true and successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful
 		end
 
 	reset_engine
@@ -287,12 +287,18 @@ feature {NONE} -- Implementation routines / procedures
 		do
 			from
 				i := 2
+			invariant
+				i >= 2
+				i <= a_list.count + 1
 			until
 				i = a_list.count + 1
 			loop
 				temp_tuple := a_list.i_th (i)
 				j := i - 1
 				from
+
+				invariant
+					j >= 0
 				until
 					j < 1 or a_list.i_th (j).value <= temp_tuple.value
 				loop
@@ -320,4 +326,10 @@ feature {NONE} -- Implementation attributes
 	successful_state: S
 			-- The successful state, the result of the search;
 
+invariant
+	open_is_void: open /= void
+	closed_is_void: closed /= void
+	nr_of_visited_states_is_negative: nr_of_visited_states >= 0
+	successful_state_is_inconsistent: search_performed implies (is_search_successful implies problem.is_successful (successful_state))
+	successful_state_is_inconsistent: search_performed implies ((successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful)
 end
