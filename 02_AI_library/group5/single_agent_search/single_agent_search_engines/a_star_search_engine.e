@@ -50,80 +50,77 @@ feature -- Search Execution
 		local
 			current_state: S
 			current_state_path_cost: REAL
-			current_tuple: TUPLE[state: S; cost: REAL]
-			current_successors: LINKED_LIST[S]
+			current_tuple: TUPLE [state: S; cost: REAL]
+			current_successors: LINKED_LIST [S]
 			already_in_close: BOOLEAN
 		do
 			create current_successors.make
 			current_state := problem.initial_state
 			current_state_path_cost := path_cost (current_state)
-			current_tuple := [current_state, current_state_path_cost + total_cost(current_state)]
+			current_tuple := [current_state, current_state_path_cost + total_cost (current_state)]
 			open.extend (current_tuple)
 			nr_of_visited_states := nr_of_visited_states + 1
 
-			-- End if the first state is successful;
+				-- End if the first state is successful;
 			if problem.is_successful (current_state) then
 				is_search_successful := true
 				successful_state := current_state
 			end
-
 			from
-
 			until
 				open.is_empty or is_search_successful = true
 			loop
 				current_successors.wipe_out
-				-- Sort the "open" list, so that the state with the lowest cost, the most promising, is first;
+					-- Sort the "open" list, so that the state with the lowest cost, the most promising, is first;
 				sort_list_with_tuples (open)
 
-				-- Get the first state (the most promising) from the "open" list;
+					-- Get the first state (the most promising) from the "open" list;
 				current_tuple := open.first
 				current_state := current_tuple.state
 					-- Calculate how far the current_state is from the start, optimization useful at a later stage;
-				current_state_path_cost := path_cost(current_state)
+				current_state_path_cost := path_cost (current_state)
 				open.go_i_th (1)
 				open.remove
 
-				-- Add the current state to the list of visited states;
+					-- Add the current state to the list of visited states;
 				closed.extend (current_tuple)
 				nr_of_visited_states := nr_of_visited_states + 1
 
-				-- End if the current state is successful;
+					-- End if the current state is successful;
 				if problem.is_successful (current_state) then
 					is_search_successful := true
 					successful_state := current_state
 				else
 					current_successors.append (problem.get_successors (current_state))
 
-					-- Examinate the successors of the current state;
+						-- Examinate the successors of the current state;
 					from
 						current_successors.start
 					until
 						current_successors.exhausted or is_search_successful = true
 					loop
 						already_in_close := false
-						-- Check if the current successor was already visited with a higher cost:
-						--		if so, replace it in the "closed" list;
+							-- Check if the current successor was already visited with a higher cost:
+							--		if so, replace it in the "closed" list; if the state was replaced,
+							--			or if it is the first time it is visited,					
+							--		 		proceed to evaluate its presence in the "open" list;
 						already_in_close := replace_list_state (closed, current_successors.item)
 						if already_in_close = true then
 							if problem.is_successful (current_successors.item) then
 								is_search_successful := true
 								successful_state := current_successors.item
 							else
-								-- Check if the current successor is already in the queue with a higher cost:
-								--		if so, replace it in the "open" list; if it is not present, add it;
-
+									-- Check if the current successor is already in the queue (the "open" list) with a higher cost:
+									--		if so, replace it in the "open" list; if it is not present, add it;
 								already_in_close := false
 								already_in_close := replace_list_state (open, current_successors.item)
 								if already_in_close = true then
-									open.extend ([current_successors.item, current_state_path_cost + total_cost(current_successors.item)])
+									open.extend ([current_successors.item, current_state_path_cost + total_cost (current_successors.item)])
 								end
-
 							end
 						end
 						current_successors.forth
 					end
-
 				end
 			end
 			search_performed := true
@@ -139,6 +136,14 @@ feature -- Search Execution
 			open.compare_objects
 			closed.compare_objects
 			nr_of_visited_states := 0
+		ensure then
+			search_not_performed: search_performed = false
+			search_not_successful: is_search_successful = false
+			open_reinitialized: open /= void
+			closed_reinitialized: closed /= void
+			open_uses_equal: open.object_comparison = true
+			closed_uses_equal: closed.object_comparison = true
+			visited_states_reset: nr_of_visited_states = 0
 		end
 
 feature -- Status Report
@@ -193,6 +198,8 @@ feature {NONE} -- Implementation routines / procedures
 
 	path_cost (a_state: S): REAL
 			-- Calculate the cost of "a_state" from the starting state
+		require
+			a_state_not_null: a_state /= void
 		local
 			current_cost: REAL
 			current_state: S
@@ -217,12 +224,19 @@ feature {NONE} -- Implementation routines / procedures
 			-- Calculate the A* cost of a state,
 			-- 		i.e. the path cost to "a_state" from the parent of "a_state"
 			--			+ the heuristic cost from "a_state" to the goal;
+		require
+			a_state_not_null: a_state /= void
 		do
 			Result := problem.cost (a_state) + problem.heuristic_value (a_state)
+		ensure
+			correct_result: Result = problem.cost (a_state) + problem.heuristic_value (a_state)
 		end
 
-	replace_list_state (list: LINKED_LIST[TUPLE[state: S; cost: REAL]]; a_state: S): BOOLEAN
+	replace_list_state (a_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]; a_state: S): BOOLEAN
 			-- Check if a state is already present in closed with a lower cost, if so replace it;
+			-- Returns true if the state was substituted or if the state wasn't found;
+		require
+			a_list /= void
 		local
 			state_substituted: BOOLEAN
 			a_state_cost: REAL
@@ -230,30 +244,33 @@ feature {NONE} -- Implementation routines / procedures
 		do
 			from
 				state_substituted := false
-				list.start
+				a_list.start
 				a_state_cost := path_cost (a_state) + total_cost (a_state)
 				already_present := false
+				a_list.compare_objects
 			until
-				list.exhausted or state_substituted = true
+				a_list.exhausted or state_substituted = true
 			loop
-				if equal (list.item.state, a_state) then
+				if equal (a_list.item.state, a_state) then
 					already_present := true
-					if list.item.cost > a_state_cost then
-						list.replace ([a_state, a_state_cost])
+					if a_list.item.cost > a_state_cost then
+						a_list.replace ([a_state, a_state_cost])
 						state_substituted := true
 					end
 				end
-				list.forth
+				a_list.forth
 			end
 			Result := not already_present or state_substituted
 		ensure
-			list_size_not_changed: old list.count = list.count
+			a_list_size_not_changed: old a_list.count = a_list.count
+
 		end
 
-
-		sort_list_with_tuples (my_list: LIST [TUPLE [state: S; value: REAL]])
+	sort_list_with_tuples (a_list: LIST [TUPLE [state: S; value: REAL]])
 			-- Sorts the given list from the state with the lowest value to the one with the highest value
 			-- insertion sort;
+		require
+			a_list_not_null: a_list /= void
 		local
 			i, j: INTEGER
 			temp_tuple: TUPLE [state: S; value: REAL]
@@ -262,24 +279,26 @@ feature {NONE} -- Implementation routines / procedures
 			from
 				i := 2
 			until
-				i = my_list.count + 1
+				i = a_list.count + 1
 			loop
-				temp_tuple := my_list.i_th (i)
+				temp_tuple := a_list.i_th (i)
 				j := i - 1
 				from
 				until
-					j < 1 or my_list.i_th (j).value <= temp_tuple.value
+					j < 1 or a_list.i_th (j).value <= temp_tuple.value
 				loop
-					temp_tuple2 := my_list.i_th (j)
-					my_list.i_th (j + 1) := temp_tuple2
+					temp_tuple2 := a_list.i_th (j)
+					a_list.i_th (j + 1) := temp_tuple2
 					j := j - 1
 				end
-				my_list.i_th (j + 1) := temp_tuple
+				a_list.i_th (j + 1) := temp_tuple
 				i := i + 1
 			end
+		ensure
+			size_not_changed: old a_list.count = a_list.count
+			list_ordered_ascending_value: across a_list as tuple all a_list.first.value <= tuple.item.value end
+				-- forall x, old a_list.has(x) iff a_list.has(x);
 		end
-
-
 
 feature {NONE} -- Implementation attributes
 
