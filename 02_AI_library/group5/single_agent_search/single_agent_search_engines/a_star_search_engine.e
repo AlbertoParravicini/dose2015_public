@@ -31,6 +31,7 @@ feature -- Creation
 			-- A_STAR_SEARCH_ENGINE with a problem
 		require
 			other_problem /= Void
+			other_problem.initial_state /= Void
 		do
 			set_problem (other_problem)
 			reset_engine
@@ -66,7 +67,9 @@ feature -- Search Execution
 				is_search_successful := true
 				successful_state := current_state
 			end
+
 			from
+
 			until
 				open.is_empty or is_search_successful = true
 			loop
@@ -102,7 +105,7 @@ feature -- Search Execution
 						already_in_close := false
 							-- Check if the current successor was already visited with a higher cost:
 							--		if so, replace it in the "closed" list; if the state was replaced,
-							--			or if it is the first time it is visited,					
+							--			or if it is the first time it is visited,
 							--		 		proceed to evaluate its presence in the "open" list;
 						already_in_close := replace_list_state (closed, current_successors.item)
 						if already_in_close = true then
@@ -124,6 +127,12 @@ feature -- Search Execution
 				end
 			end
 			search_performed := true
+		ensure then
+			unsuccessful_state_with_non_empty_queue: (not is_search_successful) implies open.is_empty
+			no_visited_states: nr_of_visited_states > old nr_of_visited_states
+			at_least_one_state_visited: closed.count > old closed.count
+			search_successful_nec: is_search_successful implies problem.is_successful (successful_state)
+			search_successful_suc: problem.is_successful (successful_state) implies is_search_successful
 		end
 
 	reset_engine
@@ -263,7 +272,7 @@ feature {NONE} -- Implementation routines / procedures
 			Result := not already_present or state_substituted
 		ensure
 			a_list_size_not_changed: old a_list.count = a_list.count
-
+			state_already_present_with_higher_cost: Result = false implies across a_list as a_tuple some equal (a_tuple.item.state, a_state) end
 		end
 
 	sort_list_with_tuples (a_list: LIST [TUPLE [state: S; value: REAL]])
