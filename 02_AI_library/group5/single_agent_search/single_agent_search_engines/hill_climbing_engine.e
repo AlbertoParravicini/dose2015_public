@@ -30,7 +30,7 @@ feature {NONE} -- Implementation
 	maximum_state: S
 		-- State with heuristic value better than its neighbors.
 
-	maximum_number_of_sideways_moves: INTEGER = 50
+	max_number_of_sideways_moves: INTEGER
 		-- Maximum number of sideways moves to do to try solving "shoulder problem".
 		-- Set to 0 if sideways moves aren't allowed.
 
@@ -41,13 +41,19 @@ feature -- Creation
 			-- Constructor of the class. It initialises a
 			-- HILL_CLIMBING_ENGINE with a problem
 		require
-			other_problem /= Void
+			valid_problem: other_problem /= Void
 		do
+
 			set_problem (other_problem)
+
+			set_max_number_of_sideways_moves (50)
+				-- Default value of maximum number of sideways moves.
+
 			reset_engine
+
 		ensure
-			problem = other_problem
-			not search_performed
+			setting_done: problem = other_problem
+			ready_search: not search_performed
 		end
 
 
@@ -81,10 +87,15 @@ feature -- Search Execution
 			number_of_done_sideways_moves: INTEGER
 				-- Counter of done sideways moves.
 
+			stochastic_selection_of_sideways_move: RANDOM
+				-- Random numbers generator to have a stochastic choice of sideways move.
+
 		do
 
 			is_maximum_state_reached := false
 			number_of_done_sideways_moves := 0
+			create stochastic_selection_of_sideways_move.make
+			stochastic_selection_of_sideways_move.start
 				-- Initialize local variables.
 
 
@@ -159,7 +170,7 @@ feature -- Search Execution
 					-- a "flat" local maximum or
 					-- a shoulder.
 
-					if problem.is_successful (current_state) or neighbors_list.count = 0 or number_of_done_sideways_moves >= maximum_number_of_sideways_moves then
+					if problem.is_successful (current_state) or neighbors_list.count = 0 or number_of_done_sideways_moves >= max_number_of_sideways_moves then
 						-- If current state is a successful state or has not neighbors with the same heuristic value then is respectively:
 						-- a global maximum or
 						-- a local maximum;
@@ -169,9 +180,9 @@ feature -- Search Execution
 					else
 						-- else current state could be a shoulder, then do a sideways move.
 
-						print (number_of_done_sideways_moves.out + ":%N")
+						print (((stochastic_selection_of_sideways_move.item \\ neighbors_list.count) + 1).out + ":%N")
 
-							-- Execution of sideways move.	
+							-- Implementation of sideways move.	
 						from
 							neighbors_list.start
 						until
@@ -181,7 +192,8 @@ feature -- Search Execution
 							neighbors_list.forth
 						end
 
-						current_state := neighbors_list.i_th (1)
+						current_state := neighbors_list.i_th ((stochastic_selection_of_sideways_move.item \\ neighbors_list.count) + 1)
+						stochastic_selection_of_sideways_move.forth
 						is_maximum_state_reached := false
 
 						number_of_done_sideways_moves := number_of_done_sideways_moves + 1
@@ -206,6 +218,19 @@ feature -- Status setting
 			search_performed := false
 			is_search_successful := false
 			nr_of_visited_states := 0
+		end
+
+
+
+	set_max_number_of_sideways_moves(n: INTEGER)
+		-- Sets maximum number of sideways moves to do to try solving "shoulder problem".
+		-- Set to 0 if sideways moves aren't allowed.
+		require
+			non_negative_number: n >= 0
+		do
+			max_number_of_sideways_moves := n
+		ensure
+			setting_done: max_number_of_sideways_moves = n
 		end
 
 
