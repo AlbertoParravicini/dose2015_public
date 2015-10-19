@@ -12,23 +12,28 @@ note
 	date: "$Date: 2015-08-22 03:18:00 -0300$"
 	revision: "$Revision: 0.1 $"
 
+
 class
 	HILL_CLIMBING_ENGINE[RULE -> ANY, S -> SEARCH_STATE[RULE], P -> HEURISTIC_SEARCH_PROBLEM [RULE, S]]
+
 
 inherit
 	SEARCH_ENGINE [RULE, S, P]
 
+
 create
 	make
 
+
 feature {NONE} -- Implementation
 
-		-- State with heuristic value better than its neighbors.
 	maximum_state: S
+		-- State with heuristic value better than its neighbors.
 
+	maximum_number_of_sideways_moves: INTEGER = 50
 		-- Maximum number of sideways moves to do to try solving "shoulder problem".
 		-- Set to 0 if sideways moves aren't allowed.
-	maximum_number_of_sideways_moves: INTEGER = 0
+
 
 feature -- Creation
 
@@ -45,6 +50,7 @@ feature -- Creation
 			not search_performed
 		end
 
+
 feature -- Search Execution
 
 	perform_search
@@ -55,100 +61,113 @@ feature -- Search Execution
 
 		local
 
-				-- State with heuristic value better than its parents.
 			current_state: S
+				-- State with heuristic value better than its parents.
 
-				-- Save the best heuristic value reached in each iteration.
 			current_best_heuristic_value: REAL
+				-- Save the best heuristic value reached in each iteration.
 
-				-- List of successors of the current state.
 			neighbors_list: LIST [S]
+				-- List of successors of the current state.
 
-				-- TRUE if the neighbors have heuristic value worse or equal than the current state.
 			is_maximum_state_reached: BOOLEAN
+				-- TRUE if the neighbors have heuristic value worse or equal than the current state.
 
+			useless_state_found: BOOLEAN
 				-- TRUE if a useless state has been removed from neighbors list.
 				-- Useless state: a state equal to parent of current state or
 				-- with an heuristic value worse than the current state.
-			useless_state_found: BOOLEAN
 
-				-- Counter of done sideways moves.
 			number_of_done_sideways_moves: INTEGER
+				-- Counter of done sideways moves.
 
 		do
-				-- Initialize local variables.
+
 			is_maximum_state_reached := false
 			number_of_done_sideways_moves := 0
+				-- Initialize local variables.
 
-				-- Start search from initial state.
+
 			current_state := problem.initial_state
 			current_best_heuristic_value := problem.heuristic_value (current_state)
 			nr_of_visited_states := nr_of_visited_states + 1
+				-- Start search from initial state.
 
-				-- Main loop.
-			from
+
+			from -- Main loop.
 			until
 				is_maximum_state_reached
 			loop
-					-- Get successors of the current state.
 				neighbors_list := problem.get_successors (current_state)
+					-- Get successors of the current state.
 
-					-- Assume that there aren't neighbors with heuristic value better than the current state.
 				is_maximum_state_reached := true
+					-- Assume that there aren't neighbors with heuristic value better than the current state.
 
 
-					-- Nested loop: for each successor compare the heuristic value to find the best one.
-				from
+
+				from -- Nested loop: for each successor compare the heuristic value to find the best one.
 					neighbors_list.start
 				until
-						-- Exit the nested loop as soon as found a neighbor with better heuristic value or when there aren't more neighbors.
 					not is_maximum_state_reached or neighbors_list.exhausted
+						-- Exit the nested loop as soon as found a neighbor with better heuristic value or when there aren't more neighbors.
 				loop
 					useless_state_found := false
 
-						-- If a successor has heuristic value better than the current state then update current state.
 					if problem.heuristic_value (neighbors_list.item) < current_best_heuristic_value then
+						-- If a successor has heuristic value better than the current state then update current state.
+
 						current_state := neighbors_list.item
 						current_best_heuristic_value := problem.heuristic_value (current_state)
 						is_maximum_state_reached := false
+						number_of_done_sideways_moves := 0
 
-						-- If a successor is equal to the parent of current state or has heuristic value
-						-- worse than the current state then remove it from neighbors_list, in order to
-						-- obtain a neighbors_list with heuristic value equal to the current state, so it
-						-- is possible to optimize search with "Escaping Shoulders: Sideways Move" process.
+
 					else
+
 						if equal (neighbors_list.item, current_state.parent) or problem.heuristic_value (neighbors_list.item) > current_best_heuristic_value then
+							-- If a successor is equal to the parent of current state or has heuristic value
+							-- worse than the current state then remove it from neighbors_list, in order to
+							-- obtain a neighbors_list with heuristic value equal to the current state, so it
+							-- is possible to optimize search with "Escaping Shoulders: Sideways Move" process.
+
 							neighbors_list.remove
 							useless_state_found := true
+
 						end
+
 					end
 
 					nr_of_visited_states := nr_of_visited_states + 1
-						-- If no state has been removed from neighbors_list then go to the next neighbor.
-					if not useless_state_found then
-						neighbors_list.forth
-					end
-				end -- End nested loop.
 
+					if not useless_state_found then
+						-- If no state has been removed from neighbors_list then go to the next neighbor.
+
+						neighbors_list.forth
+
+					end
+
+				end -- End nested loop.
 
 
 				-- "Escaping Shoulders: Sideways Move"
 
+				if is_maximum_state_reached then
 					-- Now if is_maximum_state_reached is TRUE then current state is:
 					-- a global maximum or
 					-- a local maximum or
 					-- a "flat" local maximum or
 					-- a shoulder.
-				if is_maximum_state_reached then
 
+					if problem.is_successful (current_state) or neighbors_list.count = 0 or number_of_done_sideways_moves >= maximum_number_of_sideways_moves then
 						-- If current state is a successful state or has not neighbors with the same heuristic value then is respectively:
 						-- a global maximum or
 						-- a local maximum;
-					if problem.is_successful (current_state) or neighbors_list.count = 0 or number_of_done_sideways_moves >= maximum_number_of_sideways_moves then
+
 						maximum_state := current_state;
 
-						-- else current state could be a shoulder, then do a sideways move.
 					else
+						-- else current state could be a shoulder, then do a sideways move.
 
 						print (number_of_done_sideways_moves.out + ":%N")
 
@@ -173,9 +192,10 @@ feature -- Search Execution
 
 			end -- End main loop.
 
-				-- End of the search.
 			is_search_successful := true
 			search_performed := true
+				-- End of the search.
+
 		end
 
 feature -- Status setting
@@ -199,11 +219,11 @@ feature -- Status Report
 			do
 				if search_performed and is_search_successful then
 
-						-- Initialize local variables.
 					create list.make
+						-- Initialize local variables.
 
-						-- Get parent state for each state from maximum_state to initial state and put_front in the list.
 					from
+						-- Get parent state for each state from maximum_state to initial state and put_front in the list.
 						current_state := maximum_state
 					until
 						current_state = void
