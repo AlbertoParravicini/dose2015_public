@@ -240,6 +240,8 @@ feature {NONE}
 			Result := path
 		end
 
+feature
+	-- Custom features to enable / disable cycle checking
 	enable_cycle_checking
 			-- Enables cycle checking
 		do
