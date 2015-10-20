@@ -34,22 +34,23 @@ feature -- Creation
 		do
 			set_problem (other_problem)
 			create stack.make
-			create visited_states.make
 			stack.put (0, problem.initial_state)
+			stack.compare_objects
 			search_performed := false
 			is_search_successful := false
 			set_max_depth (0)
 			nr_of_visited_states := 0
-			stack.compare_objects
-			visited_states.compare_objects
+
+				-- Use this boolean to enable or disable cycle checking
+			cycle_checking := false
 		ensure
 			make_parameter_value_error: problem = other_problem
 			search_performed_value_error: not search_performed
 			is_search_successful_value_error: not is_search_successful
 			stack_value_error: stack /= void and then stack.count = 1
-			visited_states_value_error: visited_states /= void and then visited_states.count = 0
 			max_depth_value_error: maximum_depth = 0
 			nr_of_visited_states_value_error: nr_of_visited_states = 0
+			cycle_checking_error:cycle_checking=false
 		end
 
 feature -- Search Execution
@@ -64,6 +65,7 @@ feature -- Search Execution
 			current_depth: INTEGER
 			current_successors: LINKED_LIST [S]
 			current_tuple: TUPLE [depth: INTEGER; state: S]
+			current_partial_path: LIST [S]
 		do
 			from
 			until
@@ -79,7 +81,6 @@ feature -- Search Execution
 				if (current_state /= void and then problem.is_successful (current_state)) then
 					successful_state := current_state
 					is_search_successful := true
-					visited_states.extend (current_state)
 					nr_of_visited_states := nr_of_visited_states + 1
 				end
 				if (not is_search_successful) then
@@ -88,39 +89,40 @@ feature -- Search Execution
 							-- Get list of successors from current state
 						current_successors.append (problem.get_successors (current_state))
 							-- Set current state as visited
-						visited_states.extend (current_state)
 						nr_of_visited_states := nr_of_visited_states + 1
+							-- Analyze all the successors of the current state
 						from
 							current_successors.start
 						until
 							current_successors.exhausted or is_search_successful
 						loop
-								-- Add new states to stack if they are new state, check if they are succesful
-								----------------------------------------------------------------------
-								----------------------------------------------------------------------
-								-- UNCOMMENT THE FOLLOWING COMMENTED LINES TO ENABLE CYCLE CHECKING --
-								-- And add current_partial_path as a local variable                 --
-								----------------------------------------------------------------------
-								----------------------------------------------------------------------
-								--  current_partial_path:=partial_path(current_state)
-								--  current_partial_path.compare_objects
-								--	if (not current_partial_path.has (current_successors.item)) then
-								-- If I haven't visited this state already
-							if (problem.is_successful (current_successors.item)) then
-									-- If it is the desired state, add the state to the visited ones and set the search successfull
-								visited_states.extend (current_successors.item)
-								nr_of_visited_states := nr_of_visited_states + 1
-								successful_state := current_successors.item
-								is_search_successful := true
-							else
-									-- Add the state to the stack
-								stack.put ([current_depth + 1, current_successors.item])
+								-- If cycle_checking is enabled, the search will exclude successors
+								-- that are equal to at least one of the ancestors of the current state
+							if (cycle_checking) then
+								current_partial_path := partial_path (current_state)
+								current_partial_path.compare_objects
 							end
-								--	end
+								-- Exclude the current successors if cycle checking is enabled and the
+								-- successor is one of the ancestors
+							if ((cycle_checking and then (not current_partial_path.has (current_successors.item)))
+								or (not cycle_checking)) then
+									-- Check if the problem is solved with the current successor
+								if (problem.is_successful (current_successors.item)) then
+										-- If it is the desired state, increment the counter
+										-- of the visited states and set the search successfull
+									nr_of_visited_states := nr_of_visited_states + 1
+									successful_state := current_successors.item
+									is_search_successful := true
+								else
+										-- If current successor isn't a successful state,
+										-- add the state to the stack to visit him later
+									stack.put ([current_depth + 1, current_successors.item])
+								end
+							end
+								-- Go to next successor
 							current_successors.forth
 						end
 					end
-					visited_states.extend (current_state)
 					nr_of_visited_states := nr_of_visited_states + 1
 				end
 			end
@@ -134,20 +136,19 @@ feature -- Search Execution
 			-- Resets engine, so that search can be restarted.
 		do
 			create stack.make
-			create visited_states.make
 			stack.put (0, problem.initial_state)
 			search_performed := false
 			is_search_successful := false
 			set_max_depth (0)
 			nr_of_visited_states := 0
 			stack.compare_objects
-			visited_states.compare_objects
+			cycle_checking:=false
 		ensure then
 			is_search_successful_value_error: not is_search_successful
 			stack_value_error: stack /= void and then stack.count = 1
-			visited_states_value_error: visited_states /= void and then visited_states.count = 0
 			max_depth_non_reset: maximum_depth = 0
 			nr_of_visited_states_non_reset: nr_of_visited_states = 0
+			cycle_checking_error:cycle_checking=false
 		end
 
 feature -- Status setting
@@ -214,8 +215,8 @@ feature {NONE}
 	stack: LINKED_STACK [TUPLE [depth: INTEGER; state: S]]
 			-- Where the states will be saved
 
-	visited_states: LINKED_LIST [S]
-			-- States that have been visited
+	cycle_checking: BOOLEAN
+			-- If true, the algorithm will avoid cycles
 
 	successful_state: S
 			-- Searched state
@@ -239,12 +240,26 @@ feature {NONE}
 			Result := path
 		end
 
+	enable_cycle_checking
+			-- Enables cycle checking
+		do
+			cycle_checking:=true
+		ensure
+			cycle_checking=true
+		end
+
+	disable_cycle_checking
+			-- Disables cycle checking
+		do
+			cycle_checking:=false
+		ensure
+			cycle_checking=false
+		end
+
 invariant
 	stack_is_void: stack /= void
-	visited_states_is_void: visited_states /= void
 	nr_of_visited_states_is_negative: nr_of_visited_states >= 0
 	successful_state_is_inconsistent: search_performed implies (is_search_successful implies problem.is_successful (successful_state))
 	successful_state_is_inconsistent: search_performed implies ((successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful)
-	successful_state_not_belonging_to_visited_states: is_search_successful implies visited_states.has (successful_state)
 
 end

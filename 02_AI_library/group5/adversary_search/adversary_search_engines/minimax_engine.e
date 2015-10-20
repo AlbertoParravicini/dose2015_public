@@ -21,33 +21,52 @@ inherit
 create
 	make, make_with_depth
 
-feature
+feature -- Creation
 
 	make (new_problem: P)
+			-- Constructor of the class. It initialises a
+			-- MINIMAX_ENGINE with a problem
 		require
 			new_problem /= Void
 		do
 			set_problem(new_problem)
 			search_performed := False
+		ensure
+			valid_make_value_error: problem = new_problem
+			valid_search_performed_value: not search_performed
 		end
 
+
 	make_with_depth (new_problem: P; new_max_depth: INTEGER)
+			-- Constructor of the class. It initialises a
+			-- MINIMAX_ENGINE with a problem and maximum depth
 		require
 			new_problem /= Void
 			new_max_depth >= 0
 		do
 			set_problem (new_problem)
 			set_max_depth (new_max_depth)
+			search_performed := False
+		ensure
+			valid_make_value_error: problem = new_problem
+			valid_search_performed_value: not search_performed
 		end
 
 feature
 
 	reset_engine
+			-- Resets engine, so that search can be restarted.
 		do
 			search_performed := False
+		ensure then
+			valid_search_performed_value: not search_performed
 		end
 
 	perform_search (initial_state: S)
+			-- Starts the search using a min-max search strategy
+			-- If initial_state is max, result is succesor with max value
+			-- If initial_state is min, result is succesor with min value
+			-- The state result of the search is returned in obtained_successor
 		local
 			current_successors : LIST [S]
 			value_to_compare : INTEGER
@@ -62,20 +81,35 @@ feature
 					current_successors.exhausted
 				loop
 					value_to_compare := compute_value (current_successors.item, 0)
-					if (value_to_compare > obtained_value)  then
-						obtained_successor := current_successors.item
-						obtained_value := value_to_compare
+					if initial_state.is_max then
+						if (value_to_compare > obtained_value)  then
+							obtained_successor := current_successors.item
+							obtained_value := value_to_compare
+						end
+					else
+						if (value_to_compare < obtained_value)  then
+							obtained_successor := current_successors.item
+							obtained_value := value_to_compare
+						end
 					end
 					current_successors.forth
 				end
 			end
 			search_performed := True
+		ensure then
+			valid_search_performed_value: search_performed
+			valid_obtained_successor: obtained_successor /= Void
 		end
 
 	compute_value (initial_state : S; current_depth : INTEGER) : INTEGER
+			-- Return the value of the state applying the algorithm min-max
+		require
+			valid_parameter_state : initial_state /= Void
+			valid_parameter_depth : current_depth >= 0 and current_depth <= max_depth
 		local
 			max_value : INTEGER
 			min_value : INTEGER
+			computed_value : INTEGER
 			current_successors : LIST [S]
 		do
 			if (problem.is_end (initial_state) or current_depth >= max_depth) then
@@ -89,10 +123,11 @@ feature
 				until
 					current_successors.exhausted
 				loop
+					computed_value := (compute_value (current_successors.item, current_depth+1))
 					if initial_state.is_max then
-						max_value := max_value.max (compute_value (current_successors.item, current_depth+1))
+						max_value := max_value.max (computed_value)
 					else
-						min_value := min_value.min (compute_value (current_successors.item, current_depth+1))
+						min_value := min_value.min (computed_value)
 					end
 					current_successors.forth
 				end
@@ -102,13 +137,21 @@ feature
 					Result := min_value
 				end
 			end
+		ensure
+			valid_obtained_value : (Result /= Void) or (Result > problem.max_value) or (Result < problem.min_value)
 		end
 
 
 	set_max_depth (new_max_depth: INTEGER)
+			-- Sets the maximum depth to be used for search.
+		require else
+			valid_max_depth_parameter : new_max_depth /= Void and new_max_depth >= 0
 		do
 			max_depth := new_max_depth
+		ensure then
+			valid_max_depth_value : max_depth = new_max_depth
 		end
+
 
 	obtained_value: INTEGER
 
