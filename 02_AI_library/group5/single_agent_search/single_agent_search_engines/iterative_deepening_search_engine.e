@@ -38,6 +38,7 @@ feature -- Creation
 			nr_of_visited_states := 0
 			set_step (1)
 			current_depth := 0
+			cycle_checking := false
 		ensure
 			make_parameter_value_error: problem = other_problem
 			search_performed_value_error: not search_performed
@@ -45,6 +46,7 @@ feature -- Creation
 			nr_of_visited_states_value_error: nr_of_visited_states = 0
 			step_set_error: step = 1
 			current_depth_error: current_depth = 0
+			cycle_checking_error: cycle_checking = false
 		end
 
 feature -- Search Execution
@@ -55,27 +57,43 @@ feature -- Search Execution
 			-- The result of the search is indicated in
 			-- is_search_successful.
 		local
-			engine: BOUNDED_DEPTH_FIRST_SEARCH_ENGINE[RULE, S, P]
+			engine: BOUNDED_DEPTH_FIRST_SEARCH_ENGINE [RULE, S, P]
 		do
+			-- Create Bounded DFS engine
 			create engine.make (problem)
+			-- Set cycle checking
+			if(cycle_checking) then
+				engine.enable_cycle_checking
+			else
+				engine.disable_cycle_checking
+			end
+			-- Begin search loop
+			engine.set_max_depth (current_depth)
 			from
-				engine.set_max_depth (current_depth)
 			until
 				is_search_successful
 			loop
 				engine.perform_search
-				nr_of_visited_states:= nr_of_visited_states + engine.nr_of_visited_states
+				-- Increase visited states counter
+				nr_of_visited_states := nr_of_visited_states + engine.nr_of_visited_states
 				if (engine.is_search_successful) then
-					is_search_successful:= true
-					solution:=engine.obtained_solution
+						-- Set search successfull and assign solution
+					is_search_successful := true
+					solution := engine.obtained_solution
 				else
+						-- Reset the Bounded DFS engine for a new iteration of the search
 					engine.reset_engine
 					engine.set_problem (problem)
 					go_deeper
 					engine.set_max_depth (current_depth)
+					if(cycle_checking) then
+						engine.enable_cycle_checking
+					else
+						engine.disable_cycle_checking
+					end
 				end
 			end
-			search_performed:=true
+			search_performed := true
 		end
 
 	reset_engine
@@ -86,12 +104,14 @@ feature -- Search Execution
 			nr_of_visited_states := 0
 			set_step (1)
 			current_depth := 0
+			cycle_checking := false
 		ensure then
 			search_performed_value_error: not search_performed
 			is_search_successful_value_error: not is_search_successful
 			nr_of_visited_states_value_error: nr_of_visited_states = 0
 			step_set_error: step /= 1
 			current_depth_error: current_depth /= 0
+			cycle_checking_error: cycle_checking = false
 		end
 
 feature -- Status setting
@@ -158,8 +178,11 @@ feature {NONE}
 	current_depth: INTEGER
 			-- current depth
 
-	solution:S
+	solution: S
 			-- solution state
+
+	cycle_checking: BOOLEAN
+			-- If true, the algorithm will avoid cycles
 
 	go_deeper
 			-- increases current depth according to step
@@ -167,6 +190,24 @@ feature {NONE}
 			current_depth := current_depth + step
 		ensure
 			correct_depth_increase: current_depth = step + old current_depth
+		end
+
+feature
+		-- Custom features to enable / disable cycle checking
+	enable_cycle_checking
+			-- Enables cycle checking
+		do
+			cycle_checking := true
+		ensure
+			cycle_checking = true
+		end
+
+	disable_cycle_checking
+			-- Disables cycle checking
+		do
+			cycle_checking := false
+		ensure
+			cycle_checking = false
 		end
 
 end
