@@ -94,6 +94,9 @@ feature -- Search Execution
 				end
 			end
 			search_performed := true
+		ensure then
+			no_visited_states: nr_of_visited_states > old nr_of_visited_states
+			depth_is_positive: current_depth >= 0
 		end
 
 	reset_engine
@@ -124,7 +127,7 @@ feature -- Status setting
 		do
 			step := new_step
 		ensure
-			step = new_step
+			step_error: step = new_step
 		end
 
 feature -- Status Report
