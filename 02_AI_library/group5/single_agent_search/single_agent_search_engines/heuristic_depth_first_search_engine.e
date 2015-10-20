@@ -34,19 +34,16 @@ feature -- Creation
 		do
 			set_problem (other_problem)
 			create stack.make
-			create visited_states.make
 			stack.put (problem.initial_state)
 			search_performed := false
 			is_search_successful := false
 			nr_of_visited_states := 0
 			stack.compare_objects
-			visited_states.compare_objects
 		ensure
 			make_parameter_value_error: problem = other_problem
 			search_performed_value_error: not search_performed
 			is_search_successful_value_error: not is_search_successful
 			stack_value_error: stack /= void and then stack.count = 1
-			visited_states_value_error: visited_states /= void and then visited_states.count = 0
 			nr_of_visited_states_value_error: nr_of_visited_states = 0
 		end
 
@@ -76,14 +73,12 @@ feature -- Search Execution
 				if (current_state /= void and then problem.is_successful (current_state)) then
 					successful_state := current_state
 					is_search_successful := true
-					visited_states.extend (current_state)
 					nr_of_visited_states := nr_of_visited_states + 1
 				end
 				if (not is_search_successful) then
 						-- No constraints on maximum depth
 					current_successors.append (problem.get_successors (current_state))
 						-- Set initial state as visited
-					visited_states.extend (current_state)
 					nr_of_visited_states := nr_of_visited_states + 1
 
 						-- Fill current_successors_with_heuristic_value according to their heuristic value
@@ -118,7 +113,6 @@ feature -- Search Execution
 								-- The state hasn't been visited
 							if (problem.is_successful (current_successors_with_heuristic_value.item.state)) then
 									-- If it is a successful state
-								visited_states.extend (current_successors_with_heuristic_value.item.state)
 								nr_of_visited_states := nr_of_visited_states + 1
 								successful_state := current_successors_with_heuristic_value.item.state
 								is_search_successful := true
@@ -144,7 +138,6 @@ feature -- Status setting
 			-- Resets engine, so that search can be restarted.
 		do
 			create stack.make
-			create visited_states.make
 			stack.put (problem.initial_state)
 			search_performed := false
 			is_search_successful := false
@@ -152,7 +145,6 @@ feature -- Status setting
 		ensure then
 			is_search_successful_value_error: not is_search_successful
 			stack_value_error: stack /= void and then stack.count = 1
-			visited_states_value_error: visited_states /= void and then visited_states.count = 0
 			nr_of_visited_states_non_reset: nr_of_visited_states = 0
 		end
 
@@ -205,9 +197,6 @@ feature {NONE}
 
 	stack: LINKED_STACK [S]
 			-- Stack of the states that will be visited, LIFO
-
-	visited_states: LINKED_LIST [S]
-			-- List of all the states that have been visited
 
 	successful_state: S
 			-- Searched state
@@ -262,10 +251,8 @@ feature {NONE}
 invariant
 		-- List of all class invariants
 	stack_is_void: stack /= void
-	visited_states_is_void: visited_states /= void
 	nr_of_visited_states_is_negative: nr_of_visited_states >= 0
 	successful_state_is_inconsistent: search_performed implies (is_search_successful implies problem.is_successful (successful_state))
 	successful_state_is_inconsistent: search_performed implies ((successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful)
-	successful_state_not_belonging_to_visited_states: is_search_successful implies visited_states.has (successful_state)
 
 end
