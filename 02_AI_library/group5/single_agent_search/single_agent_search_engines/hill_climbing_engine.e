@@ -88,13 +88,24 @@ feature -- Search Execution
 			stochastic_selection_of_sideways_move: RANDOM
 				-- Random numbers generator to have a stochastic choice of sideways move.
 
+			time_seed_for_random_generator: TIME
+				-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
+
 		do
 
 			is_maximum_state_reached := false
 			number_of_done_sideways_moves := 0
-			create stochastic_selection_of_sideways_move.make
-			stochastic_selection_of_sideways_move.start
 				-- Initializes local variables.
+
+
+			create time_seed_for_random_generator.make_now
+			create stochastic_selection_of_sideways_move.set_seed (
+				((time_seed_for_random_generator.hour
+					* 60 + time_seed_for_random_generator.minute)
+						* 60 + time_seed_for_random_generator.second)
+							* 1000 + time_seed_for_random_generator.milli_second)
+			stochastic_selection_of_sideways_move.start
+				-- Initializes random generator using current time seed.
 
 
 			current_maximum_state := problem.initial_state
@@ -128,7 +139,9 @@ feature -- Search Execution
 						current_maximum_state := neighbors_list.item
 						current_best_heuristic_value := problem.heuristic_value (current_maximum_state)
 						is_maximum_state_reached := false
+
 						number_of_done_sideways_moves := 0
+							-- Resets counter of sideways moves in order to analize new heuristic value.
 
 					end
 
@@ -191,13 +204,14 @@ feature -- Search Execution
 						-- else current maximum state could be a shoulder, then do a sideways move.
 
 						-- SIDEWAYS MOVE implementation.
-						print (((stochastic_selection_of_sideways_move.item \\ neighbors_list.count) + 1).out + ":%N")
 
 						current_maximum_state := neighbors_list.i_th ((stochastic_selection_of_sideways_move.item \\ neighbors_list.count) + 1)
-						stochastic_selection_of_sideways_move.forth
-						is_maximum_state_reached := false
+							-- Now neighbors_list has only states with the same heuristic value than the current maximum state,
+							-- so it can pick one randomly to do a sideways move.
 
 						number_of_done_sideways_moves := number_of_done_sideways_moves + 1
+						stochastic_selection_of_sideways_move.forth
+						is_maximum_state_reached := false
 
 					end
 
