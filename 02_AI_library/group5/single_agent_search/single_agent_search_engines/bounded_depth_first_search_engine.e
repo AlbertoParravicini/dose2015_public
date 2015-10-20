@@ -50,6 +50,7 @@ feature -- Creation
 			stack_value_error: stack /= void and then stack.count = 1
 			max_depth_value_error: maximum_depth = 0
 			nr_of_visited_states_value_error: nr_of_visited_states = 0
+			cycle_checking_error:cycle_checking=false
 		end
 
 feature -- Search Execution
@@ -141,11 +142,13 @@ feature -- Search Execution
 			set_max_depth (0)
 			nr_of_visited_states := 0
 			stack.compare_objects
+			cycle_checking:=false
 		ensure then
 			is_search_successful_value_error: not is_search_successful
 			stack_value_error: stack /= void and then stack.count = 1
 			max_depth_non_reset: maximum_depth = 0
 			nr_of_visited_states_non_reset: nr_of_visited_states = 0
+			cycle_checking_error:cycle_checking=false
 		end
 
 feature -- Status setting
@@ -235,6 +238,22 @@ feature {NONE}
 				current_state := current_state.parent
 			end
 			Result := path
+		end
+
+	enable_cycle_checking
+			-- Enables cycle checking
+		do
+			cycle_checking:=true
+		ensure
+			cycle_checking=true
+		end
+
+	disable_cycle_checking
+			-- Disables cycle checking
+		do
+			cycle_checking:=false
+		ensure
+			cycle_checking=false
 		end
 
 invariant
