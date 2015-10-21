@@ -31,6 +31,7 @@ feature {NONE} -- Initialization
 				create engine.make (jar_puzzle)
 				engine.set_max_depth (curr_depth)
 				engine.set_mark_visited_states (true)
+				--engine.set_check_parents(true)
 			until
 				found or curr_depth=20
 			loop
