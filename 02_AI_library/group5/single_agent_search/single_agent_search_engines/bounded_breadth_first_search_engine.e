@@ -41,7 +41,7 @@ feature -- Creation
 			-- BREADTH_FIRST_SEARCH_ENGINE with a problem
 		require
 			other_problem /= Void
-			-- TODO: more requires
+			other_problem.initial_state /= void
 		do
 			set_problem (other_problem)
 			reset_engine
@@ -69,7 +69,7 @@ feature -- Search Execution
 			current_depth := 0
 			queue.put ([current_depth, current_state])
 			marked_states.extend (current_state)
-			-- Activate it if you want to include the original state as "visited state"
+			-- Activate it if you want to include the original state as "visited state";
 			nr_of_visited_states := nr_of_visited_states + 1
 
 				-- What if the first state is already successful?
@@ -78,54 +78,66 @@ feature -- Search Execution
 				successful_state := current_state
 			end
 
-				-- Main loop
+				-- Main loop;
 			from
+
+			invariant
+				nr_of_visited_states_is_negative: nr_of_visited_states >= 0
+				depth_positive: current_depth >= 0
+				depth_not_exceeded: current_depth <= maximum_depth
 			until
 				queue.is_empty or is_search_successful
+
 			loop
 				current_successors.wipe_out
-					-- Remove the first state of the queue, add it to the marked states list
+					-- Remove the first state of the queue, add it to the marked states list;
 				current_tuple := queue.item
 				current_state := current_tuple.state
 				current_depth := current_tuple.depth
 				queue.remove
 
-					-- Check if the removed state is successful, if so don't start the main loop
+					-- Check if the removed state is successful, if so don't start the main loop;
 				if (problem.is_successful (current_state)) then
 					is_search_successful := true
 					successful_state := current_state
 
-						-- Get the successors of the state, if the removed state isn't successful
+						-- Get the successors of the state, if the removed state isn't successful;
 				elseif (current_depth < maximum_depth) then
 					current_successors.append (problem.get_successors (current_state))
 					from
 						current_successors.start
+					invariant
+						nr_of_visited_states_is_negative: nr_of_visited_states >= 0
+						successor_address_different_from_parent: current_successors.item /= current_state
 					until
 						current_successors.exhausted or is_search_successful
 					loop
 							-- Check if the current successor is marked,
-							-- 		if so just go to the next iteration of the loop
+							-- 		if so just go to the next iteration of the loop;
 						if (not marked_states.has (current_successors.item)) then
 							marked_states.extend (current_successors.item)
 							nr_of_visited_states := nr_of_visited_states + 1
-								-- Check if the current successor is successful
+								-- Check if the current successor is successful;
 							if problem.is_successful (current_successors.item) then
 								is_search_successful := true
 								successful_state := current_successors.item
 							else
-									-- Put it in the queue if it isn't successful
+									-- Put it in the queue if it isn't successful;
 								queue.put ([current_depth + 1, current_successors.item])
 							end
 						end
 						current_successors.forth
-					end -- End of the loop
+					end -- End of the loop;
 				end
-			end -- End of the main loop
+			end -- End of the main loop;
 			search_performed := true
 
 		ensure then
 			unsuccessful_state_with_non_empty_queue: (not is_search_successful) implies queue.is_empty
 			no_visited_states: nr_of_visited_states > old nr_of_visited_states
+			at_least_one_state_visited: marked_states.count > old marked_states.count
+			search_successful_nec: is_search_successful implies problem.is_successful (successful_state)
+			search_successful_suc: (search_performed and successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful
 		end
 
 	reset_engine
@@ -137,6 +149,8 @@ feature -- Search Execution
 			search_performed := false
 			is_search_successful := false
 			nr_of_visited_states := 0
+			queue.compare_objects
+			marked_states.compare_objects
 		ensure then
 			maximum_depth = 0
 			queue /= void and then queue.count = 0
@@ -149,12 +163,12 @@ feature -- Search Execution
 feature -- Status setting
 
 	set_max_depth (new_bound: INTEGER)
-			-- Sets the max depth bound to new_bound
+			-- Sets the max depth bound to new_bound;
 		require
 			new_bound >= 0
 		do
 			maximum_depth := new_bound
-				-- Could cause issues if not called appropriately (during the search?)
+				-- Could cause issues if not called appropriately (during the search?);
 		ensure
 			maximum_depth = new_bound
 		end
@@ -162,14 +176,14 @@ feature -- Status setting
 feature -- Status Report
 
 	path_to_obtained_solution: LIST [S]
-			-- Returns the path to the solution obtained from performed search.
+			-- Returns the path to the solution obtained from performed search;
 		local
 			current_state: S
 			list: LINKED_LIST [S]
 		do
 			if (is_search_successful) then
 					-- Starting from the successful state, get the parent of each state
-					--		by travelling backwards in the hierarchy, and add it to a list
+					--		by travelling backwards in the hierarchy, and add it to a list;
 				from
 					current_state := obtained_solution
 					create list.make
@@ -183,14 +197,14 @@ feature -- Status Report
 				Result := list
 			end
 		ensure then
-				--First member of the list is the starting state, ending position of the list is the searched state
+				--First member of the list is the starting state, ending position of the list is the searched state;
 			first_state_is_consistent: Result.is_empty or else equal (Result.first, problem.initial_state)
 			last_state_is_consistent: Result.is_empty or else problem.is_successful (Result.last)
 			empty_list_is_consistent: (Result.is_empty implies (not is_search_successful)) and ((not is_search_successful) implies Result.is_empty)
 		end
 
 	obtained_solution: detachable S
-			-- Returns solution obtained from last performed search.
+			-- Returns solution obtained from last performed search;
 		do
 			if is_search_successful and search_performed then
 				Result := successful_state
