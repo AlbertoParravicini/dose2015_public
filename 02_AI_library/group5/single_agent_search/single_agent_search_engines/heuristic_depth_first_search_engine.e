@@ -39,12 +39,14 @@ feature -- Creation
 			is_search_successful := false
 			nr_of_visited_states := 0
 			stack.compare_objects
+			cycle_checking := false
 		ensure
 			make_parameter_value_error: problem = other_problem
 			search_performed_value_error: not search_performed
 			is_search_successful_value_error: not is_search_successful
 			stack_value_error: stack /= void and then stack.count = 1
 			nr_of_visited_states_value_error: nr_of_visited_states = 0
+			cycle_checking_error: cycle_checking = false
 		end
 
 feature -- Search Execution
@@ -107,9 +109,11 @@ feature -- Search Execution
 							-- 1) check if already visited
 							-- 2) check if successful
 							-- 3) if successful, set the result
-						current_partial_path := partial_path (current_state)
-						current_partial_path.compare_objects
-						if (not current_partial_path.has (current_successors_with_heuristic_value.item.state)) then
+						if (cycle_checking) then
+							current_partial_path := partial_path (current_state)
+							current_partial_path.compare_objects
+						end
+						if ((cycle_checking and then (not current_partial_path.has (current_successors_with_heuristic_value.item.state))) or (not cycle_checking)) then
 								-- The state hasn't been visited
 							if (problem.is_successful (current_successors_with_heuristic_value.item.state)) then
 									-- If it is a successful state
@@ -142,10 +146,12 @@ feature -- Status setting
 			search_performed := false
 			is_search_successful := false
 			nr_of_visited_states := 0
+			cycle_checking := false
 		ensure then
 			is_search_successful_value_error: not is_search_successful
 			stack_value_error: stack /= void and then stack.count = 1
 			nr_of_visited_states_non_reset: nr_of_visited_states = 0
+			cycle_checking_error: cycle_checking = false
 		end
 
 feature -- Status Report
@@ -201,6 +207,9 @@ feature {NONE}
 	successful_state: S
 			-- Searched state
 
+	cycle_checking: BOOLEAN
+			-- If true, the algorithm will avoid cycles
+
 	partial_path (state: S): LIST [S]
 			-- Returns the path to the solution obtained from performed search.
 			-- If there is no path, an empty list is returned
@@ -246,6 +255,25 @@ feature {NONE}
 				my_list.i_th (j + 1) := temp_tuple
 				i := i + 1
 			end
+		end
+
+feature
+	-- Custom features to enable / disable cycle checking
+
+	enable_cycle_checking
+			-- Enables cycle checking
+		do
+			cycle_checking := true
+		ensure
+			cycle_checking = true
+		end
+
+	disable_cycle_checking
+			-- Disables cycle checking
+		do
+			cycle_checking := false
+		ensure
+			cycle_checking = false
 		end
 
 invariant
