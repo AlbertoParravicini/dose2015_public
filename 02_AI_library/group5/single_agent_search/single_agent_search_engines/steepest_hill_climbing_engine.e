@@ -16,63 +16,65 @@ class
 	STEEPEST_HILL_CLIMBING_ENGINE[RULE -> ANY, S -> SEARCH_STATE[RULE], P -> HEURISTIC_SEARCH_PROBLEM [RULE, S]]
 
 inherit
-	SEARCH_ENGINE [RULE, S, P]
+	HILL_CLIMBING_ENGINE [RULE, S, P]
+        redefine
+            update_current_maximum_state_from_neighbors
+        end
 
 create
 	make
 
-feature -- Creation
 
-	make (other_problem: P)
-			-- Constructor of the class. It initialises a
-			-- STEEPEST_HILL_CLIMBING_ENGINE with a problem
-		require
-			other_problem /= Void
+feature {NONE} -- Implementation
+
+
+	update_current_maximum_state_from_neighbors (a_current_best_heuristic_value: REAL neighbors_list: LIST [S]): BOOLEAN
+		-- For each successor compare the heuristic values to find the one with the best value.
+		-- Return true if current_maximum_state was updated.
+
+		local
+
+			is_current_maximum_state_updated: BOOLEAN
+				-- True if current_maximum_state was updated.
+
+			l_current_best_heuristic_value: REAL
+				-- Saves the best heuristic value reached in each iteration.
+
 		do
-			-- TODO: add your code here
-		ensure
-			problem = other_problem
-			not search_performed
+
+			is_current_maximum_state_updated := false
+			l_current_best_heuristic_value := a_current_best_heuristic_value
+				-- Initializes local variable.
+
+
+			from -- Neighbors loop.
+					neighbors_list.start
+			until
+				neighbors_list.exhausted
+					-- Exits the loop when there aren't more neighbors.
+			loop
+
+				if problem.heuristic_value (neighbors_list.item) < l_current_best_heuristic_value then
+					-- If a successor has heuristic value better than the current maximum state then update current maximum state.
+
+					current_maximum_state := neighbors_list.item
+
+					is_current_maximum_state_updated := true
+
+					l_current_best_heuristic_value := problem.heuristic_value (current_maximum_state)
+						-- Updates local current best heuristic value
+
+				end
+
+				nr_of_visited_states := nr_of_visited_states + 1
+				neighbors_list.forth
+
+			end -- End neighbors loop.
+
+			Result := is_current_maximum_state_updated
+
 		end
 
-feature -- Search Execution
 
-	perform_search
-			-- Starts the search using a steepest ascent hill climbing
-			-- strategy. This search strategy is non exhaustive.
-			-- The result of the search is indicated in
-			-- is_search_successful.
-		do
-			-- TODO: add your code here
-		end
-
-feature -- Status setting
-
-	reset_engine
-			-- Resets engine, so that search can be restarted.
-		do
-			-- TODO: add your code here
-		end
-
-
-feature -- Status Report
-
-	path_to_obtained_solution: LIST [S]
-			-- Returns the path to the solution obtained from performed search.
-		do
-			-- TODO: add your code here
-		end
-
-	obtained_solution: detachable S
-			-- Returns solution obtained from last performed search.
-		do
-			-- TODO: add your code here
-		end
-
-	is_search_successful: BOOLEAN
-			-- Was last search successful?
-
-	nr_of_visited_states: INTEGER
-			-- Number of states visited in the performed search.
 
 end

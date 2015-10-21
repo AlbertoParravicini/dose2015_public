@@ -80,7 +80,7 @@ feature {NONE} -- Implementation
 					neighbors_list.start
 			until
 				is_current_maximum_state_updated or neighbors_list.exhausted
-					-- Exits the nested loop as soon as found a neighbor with better heuristic value or when there aren't more neighbors.
+					-- Exits the loop as soon as found a neighbor with better heuristic value or when there aren't more neighbors.
 			loop
 
 				if problem.heuristic_value (neighbors_list.item) < current_best_heuristic_value then
@@ -113,7 +113,7 @@ feature -- Search Execution
 		local
 
 			current_best_heuristic_value: REAL
-				-- Saves the best heuristic value reached in each iteration.
+				-- Saves the best heuristic value reached.
 
 			neighbors_list: LIST [S]
 				-- List of successors of the current maximum state.
