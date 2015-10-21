@@ -266,6 +266,15 @@ feature {NONE}
 		ensure
 			first_element_is_initial_state: equal(Result.first, problem.initial_state)
 			last_element_is_given_state: equal(Result.last, state)
+				-- Variables that must not change
+			problem_invariant: problem = old problem
+			search_performed_invariant: search_performed = old search_performed
+			is_search_successful_invariant: is_search_successful = old is_search_successful
+			stack_invariant: stack = old stack
+			maximum_depth_invariant: maximum_depth = old maximum_depth
+			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
+			cycle_checking_invariant: cycle_checking = old cycle_checking
+			successful_state_invariant: successful_state = old successful_state
 		end
 
 feature
