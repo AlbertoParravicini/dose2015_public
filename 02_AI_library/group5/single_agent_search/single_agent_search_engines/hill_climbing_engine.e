@@ -30,21 +30,17 @@ feature {NONE} -- Implementation
 	current_maximum_state: S
 		-- State with heuristic value better than its neighbors.
 
-	max_number_of_sideways_moves: INTEGER
-		-- Maximum number of sideways moves to do to try solving "shoulder problem".
-		-- Set to 0 if sideways moves aren't allowed.
-
-	best_heuristic_partial_solution_allowed: BOOLEAN
-		-- TRUE if search engine can return best heuristic partial solution when it hasn't found the correct one.
-
 
 feature -- Creation
 
 	make (other_problem: P)
 			-- Constructor of the class. It initialises a
 			-- HILL_CLIMBING_ENGINE with a problem
+
 		require
-			valid_problem: other_problem /= Void
+
+			valid_problem: other_problem /= Void and other_problem.initial_state /= Void
+
 		do
 
 			set_problem (other_problem)
@@ -58,8 +54,10 @@ feature -- Creation
 			reset_engine
 
 		ensure
+
 			setting_done: problem = other_problem and max_number_of_sideways_moves = 10 and best_heuristic_partial_solution_allowed
-			ready_search: not search_performed
+
+			ready_to_search: not search_performed
 		end
 
 
@@ -221,6 +219,19 @@ feature -- Search Execution
 			search_performed := true
 				-- End of the search.
 
+
+		ensure then
+
+			positive_visited_states: nr_of_visited_states > 0
+
+			valid_result: current_maximum_state /= Void
+
+			routine_invariant: max_number_of_sideways_moves = old max_number_of_sideways_moves
+								and best_heuristic_partial_solution_allowed = old best_heuristic_partial_solution_allowed
+
+			no_better_neighbor: across problem.get_successors (current_maximum_state) as current_successor all
+									problem.heuristic_value (current_maximum_state) <= problem.heuristic_value (current_successor.item)
+								end
 		end
 
 feature -- Status setting
@@ -231,6 +242,14 @@ feature -- Status setting
 			search_performed := false
 			is_search_successful := false
 			nr_of_visited_states := 0
+
+		ensure then
+
+			setting_done:  search_performed = false and is_search_successful = false and nr_of_visited_states = 0
+
+			routine_invariant: max_number_of_sideways_moves = old max_number_of_sideways_moves and
+								best_heuristic_partial_solution_allowed = old best_heuristic_partial_solution_allowed
+
 		end
 
 
@@ -239,21 +258,42 @@ feature -- Status setting
 		-- Sets maximum number of sideways moves to do to try solving "shoulder problem".
 		-- Set to 0 if sideways moves aren't allowed.
 		require
+
 			non_negative_number: n >= 0
+
 		do
 			max_number_of_sideways_moves := n
+
 		ensure
+
 			setting_done: max_number_of_sideways_moves = n
+
+			routine_invariant: best_heuristic_partial_solution_allowed = old best_heuristic_partial_solution_allowed and
+								search_performed = old search_performed and
+								is_search_successful = old is_search_successful and
+								nr_of_visited_states = old nr_of_visited_states
+
 		end
 
 
 
 	allow_best_heuristic_partial_solution(b: BOOLEAN)
 		-- Set to TRUE if search engine can return best heuristic partial solution when it hasn't found the correct one.
+
 		do
+
 			best_heuristic_partial_solution_allowed := b
+
 		ensure
+
 			setting_done: best_heuristic_partial_solution_allowed = b
+
+			routine_invariant: max_number_of_sideways_moves = old max_number_of_sideways_moves and
+								search_performed = old search_performed and
+								is_search_successful = old is_search_successful and
+								nr_of_visited_states = old nr_of_visited_states and
+								current_maximum_state = old current_maximum_state
+
 		end
 
 
@@ -283,9 +323,19 @@ feature -- Status Report
 				end
 
 				Result := list
-				
+
 			ensure then
-				result_not_void: Result /= void
+
+				valid_result: Result /= Void
+
+				function_invariant: max_number_of_sideways_moves = old max_number_of_sideways_moves and
+									best_heuristic_partial_solution_allowed = old best_heuristic_partial_solution_allowed and
+									search_performed = old search_performed and
+									is_search_successful = old is_search_successful and
+									nr_of_visited_states = old nr_of_visited_states and
+									current_maximum_state = old current_maximum_state
+
+
 			end
 
 	obtained_solution: detachable S
@@ -294,6 +344,16 @@ feature -- Status Report
 			if search_performed and is_search_successful then
 				Result := current_maximum_state
 			end
+
+		ensure then
+
+			function_invariant: max_number_of_sideways_moves = old max_number_of_sideways_moves and
+								best_heuristic_partial_solution_allowed = old best_heuristic_partial_solution_allowed and
+								search_performed = old search_performed and
+								is_search_successful = old is_search_successful and
+								nr_of_visited_states = old nr_of_visited_states and
+								current_maximum_state = old current_maximum_state
+
 		end
 
 	is_search_successful: BOOLEAN
@@ -301,5 +361,16 @@ feature -- Status Report
 
 	nr_of_visited_states: INTEGER
 			-- Number of states visited in the performed search.
+
+
+	max_number_of_sideways_moves: INTEGER
+		-- Maximum number of sideways moves to do to try solving "shoulder problem".
+		-- Set to 0 if sideways moves aren't allowed.
+
+	best_heuristic_partial_solution_allowed: BOOLEAN
+		-- TRUE if search engine can return best heuristic partial solution when it hasn't found the correct one.
+
+
+invariant
 
 end
