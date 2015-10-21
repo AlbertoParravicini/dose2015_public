@@ -27,10 +27,15 @@ feature {NONE} -- Initialization
 			path: LIST[WATER_JAR_PUZZLE_STATE]
 		do
 			from
-				curr_depth := 12
+				curr_depth := 4
 				create jar_puzzle.make
 				create engine.make (jar_puzzle)
+<<<<<<< HEAD
 				--engine.set_max_depth (curr_depth)
+=======
+				engine.set_max_depth (curr_depth)
+				engine.set_mark_visited_states (true)
+>>>>>>> bfs_implementation_attempt_1
 			until
 				found or curr_depth=20
 			loop

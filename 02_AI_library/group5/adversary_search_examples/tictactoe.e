@@ -90,6 +90,7 @@ feature -- State space
 			end
 		end
 
+
 	value (state: TICTACTOE_STATE): INTEGER
 			-- A sequence of size 1 gives score 1 (resp. -1)
 			-- A sequence of size 2 gives score 10 (resp. -10)
@@ -100,12 +101,6 @@ feature -- State space
 			if state.has_cross_won then
 				score := max_value
 			else
-				if state.has_circle_won then
-					score := min_value
-				else
-					if (state.has_cross_won) then
-						score := score + 100
-					else
 				if state.has_double_cross then
 					score := score + 10
 				else
@@ -115,7 +110,7 @@ feature -- State space
 				end
 			end
 			if (state.has_circle_won) then
-				score := score - 100
+				score := min_value
 			else
 				if state.has_double_circle then
 					score := score - 10
@@ -126,10 +121,9 @@ feature -- State space
 				end
 			end
 			Result := score
-
-				end
-			end
 		end
+
+
 
 	min_value: INTEGER = -1000
 
