@@ -263,6 +263,9 @@ feature {NONE}
 				current_state := current_state.parent
 			end
 			Result := path
+		ensure
+			first_element_is_initial_state: equal(Result.first, problem.initial_state)
+			last_element_is_given_state: equal(Result.last, state)
 		end
 
 feature
