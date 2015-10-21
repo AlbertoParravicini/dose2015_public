@@ -25,12 +25,6 @@ create
 	make
 
 
-feature {NONE} -- Implementation
-
-	current_maximum_state: S
-		-- State with heuristic value better than its neighbors.
-
-
 feature -- Creation
 
 	make (other_problem: P)
@@ -48,7 +42,7 @@ feature -- Creation
 			set_max_number_of_sideways_moves (10)
 				-- Default value of maximum number of sideways moves.
 
-			allow_best_heuristic_partial_solution (true)
+			set_best_heuristic_partial_solution_allowed (true)
 				-- Search engine can return best heuristic partial solution by default.
 
 			reset_engine
@@ -58,6 +52,53 @@ feature -- Creation
 			setting_done: problem = other_problem and max_number_of_sideways_moves = 10 and best_heuristic_partial_solution_allowed
 
 			ready_to_search: not search_performed
+		end
+
+
+feature {NONE} -- Implementation
+
+	current_maximum_state: S
+		-- State with heuristic value better than its neighbors.
+
+
+	update_current_maximum_state_from_neighbors (current_best_heuristic_value: REAL neighbors_list: LIST [S]): BOOLEAN
+		-- For each successor compare the current best heuristic value to find a state better than current_maximum_state.
+		-- Return true if current_maximum_state was updated.
+
+		local
+
+			is_current_maximum_state_updated: BOOLEAN
+				-- True if current_maximum_state was updated.
+
+		do
+
+			is_current_maximum_state_updated := false
+				-- Initializes local variable.
+
+
+			from -- Neighbors loop.
+					neighbors_list.start
+			until
+				is_current_maximum_state_updated or neighbors_list.exhausted
+					-- Exits the nested loop as soon as found a neighbor with better heuristic value or when there aren't more neighbors.
+			loop
+
+				if problem.heuristic_value (neighbors_list.item) < current_best_heuristic_value then
+					-- If a successor has heuristic value better than the current maximum state then update current maximum state.
+
+					current_maximum_state := neighbors_list.item
+
+					is_current_maximum_state_updated := true
+
+				end
+
+				nr_of_visited_states := nr_of_visited_states + 1
+				neighbors_list.forth
+
+			end -- End neighbors loop.
+
+			Result := is_current_maximum_state_updated
+
 		end
 
 
@@ -123,31 +164,18 @@ feature -- Search Execution
 					-- Assumes that there aren't neighbors with heuristic value better than the current maximum state.
 
 
+				if update_current_maximum_state_from_neighbors (current_best_heuristic_value, neighbors_list) then
+					-- If current maximum state was updated because it was found a neighbor better.
 
-				from -- Nested loop: for each successor compare the heuristic value to find the best one.
-					neighbors_list.start
-				until
-					not is_maximum_state_reached or neighbors_list.exhausted
-						-- Exits the nested loop as soon as found a neighbor with better heuristic value or when there aren't more neighbors.
-				loop
+					current_best_heuristic_value := problem.heuristic_value (current_maximum_state)
+						-- Updates current best heuristic value.
 
-					if problem.heuristic_value (neighbors_list.item) < current_best_heuristic_value then
-						-- If a successor has heuristic value better than the current maximum state then update current maximum state.
+					is_maximum_state_reached := false
+						-- Now it may be a new neighbor better than the new current maximum state.
 
-						current_maximum_state := neighbors_list.item
-						current_best_heuristic_value := problem.heuristic_value (current_maximum_state)
-						is_maximum_state_reached := false
-
-						number_of_done_sideways_moves := 0
-							-- Resets counter of sideways moves in order to analize new heuristic value.
-
-					end
-
-					nr_of_visited_states := nr_of_visited_states + 1
-					neighbors_list.forth
-
-				end -- End nested loop.
-
+					number_of_done_sideways_moves := 0
+						-- Resets counter of sideways moves in order to analize new heuristic value.
+				end
 
 
 				-- "ESCAPING SHOULDERS: SIDEWAYS MOVE" optimization.
@@ -277,7 +305,7 @@ feature -- Status setting
 
 
 
-	allow_best_heuristic_partial_solution(b: BOOLEAN)
+	set_best_heuristic_partial_solution_allowed(b: BOOLEAN)
 		-- Set to TRUE if search engine can return best heuristic partial solution when it hasn't found the correct one.
 
 		do
@@ -335,6 +363,13 @@ feature -- Status Report
 									nr_of_visited_states = old nr_of_visited_states and
 									current_maximum_state = old current_maximum_state
 
+				first_state_is_consistent: Result.is_empty or else equal (Result.first, problem.initial_state)
+
+				last_state_is_consistent: Result.is_empty or else equal (Result.last, current_maximum_state)
+
+				unsuccessful_search: Result.is_empty implies not is_search_successful
+
+				empty_list_is_consistent: not is_search_successful implies Result.is_empty
 
 			end
 
@@ -354,6 +389,11 @@ feature -- Status Report
 								nr_of_visited_states = old nr_of_visited_states and
 								current_maximum_state = old current_maximum_state
 
+
+			valid_result: is_search_successful and search_performed implies Result = current_maximum_state
+
+			unsuccessful_search: not is_search_successful implies Result = Void
+
 		end
 
 	is_search_successful: BOOLEAN
@@ -361,7 +401,6 @@ feature -- Status Report
 
 	nr_of_visited_states: INTEGER
 			-- Number of states visited in the performed search.
-
 
 	max_number_of_sideways_moves: INTEGER
 		-- Maximum number of sideways moves to do to try solving "shoulder problem".
@@ -372,5 +411,11 @@ feature -- Status Report
 
 
 invariant
+
+	non_negative_variables: nr_of_visited_states >= 0 and max_number_of_sideways_moves >= 0
+
+	valid_current_maximum_state: search_performed implies current_maximum_state /= Void
+
+	correct_solution_found: not best_heuristic_partial_solution_allowed and search_performed and is_search_successful implies problem.is_successful (current_maximum_state)
 
 end
