@@ -29,13 +29,8 @@ feature {NONE} -- Implementation
 	queue: LINKED_QUEUE [TUPLE [depth: INTEGER; state: S]]
 			-- Queue containing the states which haven't been fully explored, and their depth;
 
-<<<<<<< HEAD
-	marked_states: LINKED_LIST [S]
-			-- List of the states which have been fully explored
-=======
 	marked_states: LINKED_QUEUE [S]
 			-- List of the states which have been fully explored;
->>>>>>> bfs_implementation_attempt_1
 
 	successful_state: S
 			-- The successful state, the result of a successful search;
