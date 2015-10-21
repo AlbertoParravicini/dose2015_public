@@ -49,7 +49,7 @@ feature -- Creation
 
 			set_problem (other_problem)
 
-			set_max_number_of_sideways_moves (20)
+			set_max_number_of_sideways_moves (10)
 				-- Default value of maximum number of sideways moves.
 
 			allow_best_heuristic_partial_solution (true)
@@ -58,7 +58,7 @@ feature -- Creation
 			reset_engine
 
 		ensure
-			setting_done: problem = other_problem and max_number_of_sideways_moves = 20 and best_heuristic_partial_solution_allowed
+			setting_done: problem = other_problem and max_number_of_sideways_moves = 10 and best_heuristic_partial_solution_allowed
 			ready_search: not search_performed
 		end
 
@@ -168,11 +168,10 @@ feature -- Search Execution
 						neighbors_list.exhausted
 					loop
 
-						if equal (neighbors_list.item, current_maximum_state.parent) or problem.heuristic_value (neighbors_list.item) > current_best_heuristic_value then
-							-- If a successor is equal to the parent of current maximum state or has heuristic value
-							-- worse than the current maximum state then removes it from neighbors_list, in order to
-							-- obtain a neighbors_list with heuristic value equal to the current maximum state, so it
-							-- is possible to optimize search with a sideways move.
+						if problem.heuristic_value (neighbors_list.item) > current_best_heuristic_value then
+							-- If a successor has heuristic value worse than the current maximum state then removes
+							-- it from neighbors_list, in order to obtain a neighbors_list with heuristic value equal
+							-- to the current maximum state, so it is possible to optimize search with a sideways move.
 
 							neighbors_list.remove
 
@@ -266,10 +265,10 @@ feature -- Status Report
 				current_state: S
 				list: LINKED_LIST [S]
 			do
-				if search_performed and is_search_successful then
+				create list.make
+					-- Initialize local variables.
 
-					create list.make
-						-- Initialize local variables.
+				if search_performed and is_search_successful then
 
 					from
 						-- Get parent state for each state from maximum_state to initial state and put_front in the list.
@@ -281,8 +280,12 @@ feature -- Status Report
 						current_state := current_state.parent
 					end
 
-					Result := list
 				end
+
+				Result := list
+				
+			ensure then
+				result_not_void: Result /= void
 			end
 
 	obtained_solution: detachable S
