@@ -34,6 +34,8 @@ feature -- Creation
 			other_problem.initial_state /= Void
 		do
 			set_problem (other_problem)
+			mark_closed_states := true
+			mark_open_states := true
 			reset_engine
 		ensure
 			problem_set: problem = other_problem
@@ -53,7 +55,7 @@ feature -- Search Execution
 			current_state_path_cost: REAL
 			current_tuple: TUPLE [state: S; cost: REAL]
 			current_successors: LINKED_LIST [S]
-			already_in_close: BOOLEAN
+			useful_state: BOOLEAN
 		do
 			create current_successors.make
 			current_state := problem.initial_state
@@ -67,15 +69,15 @@ feature -- Search Execution
 				is_search_successful := true
 				successful_state := current_state
 			end
-
 			from
-
 			until
 				open.is_empty or is_search_successful = true
 			loop
 				current_successors.wipe_out
 					-- Sort the "open" list, so that the state with the lowest cost, the most promising, is first;
 				sort_list_with_tuples (open)
+
+					--	TODO GET BEST ITEM ------------
 
 					-- Get the first state (the most promising) from the "open" list;
 				current_tuple := open.first
@@ -84,6 +86,8 @@ feature -- Search Execution
 				current_state_path_cost := path_cost (current_state)
 				open.go_i_th (1)
 				open.remove
+
+					-----------------------------------
 
 					-- Add the current state to the list of visited states;
 				closed.extend (current_tuple)
@@ -102,30 +106,41 @@ feature -- Search Execution
 					until
 						current_successors.exhausted or is_search_successful = true
 					loop
-						already_in_close := false
+						useful_state := false
 							-- Check if the current successor was already visited with a higher cost:
-							--		if so, replace it in the "closed" list; if the state was replaced,
-							--			or if it is the first time it is visited,
-							--		 		proceed to evaluate its presence in the "open" list;
-						already_in_close := replace_list_state (closed, current_successors.item)
-						if already_in_close = true then
-							if problem.is_successful (current_successors.item) then
-								is_search_successful := true
-								successful_state := current_successors.item
-							else
-									-- Check if the current successor is already in the queue (the "open" list) with a higher cost:
-									--		if so, replace it in the "open" list; if it is not present, add it;
-								already_in_close := false
-								already_in_close := replace_list_state (open, current_successors.item)
-								if already_in_close = true then
-									open.extend ([current_successors.item, current_state_path_cost + total_cost (current_successors.item)])
-								end
+							-- if so, replace it in the "closed" list; if the state was replaced,
+							-- or if it is the first time it is visited,
+							-- proceed to evaluate its presence in the "open" list;
+
+						if mark_closed_states = true then
+							useful_state := replace_list_state (closed, current_successors.item)
+						end
+
+						-- Check if the current successor is already in the queue (the "open" list) with a higher cost:
+						-- if so, replace it in the "open" list; if it is not present, add it;
+						if mark_open_states = true then
+							if mark_closed_states = false or (mark_closed_states = true and useful_state = true) then
+								useful_state := replace_list_state (open, current_successors.item)
 							end
 						end
+
+						if (mark_closed_states = false or useful_state = true) and (mark_open_states = false or useful_state = true) then
+							open.extend ([current_successors.item, current_state_path_cost + total_cost (current_successors.item)])
+						end
 						current_successors.forth
+					end -- End of loop on successors;
+
+					if mark_closed_states = true and mark_open_states = true then
+						across current_successors as curr_succ loop
+							if problem.is_successful (curr_succ.item) then
+								is_search_successful := true
+								successful_state := curr_succ.item
+							end
+						end
 					end
+
 				end
-			end
+			end -- End of the main loop;
 			search_performed := true
 		ensure then
 			unsuccessful_state_with_non_empty_queue: (not is_search_successful) implies open.is_empty
@@ -202,6 +217,10 @@ feature -- Status Report
 
 	nr_of_visited_states: INTEGER
 			-- Number of states visited in the performed search.
+
+	mark_closed_states: BOOLEAN
+
+	mark_open_states: BOOLEAN
 
 feature {NONE} -- Implementation routines / procedures
 
@@ -298,7 +317,6 @@ feature {NONE} -- Implementation routines / procedures
 				temp_tuple := a_list.i_th (i)
 				j := i - 1
 				from
-
 				invariant
 					j >= 0
 				until
@@ -334,4 +352,5 @@ invariant
 	nr_of_visited_states_is_negative: nr_of_visited_states >= 0
 	successful_state_is_inconsistent: search_performed implies (is_search_successful implies problem.is_successful (successful_state))
 	successful_state_is_inconsistent: search_performed implies ((successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful)
+
 end
