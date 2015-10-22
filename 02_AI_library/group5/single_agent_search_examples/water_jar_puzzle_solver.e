@@ -34,8 +34,8 @@ feature {NONE} -- Initialization
 				--engine.set_max_depth (curr_depth)
 				--engine.set_mark_visited_states (true)
 
-				--engine.set_mark_closed_state (true)
-				--engine.set_check_open_state (true)
+				engine.set_mark_closed_state (true)
+				engine.set_check_open_state (true)
 
 			until
 				found or curr_depth=20

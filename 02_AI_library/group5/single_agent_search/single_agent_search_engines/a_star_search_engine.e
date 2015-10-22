@@ -35,12 +35,12 @@ feature -- Creation
 		do
 			set_problem (other_problem)
 			mark_closed_states := false
-			check_open_states := false
+			check_open_states := true
 			reset_engine
 		ensure
 			problem_set: problem = other_problem
 			closed_state_not_marked: mark_closed_states = false
-			open_state_not_checked: check_open_states = false
+			open_state_checked: check_open_states = true
 			search_not_performed: not search_performed
 		end
 
@@ -58,6 +58,7 @@ feature -- Search Execution
 			current_tuple: TUPLE [state: S; cost: REAL]
 			current_successors: LINKED_LIST [S]
 			useful_state: BOOLEAN
+			best_index: INTEGER
 		do
 			create current_successors.make
 			current_state := problem.initial_state
@@ -76,20 +77,32 @@ feature -- Search Execution
 				open.is_empty or is_search_successful = true
 			loop
 				current_successors.wipe_out
-					-- Sort the "open" list, so that the state with the lowest cost, the most promising, is first;
-				sort_list_with_tuples (open)
 
-					--	TODO GET BEST ITEM ------------
 
-					-- Get the first state (the most promising) from the "open" list;
-				current_tuple := open.first
+				from
+					best_index := 1
+					open.start
+					current_tuple := open.first
+				until
+					open.exhausted
+				loop
+					if open.item.cost < current_tuple.cost then
+						current_tuple := open.item
+						best_index := open.index
+					end
+					open.forth
+				end
+
+
+
 				current_state := current_tuple.state
 					-- Calculate how far the current_state is from the start, optimization useful at a later stage;
 				current_state_path_cost := path_cost (current_state)
-				open.go_i_th (1)
+
+				open.go_i_th (best_index)
 				open.remove
 
-					-----------------------------------
+
 
 					-- Add the current state to the list of visited states;
 				if mark_closed_states = true then
@@ -332,45 +345,6 @@ feature {NONE} -- Implementation routines / procedures
 		ensure
 			a_list_size_not_changed: old a_list.count = a_list.count
 			state_already_present_with_higher_cost: Result = false implies across a_list as a_tuple some equal (a_tuple.item.state, a_state) end
-		end
-
-	sort_list_with_tuples (a_list: LIST [TUPLE [state: S; value: REAL]])
-			-- Sorts the given list from the state with the lowest value to the one with the highest value
-			-- insertion sort;
-		require
-			a_list_not_null: a_list /= void
-		local
-			i, j: INTEGER
-			temp_tuple: TUPLE [state: S; value: REAL]
-			temp_tuple2: TUPLE [state: S; value: REAL]
-		do
-			from
-				i := 2
-			invariant
-				i >= 2
-				i <= a_list.count + 1
-			until
-				i = a_list.count + 1
-			loop
-				temp_tuple := a_list.i_th (i)
-				j := i - 1
-				from
-				invariant
-					j >= 0
-				until
-					j < 1 or a_list.i_th (j).value <= temp_tuple.value
-				loop
-					temp_tuple2 := a_list.i_th (j)
-					a_list.i_th (j + 1) := temp_tuple2
-					j := j - 1
-				end
-				a_list.i_th (j + 1) := temp_tuple
-				i := i + 1
-			end
-		ensure
-			size_not_changed: old a_list.count = a_list.count
-			list_ordered_ascending_value: across a_list as tuple all a_list.first.value <= tuple.item.value end
-				-- forall x, old a_list.has(x) iff a_list.has(x);
 		end
 
 feature {NONE} -- Implementation attributes
