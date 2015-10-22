@@ -34,11 +34,13 @@ feature -- Creation
 			other_problem.initial_state /= Void
 		do
 			set_problem (other_problem)
-			mark_closed_states := true
-			mark_open_states := true
+			mark_closed_states := false
+			check_open_states := false
 			reset_engine
 		ensure
 			problem_set: problem = other_problem
+			closed_state_not_marked: mark_closed_states = false
+			open_state_not_checked: check_open_states = false
 			search_not_performed: not search_performed
 		end
 
@@ -90,7 +92,10 @@ feature -- Search Execution
 					-----------------------------------
 
 					-- Add the current state to the list of visited states;
-				closed.extend (current_tuple)
+				if mark_closed_states = true then
+					closed.extend (current_tuple)
+				end
+
 				nr_of_visited_states := nr_of_visited_states + 1
 
 					-- End if the current state is successful;
@@ -118,19 +123,19 @@ feature -- Search Execution
 
 						-- Check if the current successor is already in the queue (the "open" list) with a higher cost:
 						-- if so, replace it in the "open" list; if it is not present, add it;
-						if mark_open_states = true then
+						if check_open_states = true then
 							if mark_closed_states = false or (mark_closed_states = true and useful_state = true) then
 								useful_state := replace_list_state (open, current_successors.item)
 							end
 						end
 
-						if (mark_closed_states = false or useful_state = true) and (mark_open_states = false or useful_state = true) then
+						if (mark_closed_states = false or useful_state = true) and (check_open_states = false or useful_state = true) then
 							open.extend ([current_successors.item, current_state_path_cost + total_cost (current_successors.item)])
 						end
 						current_successors.forth
 					end -- End of loop on successors;
 
-					if mark_closed_states = true and mark_open_states = true then
+					if mark_closed_states = true and check_open_states = true then
 						across current_successors as curr_succ loop
 							if problem.is_successful (curr_succ.item) then
 								is_search_successful := true
@@ -145,7 +150,7 @@ feature -- Search Execution
 		ensure then
 			unsuccessful_state_with_non_empty_queue: (not is_search_successful) implies open.is_empty
 			no_visited_states: nr_of_visited_states > old nr_of_visited_states
-			at_least_one_state_visited: closed.count > old closed.count
+			at_least_one_state_visited: mark_closed_states = true implies (closed.count > old closed.count)
 			search_successful_nec: is_search_successful implies problem.is_successful (successful_state)
 			search_successful_suc: (search_performed = true and successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful
 		end
@@ -168,6 +173,36 @@ feature -- Search Execution
 			open_uses_equal: open.object_comparison = true
 			closed_uses_equal: closed.object_comparison = true
 			visited_states_reset: nr_of_visited_states = 0
+		end
+
+feature -- Status Setting
+
+	set_mark_closed_state (a_choice: BOOLEAN)
+		-- Set whether to memorize the visited states or not;
+		require
+			search_not_performed: search_performed = false
+			search_not_successful: is_search_successful = false
+		do
+			mark_closed_states := a_choice
+			if (closed /= void) then
+				closed.wipe_out
+			end
+		ensure
+			mark_closed_set: mark_closed_states = a_choice
+			empty_closed_states: closed.count = 0
+			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old check_open_states = check_open_states
+		end
+
+	set_check_open_state (a_choice: BOOLEAN)
+		-- Set whether to memorize the visited states or not;
+		require
+			search_not_performed: search_performed = false
+			search_not_successful: is_search_successful = false
+		do
+			check_open_states := a_choice
+		ensure
+			check_open_states_set: check_open_states = a_choice
+			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_closed_states = mark_closed_states
 		end
 
 feature -- Status Report
@@ -219,8 +254,11 @@ feature -- Status Report
 			-- Number of states visited in the performed search.
 
 	mark_closed_states: BOOLEAN
-
-	mark_open_states: BOOLEAN
+			-- Memorize the visited states in a list, then when a new state is generated, check if it was already visited:
+			-- if it was visited at a higher cost, replace it with the new state and the new cost;
+	check_open_states: BOOLEAN
+			-- When a new state is generated, check if it is already in the queue:
+			-- if it is present with an higher cost, replace it with the new state and the new cost;
 
 feature {NONE} -- Implementation routines / procedures
 
