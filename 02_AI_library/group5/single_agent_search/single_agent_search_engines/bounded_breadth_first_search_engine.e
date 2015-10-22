@@ -62,13 +62,19 @@ feature {NONE} -- Implementation
 		end
 
 	scan_queue_for_redundant_state (a_depth: INTEGER; a_state: S;): BOOLEAN
-		-- Check if in the queue the state "a_state" is already present with a lower cost;
+			-- Check if in the queue the state "a_state" is already present with a lower cost;
+		require
+			a_state /= void
 		do
-			across queue as curr_tuple loop
-				if equal(curr_tuple.item.state, a_state) and a_depth > curr_tuple.item.depth then
+			across
+				queue as curr_tuple
+			loop
+				if equal (curr_tuple.item.state, a_state) and a_depth > curr_tuple.item.depth then
 					Result := true
 				end
 			end
+		ensure
+			result_consistent: Result = true implies across queue as tuple some equal (tuple.item.state, a_state) and a_depth > tuple.item.depth end
 		end
 
 feature -- Creation
