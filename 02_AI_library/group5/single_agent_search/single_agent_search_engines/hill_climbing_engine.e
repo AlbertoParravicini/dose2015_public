@@ -164,8 +164,8 @@ feature -- Search Execution
 					-- Assumes that there aren't neighbors with heuristic value better than the current maximum state.
 
 
-				if update_current_maximum_state_from_neighbors (current_best_heuristic_value, neighbors_list) then
-					-- If current maximum state was updated because it was found a neighbor better.
+				if not problem.is_successful (current_maximum_state) and update_current_maximum_state_from_neighbors (current_best_heuristic_value, neighbors_list) then
+					-- If current maximum state is not the solution and was updated because it was found a neighbor better.
 
 					current_best_heuristic_value := problem.heuristic_value (current_maximum_state)
 						-- Updates current best heuristic value.
