@@ -66,6 +66,8 @@ feature -- Search Execution
 			current_partial_path: LIST [S]
 		do
 			from
+			invariant
+				current_depth_should_not_exceed_maximum_depth: current_depth <= maximum_depth
 			until
 				is_search_successful or stack.is_empty
 			loop
@@ -204,6 +206,7 @@ feature -- Status Report
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
 			successful_state_invariant: successful_state = old successful_state
+
 		end
 
 	obtained_solution: detachable S
