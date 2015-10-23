@@ -161,4 +161,8 @@ feature
 	obtained_successor: S
 
 
+invariant
+		-- List of all class invariants
+	obtained_successor_is_inconsistent: search_performed implies ((obtained_value >= problem.min_value and obtained_value <= problem.max_value) and obtained_successor /= Void)
+
 end
