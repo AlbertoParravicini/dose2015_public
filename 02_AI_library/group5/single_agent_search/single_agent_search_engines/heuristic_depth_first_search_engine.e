@@ -30,7 +30,7 @@ feature -- Creation
 			-- Constructor of the class. It initialises a
 			-- HEURISTIC_DEPTH_FIRST_SEARCH_ENGINE with a problem
 		require
-			make_parameter_error: other_problem /= Void
+			valid_problem: other_problem /= Void
 		do
 			set_problem (other_problem)
 			create stack.make
@@ -41,12 +41,12 @@ feature -- Creation
 			stack.compare_objects
 			cycle_checking := false
 		ensure
-			make_parameter_value_error: problem = other_problem
-			search_performed_value_error: not search_performed
-			is_search_successful_value_error: not is_search_successful
-			stack_value_error: stack /= void and then stack.count = 1
-			nr_of_visited_states_value_error: nr_of_visited_states = 0
-			cycle_checking_error: cycle_checking = false
+			problem_is_not_void: problem = other_problem
+			search_performed_is_false: not search_performed
+			is_search_successful_is_false: not is_search_successful
+			stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal(stack.item, problem.initial_state))
+			nr_of_visited_states_is_zero: nr_of_visited_states = 0
+			cycle_checking_is_false: cycle_checking = false
 		end
 
 feature -- Search Execution
@@ -132,8 +132,8 @@ feature -- Search Execution
 			end
 			search_performed := true
 		ensure then
-			unsuccessful_state_with_non_empty_stack: (not is_search_successful) implies stack.is_empty
-			no_visited_states: nr_of_visited_states > old nr_of_visited_states
+			unsuccessful_search_has_empty_stack: (not is_search_successful) implies stack.is_empty
+			at_least_the_initial_state_has_been_visited: nr_of_visited_states > old nr_of_visited_states
 		end
 
 feature -- Status setting
@@ -148,10 +148,11 @@ feature -- Status setting
 			nr_of_visited_states := 0
 			cycle_checking := false
 		ensure then
-			is_search_successful_value_error: not is_search_successful
-			stack_value_error: stack /= void and then stack.count = 1
-			nr_of_visited_states_non_reset: nr_of_visited_states = 0
-			cycle_checking_error: cycle_checking = false
+			search_performed_is_false: not search_performed
+			is_search_successful_is_false: not is_search_successful
+			stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal(stack.item, problem.initial_state))
+			nr_of_visited_states_is_zero: nr_of_visited_states = 0
+			cycle_checking_is_false:cycle_checking=false
 		end
 
 feature -- Status Report
@@ -179,6 +180,15 @@ feature -- Status Report
 			first_state_is_consistent: Result.is_empty or else equal (Result.first, problem.initial_state)
 			last_state_is_consistent: Result.is_empty or else problem.is_successful (Result.last)
 			empty_list_is_consistent: (Result.is_empty implies (not is_search_successful)) and ((not is_search_successful) implies Result.is_empty)
+				-- Variables that must not change
+			problem_invariant: problem = old problem
+			search_performed_invariant: search_performed = old search_performed
+			is_search_successful_invariant: is_search_successful = old is_search_successful
+			stack_invariant: stack = old stack
+			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
+			cycle_checking_invariant: cycle_checking = old cycle_checking
+			successful_state_invariant: successful_state = old successful_state
+
 		end
 
 	obtained_solution: detachable S
@@ -188,8 +198,17 @@ feature -- Status Report
 				Result := successful_state
 			end
 		ensure then
-			successful_search: is_search_successful implies problem.is_successful (Result)
-			unsuccessful_search: (not is_search_successful) implies Result = void
+			successful_search_has_a_valid_result: is_search_successful implies problem.is_successful (Result)
+			unsuccessful_search_has_void_result: (not is_search_successful) implies Result = void
+				-- Variables that must not change
+			problem_invariant: problem = old problem
+			search_performed_invariant: search_performed = old search_performed
+			is_search_successful_invariant: is_search_successful = old is_search_successful
+			stack_invariant: stack = old stack
+			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
+			cycle_checking_invariant: cycle_checking = old cycle_checking
+			successful_state_invariant: successful_state = old successful_state
+
 		end
 
 	is_search_successful: BOOLEAN
@@ -227,6 +246,17 @@ feature {NONE}
 				current_state := current_state.parent
 			end
 			Result := path
+		ensure
+			first_element_is_initial_state: equal(Result.first, problem.initial_state)
+			last_element_is_given_state: equal(Result.last, state)
+				-- Variables that must not change
+			problem_invariant: problem = old problem
+			search_performed_invariant: search_performed = old search_performed
+			is_search_successful_invariant: is_search_successful = old is_search_successful
+			stack_invariant: stack = old stack
+			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
+			cycle_checking_invariant: cycle_checking = old cycle_checking
+			successful_state_invariant: successful_state = old successful_state
 		end
 
 	sort_list_with_tuples (my_list: LIST [TUPLE [state: S; value: REAL]])
@@ -265,7 +295,14 @@ feature
 		do
 			cycle_checking := true
 		ensure
-			cycle_checking = true
+			cycle_checking_is_true: cycle_checking=true
+			-- Variables that must not change
+			problem_invariant: problem = old problem
+			search_performed_invariant: search_performed = old search_performed
+			is_search_successful_invariant: is_search_successful = old is_search_successful
+			stack_invariant: stack = old stack
+			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
+			successful_state_invariant: successful_state = old successful_state
 		end
 
 	disable_cycle_checking
@@ -273,7 +310,14 @@ feature
 		do
 			cycle_checking := false
 		ensure
-			cycle_checking = false
+			cycle_checking_is_false: cycle_checking=false
+			-- Variables that must not change
+			problem_invariant: problem = old problem
+			search_performed_invariant: search_performed = old search_performed
+			is_search_successful_invariant: is_search_successful = old is_search_successful
+			stack_invariant: stack = old stack
+			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
+			successful_state_invariant: successful_state = old successful_state
 		end
 
 invariant

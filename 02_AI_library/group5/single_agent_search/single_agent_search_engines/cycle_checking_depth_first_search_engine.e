@@ -33,7 +33,7 @@ feature -- Creation
 			-- Constructor of the class. It initialises a
 			-- CYCLE_CHECKING_DEPTH_FIRST_SEARCH_ENGINE with a problem
 		require
-			make_parameter_error: other_problem /= Void
+			valid_problem: other_problem /= Void
 		do
 			set_problem (other_problem)
 			create stack.make
@@ -43,12 +43,12 @@ feature -- Creation
 			nr_of_visited_states := 0
 			stack.compare_objects
 		ensure
-			make_parameter_value_error: problem = other_problem
-			search_performed_value_error: not search_performed
-			is_search_successful_value_error: not is_search_successful
-			stack_value_error: stack /= void and then stack.count = 1
-			nr_of_visited_states_value_error: nr_of_visited_states = 0
-		end
+		problem_is_not_void: problem = other_problem
+		search_performed_is_false: not search_performed
+		is_search_successful_is_false: not is_search_successful
+		stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal(stack.item, problem.initial_state))
+		nr_of_visited_states_is_zero: nr_of_visited_states = 0
+	end
 
 feature -- Search Execution
 
@@ -102,19 +102,9 @@ feature -- Search Execution
 								successful_state := current_successors.item
 								is_search_successful := true
 							else
-									-- Add the state to the stack, in order to visit it later, if it isn't already in stack
-									--if (not stack.has (current_successors.item)) then
+									-- Add the state to the stack, in order to visit it later
 								stack.put (current_successors.item)
-									--else
-									-- DEBUG
-									--print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
-									--end
-									-- Debug
-									--print("stack: "+stack.count.out+" nr_of_visited_states: "+nr_of_visited_states.out+"%N")
 							end
-						else
-								--Debug
-								--print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Cycle found.%N")
 						end
 						current_successors.forth
 					end
@@ -122,23 +112,24 @@ feature -- Search Execution
 			end
 			search_performed := true
 		ensure then
-			unsuccessful_state_with_non_empty_stack: (not is_search_successful) implies stack.is_empty
-			no_visited_states: nr_of_visited_states > old nr_of_visited_states
+			unsuccessful_search_has_empty_stack: (not is_search_successful) implies stack.is_empty
+			at_least_the_initial_state_has_been_visited: nr_of_visited_states > old nr_of_visited_states
 		end
 
 	reset_engine
 			-- Resets engine, so that search can be restarted.
 		do
 			create stack.make
-				--create visited_states.make
 			stack.put (problem.initial_state)
 			search_performed := false
 			is_search_successful := false
 			nr_of_visited_states := 0
+			stack.compare_objects
 		ensure then
-			is_search_successful_value_error: not is_search_successful
-			stack_value_error: stack /= void and then stack.count = 1
-			nr_of_visited_states_non_reset: nr_of_visited_states = 0
+			search_performed_is_false: not search_performed
+			is_search_successful_is_false: not is_search_successful
+			stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal(stack.item, problem.initial_state))
+			nr_of_visited_states_is_zero: nr_of_visited_states = 0
 		end
 
 feature -- Status Report
@@ -166,6 +157,14 @@ feature -- Status Report
 			first_state_is_consistent: Result.is_empty or else equal (Result.first, problem.initial_state)
 			last_state_is_consistent: Result.is_empty or else problem.is_successful (Result.last)
 			empty_list_is_consistent: (Result.is_empty implies (not is_search_successful)) and ((not is_search_successful) implies Result.is_empty)
+				-- Variables that must not change
+			problem_invariant: problem = old problem
+			search_performed_invariant: search_performed = old search_performed
+			is_search_successful_invariant: is_search_successful = old is_search_successful
+			stack_invariant: stack = old stack
+			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
+			successful_state_invariant: successful_state = old successful_state
+
 		end
 
 	obtained_solution: detachable S
@@ -175,8 +174,16 @@ feature -- Status Report
 				Result := successful_state
 			end
 		ensure then
-			successful_search: is_search_successful implies problem.is_successful (Result)
-			unsuccessful_search: (not is_search_successful) implies Result = void
+			successful_search_has_a_valid_result: is_search_successful implies problem.is_successful (Result)
+			unsuccessful_search_has_void_result: (not is_search_successful) implies Result = void
+				-- Variables that must not change
+			problem_invariant: problem = old problem
+			search_performed_invariant: search_performed = old search_performed
+			is_search_successful_invariant: is_search_successful = old is_search_successful
+			stack_invariant: stack = old stack
+			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
+			successful_state_invariant: successful_state = old successful_state
+
 		end
 
 	is_search_successful: BOOLEAN
@@ -211,6 +218,16 @@ feature {NONE}
 				current_state := current_state.parent
 			end
 			Result := path
+		ensure
+			first_element_is_initial_state: equal(Result.first, problem.initial_state)
+			last_element_is_given_state: equal(Result.last, state)
+				-- Variables that must not change
+			problem_invariant: problem = old problem
+			search_performed_invariant: search_performed = old search_performed
+			is_search_successful_invariant: is_search_successful = old is_search_successful
+			stack_invariant: stack = old stack
+			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
+			successful_state_invariant: successful_state = old successful_state
 		end
 
 invariant
