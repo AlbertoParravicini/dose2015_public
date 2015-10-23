@@ -72,7 +72,6 @@ feature -- Search Execution
 			current_tuple: TUPLE [state: S; cost: REAL]
 			current_successors: LINKED_LIST [S]
 			useful_state: BOOLEAN
-			best_index: INTEGER
 		do
 			create current_successors.make
 			current_state := problem.initial_state
@@ -85,6 +84,9 @@ feature -- Search Execution
 			if problem.is_successful (current_state) then
 				is_search_successful := true
 				successful_state := current_state
+			end
+			if mark_closed_states = true then
+				closed.extend (current_tuple)
 			end
 			from
 			until
@@ -112,7 +114,7 @@ feature -- Search Execution
 				else
 					current_successors.append (problem.get_successors (current_state))
 
-					-- Examinate the successors of the current state;
+						-- Examinate the successors of the current state;
 					from
 						current_successors.start
 					until
@@ -142,22 +144,48 @@ feature -- Search Execution
 						if (mark_closed_states = false or useful_state = true) and (check_open_states = false or useful_state = true) then
 							open.extend ([current_successors.item, current_state_path_cost + total_cost (current_successors.item)])
 						end
-						current_successors.forth
+						if mark_closed_states = true and check_open_states = true and useful_state = false then
+							current_successors.remove
+						else
+							current_successors.forth
+						end
 					end -- End of loop on successors;
 
 						-- If both the "closed" list and the "open" list are checked to see if the state was already present
 						-- with higher cost, it is possible to test the successfulness of the current successors without losing the
 						-- optimality of the solution;
-						--					if mark_closed_states = true and check_open_states = true then
-						--						across
-						--							current_successors as curr_succ
-						--						loop
-						--							if problem.is_successful (curr_succ.item)  then
-						--								is_search_successful := true
-						--								successful_state := curr_succ.item
-						--							end
-						--						end
-						--					end
+					if mark_closed_states = true and check_open_states = true then
+
+							-- Remove successors which aren't successful
+						from
+							current_successors.start
+						until
+							current_successors.exhausted
+						loop
+							if not problem.is_successful (current_successors.item) then
+								current_successors.remove
+							else
+								current_successors.forth
+							end
+						end
+
+							-- Of the remaining states, which are successful, pick the least expensive.
+						if current_successors.count > 0 then
+							from
+								current_successors.start
+								successful_state := current_successors.first
+							until
+								current_successors.exhausted
+							loop
+								if total_cost (current_successors.item) < total_cost (successful_state) then
+									successful_state := current_successors.item
+								end
+								current_successors.forth
+							end
+							is_search_successful := true
+							closed.extend (current_tuple)
+						end
+					end -- End of the optional successful state check loop
 				end
 			end -- End of the main loop;
 			search_performed := true
@@ -361,8 +389,8 @@ feature {NONE} -- Implementation routines / procedures
 			state_already_present_with_higher_cost: Result = false implies across a_list as a_tuple some equal (a_tuple.item.state, a_state) end
 		end
 
-	remove_best_item (a_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]): TUPLE[state: S; cost: REAL]
-		-- Remove the best item, i.e. the one with lowest cost, from the given list "a_list";
+	remove_best_item (a_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]): TUPLE [state: S; cost: REAL]
+			-- Remove the best item, i.e. the one with lowest cost, from the given list "a_list";
 		require
 			a_list /= void
 		local
@@ -381,12 +409,12 @@ feature {NONE} -- Implementation routines / procedures
 				end
 				a_list.forth
 			end
-
 			if a_list.count > 0 then
 				a_list.go_i_th (best_item_index)
 				a_list.remove
 			end
-		ensure old a_list.count > 0 implies Result /= void
+		ensure
+			old a_list.count > 0 implies Result /= void
 		end
 
 invariant
