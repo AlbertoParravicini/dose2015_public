@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 				curr_depth := 4
 				create jar_puzzle.make
 				create engine.make (jar_puzzle)
+<<<<<<< HEAD
 
 				--engine.set_max_depth (curr_depth)
 				--engine.set_mark_visited_states (true)
@@ -37,6 +38,12 @@ feature {NONE} -- Initialization
 				engine.set_mark_closed_state (true)
 				engine.set_check_open_state (true)
 
+=======
+				engine.set_max_depth (curr_depth)
+				--engine.set_mark_visited_states (true)
+				--engine.set_check_parents(true)
+				engine.set_check_queue (true)
+>>>>>>> bfs_additional_features
 			until
 				found or curr_depth=20
 			loop
