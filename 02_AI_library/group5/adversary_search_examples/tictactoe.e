@@ -90,6 +90,7 @@ feature -- State space
 			end
 		end
 
+
 	value (state: TICTACTOE_STATE): INTEGER
 			-- A sequence of size 1 gives score 1 (resp. -1)
 			-- A sequence of size 2 gives score 10 (resp. -10)
