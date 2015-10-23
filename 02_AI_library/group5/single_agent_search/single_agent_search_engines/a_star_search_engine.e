@@ -92,27 +92,12 @@ feature -- Search Execution
 			loop
 				current_successors.wipe_out
 
-
-				-- Pick the most promising state (i.e the one with lowest cost) from the frontier
-				-- and remove it from the "open" list;
-				from
-					best_index := 1
-					open.start
-					current_tuple := open.first
-				until
-					open.exhausted
-				loop
-					if open.item.cost < current_tuple.cost then
-						current_tuple := open.item
-						best_index := open.index
-					end
-					open.forth
-				end
+					-- Pick the most promising state (i.e the one with lowest cost) from the frontier
+					-- and remove it from the "open" list;
+				current_tuple := remove_best_item (open)
 				current_state := current_tuple.state
-				-- Calculate how far the current_state is from the start, optimization useful at a later stage;
+					-- Calculate how far the current_state is from the start, optimization useful at a later stage;
 				current_state_path_cost := path_cost (current_state)
-				open.go_i_th (best_index)
-				open.remove
 
 					-- Add the current state to the list of visited states;
 				if mark_closed_states = true then
@@ -127,7 +112,7 @@ feature -- Search Execution
 				else
 					current_successors.append (problem.get_successors (current_state))
 
-						-- Examinate the successors of the current state;
+					-- Examinate the successors of the current state;
 					from
 						current_successors.start
 					until
@@ -135,45 +120,44 @@ feature -- Search Execution
 					loop
 						useful_state := false
 
-						-- If "mark_closed_states" is set to true,
-						-- check if the current successor was already visited with a higher cost:
-						-- if so, replace it in the "closed" list; if the state was replaced,
-						-- or if it is the first time it is visited,
-						-- proceed to evaluate its presence in the "open" list;
+							-- If "mark_closed_states" is set to true,
+							-- check if the current successor was already visited with a higher cost:
+							-- if so, replace it in the "closed" list; if the state was replaced,
+							-- or if it is the first time it is visited,
+							-- proceed to evaluate its presence in the "open" list;
 						if mark_closed_states = true then
 							useful_state := replace_list_state (closed, current_successors.item)
 						end
 
-						-- If "check_open_states" is set to true,
-						-- check if the current successor is already in the queue (the "open" list) with a higher cost:
-						-- if so, replace it in the "open" list; if it is not present, add it;
+							-- If "check_open_states" is set to true,
+							-- check if the current successor is already in the queue (the "open" list) with a higher cost:
+							-- if so, replace it in the "open" list; if it is not present, add it;
 						if check_open_states = true then
 							if mark_closed_states = false or (mark_closed_states = true and useful_state = true) then
 								useful_state := replace_list_state (open, current_successors.item)
 							end
 						end
 
-						-- Add the current successor to the open list, along with its cost;
+							-- Add the current successor to the open list, along with its cost;
 						if (mark_closed_states = false or useful_state = true) and (check_open_states = false or useful_state = true) then
 							open.extend ([current_successors.item, current_state_path_cost + total_cost (current_successors.item)])
 						end
 						current_successors.forth
 					end -- End of loop on successors;
 
-
-					-- If both the "closed" list and the "open" list are checked to see if the state was already present
-					-- with higher cost, it is possible to test the successfulness of the current successors without losing the
-					-- optimality of the solution;
---					if mark_closed_states = true and check_open_states = true then
---						across
---							current_successors as curr_succ
---						loop
---							if problem.is_successful (curr_succ.item) then
---								is_search_successful := true
---								successful_state := curr_succ.item
---							end
---						end
---					end
+						-- If both the "closed" list and the "open" list are checked to see if the state was already present
+						-- with higher cost, it is possible to test the successfulness of the current successors without losing the
+						-- optimality of the solution;
+						--					if mark_closed_states = true and check_open_states = true then
+						--						across
+						--							current_successors as curr_succ
+						--						loop
+						--							if problem.is_successful (curr_succ.item)  then
+						--								is_search_successful := true
+						--								successful_state := curr_succ.item
+						--							end
+						--						end
+						--					end
 				end
 			end -- End of the main loop;
 			search_performed := true
@@ -375,6 +359,34 @@ feature {NONE} -- Implementation routines / procedures
 		ensure
 			a_list_size_not_changed: old a_list.count = a_list.count
 			state_already_present_with_higher_cost: Result = false implies across a_list as a_tuple some equal (a_tuple.item.state, a_state) end
+		end
+
+	remove_best_item (a_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]): TUPLE[state: S; cost: REAL]
+		-- Remove the best item, i.e. the one with lowest cost, from the given list "a_list";
+		require
+			a_list /= void
+		local
+			best_item_index: INTEGER
+		do
+			from
+				best_item_index := 1
+				a_list.start
+				Result := a_list.first
+			until
+				a_list.exhausted
+			loop
+				if a_list.item.cost < Result.cost then
+					Result := a_list.item
+					best_item_index := a_list.index
+				end
+				a_list.forth
+			end
+
+			if a_list.count > 0 then
+				a_list.go_i_th (best_item_index)
+				a_list.remove
+			end
+		ensure old a_list.count > 0 implies Result /= void
 		end
 
 invariant
