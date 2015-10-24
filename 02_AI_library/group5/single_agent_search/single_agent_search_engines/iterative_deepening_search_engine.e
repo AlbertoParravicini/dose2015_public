@@ -40,7 +40,7 @@ feature -- Creation
 			current_depth := 0
 			cycle_checking := false
 		ensure
-			problem_is_not_void: problem = other_problem
+			problem_is_not_void: problem /= void
 			search_performed_is_false: not search_performed
 			is_search_successful_is_false: not is_search_successful
 			nr_of_visited_states_is_zero: nr_of_visited_states = 0
@@ -130,12 +130,12 @@ feature -- Status setting
 		ensure
 			step_error: step = new_step
 				-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 			current_depth_invariant: current_depth = old current_depth
 		end
 
@@ -164,12 +164,12 @@ feature -- Status Report
 			last_state_is_consistent: Result.is_empty or else problem.is_successful (Result.last)
 			empty_list_is_consistent: (Result.is_empty implies (not is_search_successful)) and ((not is_search_successful) implies Result.is_empty)
 				-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 			step_invariant: step = old step
 			current_depth_invariant: current_depth = old current_depth
 
@@ -185,12 +185,12 @@ feature -- Status Report
 			successful_search: is_search_successful implies problem.is_successful (Result)
 			unsuccessful_search: (not is_search_successful) implies Result = void
 				-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 			step_invariant: step = old step
 			current_depth_invariant: current_depth = old current_depth
 		end
@@ -222,12 +222,12 @@ feature {NONE}
 		ensure
 			correct_depth_increase: current_depth = step + old current_depth
 				-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 			step_invariant: step = old step
 		end
 
@@ -240,11 +240,11 @@ feature
 		ensure
 			cycle_checking_is_true:cycle_checking = true
 				-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 			step_invariant: step = old step
 			current_depth_invariant: current_depth = old current_depth
 
@@ -257,11 +257,11 @@ feature
 		ensure
 			cycle_checking_is_false:cycle_checking = false
 				-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 			step_invariant: step = old step
 			current_depth_invariant: current_depth = old current_depth
 
