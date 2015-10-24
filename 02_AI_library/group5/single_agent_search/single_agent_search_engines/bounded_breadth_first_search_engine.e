@@ -89,14 +89,14 @@ feature -- Creation
 			set_problem (other_problem)
 			mark_previous_states := false
 			check_parents := false
-			check_queue := false
+			check_queue := true
 			reset_engine
 		ensure
 				-- Also ensures the post-conditions of reset_engine
-			problem = other_problem
+			problem_set: problem /= void and then equal(problem, other_problem)
 			previous_states_not_marked: mark_previous_states = false
 			check_parents = false
-			check_queue = false
+			check_queue = true
 			not search_performed
 		end
 
@@ -201,7 +201,7 @@ feature -- Search Execution
 			at_least_one_state_visited: mark_previous_states implies (marked_states.count > old marked_states.count)
 			search_successful_nec: is_search_successful implies problem.is_successful (successful_state)
 			search_successful_suc: (search_performed and successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful
-			routine_invariant: old mark_previous_states = mark_previous_states and old maximum_depth = maximum_depth and old check_parents = check_parents and old check_queue = check_queue
+			routine_invariant: old mark_previous_states = mark_previous_states and old maximum_depth = maximum_depth and old check_parents = check_parents and old check_queue = check_queue and equal(problem, old problem)
 		end
 
 	reset_engine
@@ -222,7 +222,7 @@ feature -- Search Execution
 			search_not_performed: search_performed = false
 			search_not_successful: is_search_successful = false
 			no_visited_states: nr_of_visited_states = 0
-			routine_invariant: old maximum_depth = maximum_depth and old mark_previous_states = mark_previous_states and old check_parents = check_parents and old check_queue = check_queue
+			routine_invariant: old maximum_depth = maximum_depth and old mark_previous_states = mark_previous_states and old check_parents = check_parents and old check_queue = check_queue and equal(problem, old problem)
 		end
 
 feature -- Status setting
@@ -237,7 +237,7 @@ feature -- Status setting
 			maximum_depth := new_bound
 		ensure
 			new_depth_set: maximum_depth = new_bound
-			routine_invariant: old mark_previous_states = mark_previous_states and old search_performed = search_performed and old is_search_successful = is_search_successful and old check_parents = check_parents and old check_queue = check_queue
+			routine_invariant: old mark_previous_states = mark_previous_states and old search_performed = search_performed and old is_search_successful = is_search_successful and old check_parents = check_parents and old check_queue = check_queue and equal(problem, old problem) and equal(successful_state, old successful_state) and equal(queue, old queue) and equal(marked_states, old marked_states)
 		end
 
 	set_mark_visited_states (a_choice: BOOLEAN)
@@ -255,7 +255,7 @@ feature -- Status setting
 		ensure
 			mark_states_set: mark_previous_states = a_choice
 			empty_marked_states: marked_states.count = 0
-			routine_invariant: old maximum_depth = maximum_depth and old search_performed = search_performed and old is_search_successful = is_search_successful and old check_parents = check_parents and old check_queue = check_queue
+			routine_invariant: old maximum_depth = maximum_depth and old search_performed = search_performed and old is_search_successful = is_search_successful and old check_parents = check_parents and old check_queue = check_queue and equal(problem, old problem) and equal(successful_state, old successful_state) and equal(queue, old queue)
 		end
 
 	set_check_parents (a_choice: BOOLEAN)
@@ -270,7 +270,7 @@ feature -- Status setting
 			check_parents := a_choice
 		ensure
 			check_parents_set: check_parents = a_choice
-			routine_invariant: old maximum_depth = maximum_depth and old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_previous_states = mark_previous_states and old check_queue = check_queue
+			routine_invariant: old maximum_depth = maximum_depth and old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_previous_states = mark_previous_states and old check_queue = check_queue and equal(problem, old problem) and equal(successful_state, old successful_state) and equal(queue, old queue) and equal(marked_states, old marked_states)
 		end
 
 	set_check_queue (a_choice: BOOLEAN)
@@ -283,7 +283,7 @@ feature -- Status setting
 			check_queue := a_choice
 		ensure
 			check_queue_set: check_queue = a_choice
-			routine_invariant: old maximum_depth = maximum_depth and old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_previous_states = mark_previous_states and old check_parents = check_parents
+			routine_invariant: old maximum_depth = maximum_depth and old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_previous_states = mark_previous_states and old check_parents = check_parents and equal(problem, old problem) and equal(successful_state, old successful_state) and equal(queue, old queue) and equal(marked_states, old marked_states)
 		end
 
 feature -- Status Report
@@ -314,7 +314,7 @@ feature -- Status Report
 			first_state_is_consistent: Result.is_empty or else equal (Result.first, problem.initial_state)
 			last_state_is_consistent: Result.is_empty or else problem.is_successful (Result.last)
 			empty_list_is_consistent: (Result.is_empty implies (not is_search_successful)) and ((not is_search_successful) implies Result.is_empty)
-			routine_invariant: old mark_previous_states = mark_previous_states and old search_performed = search_performed and old is_search_successful = is_search_successful and old maximum_depth = maximum_depth and old check_parents = check_parents and old check_queue = check_queue
+			routine_invariant: old mark_previous_states = mark_previous_states and old search_performed = search_performed and old is_search_successful = is_search_successful and old maximum_depth = maximum_depth and old check_parents = check_parents and old check_queue = check_queue and equal(problem, old problem) and equal(successful_state, old successful_state) and equal(queue, old queue) and equal(marked_states, old marked_states)
 		end
 
 	obtained_solution: detachable S
@@ -327,7 +327,7 @@ feature -- Status Report
 			if_result_exists_not_void: (is_search_successful and search_performed) implies Result = successful_state
 			successful_search: is_search_successful implies problem.is_successful (Result)
 			unsuccessful_search: (not is_search_successful) implies Result = void
-			routine_invariant: old mark_previous_states = mark_previous_states and old search_performed = search_performed and old is_search_successful = is_search_successful and old maximum_depth = maximum_depth and old check_parents = check_parents and old check_queue = check_queue
+			routine_invariant: old mark_previous_states = mark_previous_states and old search_performed = search_performed and old is_search_successful = is_search_successful and old maximum_depth = maximum_depth and old check_parents = check_parents and old check_queue = check_queue and equal(problem, old problem) and equal(successful_state, old successful_state) and equal(queue, old queue) and equal(marked_states, old marked_states)
 		end
 
 	is_search_successful: BOOLEAN

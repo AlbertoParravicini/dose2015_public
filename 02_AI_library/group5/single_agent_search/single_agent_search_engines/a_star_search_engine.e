@@ -15,7 +15,7 @@ note
 	revision: "$Revision: 0.1 $"
 
 class
-	A_STAR_SEARCH_ENGINE [RULE -> ANY, S -> SEARCH_STATE [RULE], P -> HEURISTIC_STATE_COST_SEARCH_PROBLEM [RULE, S]]
+	A_STAR_SEARCH_ENGINE [RULE -> ANY, reference S -> SEARCH_STATE [RULE], P -> HEURISTIC_STATE_COST_SEARCH_PROBLEM [RULE, S]]
 
 inherit
 
@@ -52,7 +52,7 @@ feature -- Creation
 			check_open_states := true
 			reset_engine
 		ensure
-			problem_set: problem = other_problem
+			problem_set: problem /= void and then equal(problem, other_problem)
 			closed_state_not_marked: mark_closed_states = false
 			open_state_checked: check_open_states = true
 			search_not_performed: not search_performed
@@ -195,7 +195,7 @@ feature -- Search Execution
 			at_least_one_state_visited: mark_closed_states = true implies (closed.count > old closed.count)
 			search_successful_nec: is_search_successful implies problem.is_successful (successful_state)
 			search_successful_suc: (search_performed = true and successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful
-			routine_invariant: old check_open_states = check_open_states and old mark_closed_states = mark_closed_states
+			routine_invariant: old check_open_states = check_open_states and old mark_closed_states = mark_closed_states and equal(problem, old problem)
 		end
 
 	reset_engine
@@ -208,15 +208,17 @@ feature -- Search Execution
 			open.compare_objects
 			closed.compare_objects
 			nr_of_visited_states := 0
+			successful_state := void
 		ensure then
 			search_not_performed: search_performed = false
 			search_not_successful: is_search_successful = false
 			open_reinitialized: open /= void and then open.count = 0
 			closed_reinitialized: closed /= void and then closed.count = 0
+			successful_state_resetted: successful_state = void
 			open_uses_equal: open.object_comparison = true
 			closed_uses_equal: closed.object_comparison = true
 			visited_states_reset: nr_of_visited_states = 0
-			routine_invariant: old check_open_states = check_open_states and old mark_closed_states = mark_closed_states
+			routine_invariant: old check_open_states = check_open_states and old mark_closed_states = mark_closed_states and equal(problem, old problem)
 		end
 
 feature -- Status Setting
@@ -237,7 +239,7 @@ feature -- Status Setting
 		ensure
 			mark_closed_set: mark_closed_states = a_choice
 			empty_closed_states: closed.count = 0
-			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old check_open_states = check_open_states
+			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old check_open_states = check_open_states and equal(problem, old problem) and equal(open, old open) and equal(successful_state, old successful_state)
 		end
 
 	set_check_open_state (a_choice: BOOLEAN)
@@ -252,7 +254,7 @@ feature -- Status Setting
 			check_open_states := a_choice
 		ensure
 			check_open_states_set: check_open_states = a_choice
-			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_closed_states = mark_closed_states
+			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_closed_states = mark_closed_states and equal(problem, old problem) and equal(open, old open) and equal(closed, old closed) and equal(successful_state, old successful_state)
 		end
 
 feature -- Status Report
@@ -263,12 +265,12 @@ feature -- Status Report
 			current_state: S
 			list: LINKED_LIST [S]
 		do
+			create list.make
 			if (is_search_successful) then
 					-- Starting from the successful state, get the parent of each state
-					--		by travelling backwards in the hierarchy, and add it to a list
+					-- by travelling backwards in the hierarchy, and add it to a list
 				from
 					current_state := obtained_solution
-					create list.make
 					list.put_front (current_state)
 				until
 					current_state.parent = void
@@ -276,14 +278,14 @@ feature -- Status Report
 					list.put_front (current_state.parent)
 					current_state := current_state.parent
 				end
-				Result := list
 			end
+			Result := list
 		ensure then
 				--First member of the list is the starting state, ending position of the list is the searched state
 			first_state_is_consistent: Result.is_empty or else equal (Result.first, problem.initial_state)
 			last_state_is_consistent: Result.is_empty or else problem.is_successful (Result.last)
 			empty_list_is_consistent: (Result.is_empty implies (not is_search_successful)) and ((not is_search_successful) implies Result.is_empty)
-			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_closed_states = mark_closed_states and old check_open_states = check_open_states
+			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_closed_states = mark_closed_states and old check_open_states = check_open_states and equal(problem, old problem) and equal(open, old open) and equal(closed, old closed) and equal(successful_state, old successful_state)
 		end
 
 	obtained_solution: detachable S
@@ -296,7 +298,7 @@ feature -- Status Report
 			if_result_exists_not_void: (is_search_successful and search_performed) implies Result = successful_state
 			successful_search: is_search_successful implies problem.is_successful (Result)
 			unsuccessful_search: (not is_search_successful) implies Result = void
-			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_closed_states = mark_closed_states and old check_open_states = check_open_states
+			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_closed_states = mark_closed_states and old check_open_states = check_open_states and equal(problem, old problem) and equal(open, old open) and equal(closed, old closed) and equal(successful_state, old successful_state)
 		end
 
 	is_search_successful: BOOLEAN
