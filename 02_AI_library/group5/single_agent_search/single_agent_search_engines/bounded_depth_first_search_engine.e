@@ -42,7 +42,7 @@ feature -- Creation
 			nr_of_visited_states := 0
 			cycle_checking := false
 		ensure
-			problem_is_not_void: problem = other_problem
+			problem_is_not_void: problem /= void and then equal(problem, other_problem)
 			search_performed_is_false: not search_performed
 			is_search_successful_is_false: not is_search_successful
 			stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal(stack.item.state, problem.initial_state))
@@ -163,13 +163,13 @@ feature -- Status setting
 		ensure
 			maximum_depth_is_set: maximum_depth = new_bound
 				-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: stack = old stack
+			stack_invariant: equal(stack, old stack)
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 		end
 
 feature -- Status Report
@@ -198,14 +198,14 @@ feature -- Status Report
 			last_state_is_consistent: Result.is_empty or else problem.is_successful (Result.last)
 			empty_list_is_consistent: (Result.is_empty implies (not is_search_successful)) and ((not is_search_successful) implies Result.is_empty)
 				-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: stack = old stack
+			stack_invariant: equal(stack, old stack)
 			maximum_depth_invariant: maximum_depth = old maximum_depth
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 
 		end
 
@@ -219,14 +219,14 @@ feature -- Status Report
 			successful_search_has_a_valid_result: is_search_successful implies problem.is_successful (Result)
 			unsuccessful_search_has_void_result: (not is_search_successful) implies Result = void
 				-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: stack = old stack
+			stack_invariant: equal(stack, old stack)
 			maximum_depth_invariant: maximum_depth = old maximum_depth
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 		end
 
 	is_search_successful: BOOLEAN
@@ -270,14 +270,14 @@ feature {NONE}
 			first_element_is_initial_state: equal(Result.first, problem.initial_state)
 			last_element_is_given_state: equal(Result.last, state)
 				-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: stack = old stack
+			stack_invariant: equal(stack, old stack)
 			maximum_depth_invariant: maximum_depth = old maximum_depth
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 		end
 
 feature
@@ -289,13 +289,13 @@ feature
 		ensure
 			cycle_checking_is_true: cycle_checking=true
 			-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: stack = old stack
+			stack_invariant: equal(stack, old stack)
 			maximum_depth_invariant: maximum_depth = old maximum_depth
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 		end
 
 	disable_cycle_checking
@@ -305,13 +305,13 @@ feature
 		ensure
 			cycle_checking_is_false: cycle_checking=false
 			-- Variables that must not change
-			problem_invariant: problem = old problem
+			problem_invariant: equal(problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: stack = old stack
+			stack_invariant: equal(stack, old stack)
 			maximum_depth_invariant: maximum_depth = old maximum_depth
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
-			successful_state_invariant: successful_state = old successful_state
+			successful_state_invariant: equal(successful_state, old successful_state)
 		end
 
 invariant
