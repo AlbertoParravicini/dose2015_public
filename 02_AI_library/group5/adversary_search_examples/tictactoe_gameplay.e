@@ -17,7 +17,7 @@ feature -- Initialisation
 
 	make
 		local
-			engine: MINIMAX_AB_ENGINE[STRING, TICTACTOE_STATE, TICTACTOE]
+			engine: NEGASCOUT_ENGINE[STRING, TICTACTOE_STATE, TICTACTOE]
 			problem: TICTACTOE
 			initial_state: TICTACTOE_STATE
 			current_state: TICTACTOE_STATE
