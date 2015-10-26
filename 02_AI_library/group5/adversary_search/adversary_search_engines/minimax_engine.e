@@ -134,7 +134,7 @@ feature
 				end
 			end
 		ensure
-			valid_obtained_value : (Result <= problem.max_value) or (Result >= problem.min_value)
+			valid_obtained_value : (Result <= problem.max_value) and (Result >= problem.min_value)
 		end
 
 
