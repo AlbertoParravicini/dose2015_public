@@ -422,6 +422,7 @@ feature {NONE} -- Implementation routines / procedures
 invariant
 	open_is_void: open /= void
 	closed_is_void: closed /= void
+	is_search_successful implies search_performed
 	nr_of_visited_states_is_negative: nr_of_visited_states >= 0
 	successful_state_is_inconsistent: search_performed implies (is_search_successful implies problem.is_successful (successful_state))
 	successful_state_is_inconsistent: search_performed implies ((successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful)

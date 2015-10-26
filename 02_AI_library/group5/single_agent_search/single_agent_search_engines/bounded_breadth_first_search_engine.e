@@ -362,6 +362,7 @@ invariant
 	marked_states_is_void: marked_states /= void
 	nr_of_visited_states_is_negative: nr_of_visited_states >= 0
 	maximum_depth >= 0
+	is_search_successful implies search_performed
 	consistent_marked_states_size: mark_previous_states = false implies marked_states.count = 0
 	successful_state_is_inconsistent: search_performed implies (is_search_successful implies problem.is_successful (successful_state))
 	successful_state_is_inconsistent: search_performed implies ((successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful)
