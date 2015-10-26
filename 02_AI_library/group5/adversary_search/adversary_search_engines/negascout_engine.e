@@ -46,7 +46,7 @@ feature
 
 feature {NONE} -- Implementation function/routines
 
-	minimaxAB (a_state: S; current_max_depth: INTEGER; a_alfa: INTEGER; a_beta: INTEGER): TUPLE[state: S; value: INTEGER]
+	negamax (a_state: S; current_max_depth: INTEGER; a_alfa: INTEGER; a_beta: INTEGER): TUPLE[state: S; value: INTEGER]
 		local
 			v: INTEGER
 			negascout_result: TUPLE[state: S; value: INTEGER]
@@ -61,10 +61,13 @@ feature {NONE} -- Implementation function/routines
 			beta := a_beta
 
 			if problem.is_end (a_state) or current_max_depth = 0 then
-				Result := [a_state, problem.value (a_state)]
-				--print( "alfa: " + alfa.out + ", beta: " + beta.out + "%N")
+				if a_state.is_max then
+					Result := [a_state, problem.value (a_state)]
+				else
+					Result := [a_state, -problem.value (a_state)]
+				end
 
-			elseif a_state.is_max then
+			else
 				v := problem.min_value
 				cut_done := false
 
@@ -74,55 +77,27 @@ feature {NONE} -- Implementation function/routines
 				until
 					current_successors.exhausted or cut_done = true
 				loop
-					-- Keep the minimum value;
-					negascout_result := minimaxAB (current_successors.item, current_max_depth - 1, alfa, beta)
-					-- v = max (v, result)
-					if negascout_result.value > v then
-						v := negascout_result.value
+					-- At each call invert the maximizing player with the minimizing player;
+					negascout_result := negamax (current_successors.item, current_max_depth - 1, -beta, -alfa)
+					
+					-- v = max (v, -result)
+					if -negascout_result.value > v then
+						v := -negascout_result.value
 					end
+
 					-- alfa = max (alfa, v)
 					if v > alfa then
 						alfa := v
 						best_state := negascout_result.state
 					end
 
-					if beta <= alfa then
+					-- If alfa >= beta, cut the branch;
+					if alfa >= beta then
 						cut_done := true
 					end
 					current_successors.forth
 				end
 				Result := [best_state, v]
-				--print( "alfa: " + alfa.out + ", beta: " + beta.out + "%N")
-
-			else
-				v := problem.max_value
-				cut_done := false
-
-				from
-					current_successors := problem.get_successors (a_state)
-					current_successors.start
-				until
-					current_successors.exhausted or cut_done = true
-				loop
-					-- Keep the maximum value;
-					negascout_result := minimaxAB (current_successors.item, current_max_depth - 1, alfa, beta)
-					-- v = min (v, result)
-					if negascout_result.value < v then
-						v := negascout_result.value
-					end
-					-- beta = min (beta, v)
-					if v < beta then
-						beta := v
-						best_state := negascout_result.state
-					end
-
-					if beta <= alfa then
-						cut_done := true
-					end
-					current_successors.forth
-				end
-				Result := [best_state, v]
-				--print( "alfa: " + alfa.out + ", beta: " + beta.out + "%N")
 			end
 		end
 
@@ -159,7 +134,7 @@ feature
 		local
 			negascout_solution: TUPLE[state: S; value: INTEGER]
 		do
-			negascout_solution := minimaxAB (initial_state, max_depth, problem.min_value, problem.max_value)
+			negascout_solution := negamax (initial_state, max_depth, problem.min_value, problem.max_value)
 			obtained_successor := find_next_move(negascout_solution.state, initial_state)
 			obtained_value := negascout_solution.value
 			search_performed := true
