@@ -31,9 +31,10 @@ feature -- Creation
 		do
 			set_problem(new_problem)
 			search_performed := False
+			set_max_depth (default_max_depth)
 		ensure
-			valid_make_value_error: problem = new_problem
-			valid_search_performed_value: not search_performed
+			valid_make_value_problem: problem = new_problem
+			valid_make_search_performed_value: not search_performed
 		end
 
 
@@ -48,8 +49,8 @@ feature -- Creation
 			set_max_depth (new_max_depth)
 			search_performed := False
 		ensure
-			valid_make_value_error: problem = new_problem
-			valid_search_performed_value: not search_performed
+			valid_make_value_problem: problem = new_problem
+			valid_make_search_performed_value: not search_performed
 		end
 
 feature
@@ -58,8 +59,6 @@ feature
 			-- Resets engine, so that search can be restarted.
 		do
 			search_performed := False
-		ensure then
-			valid_search_performed_value: not search_performed
 		end
 
 	perform_search (initial_state: S)
@@ -96,9 +95,6 @@ feature
 				end
 			end
 			search_performed := True
-		ensure then
-			valid_search_performed_value: search_performed
-			valid_obtained_successor: obtained_successor /= Void
 		end
 
 	compute_value (initial_state : S; current_depth : INTEGER) : INTEGER
@@ -138,18 +134,14 @@ feature
 				end
 			end
 		ensure
-			valid_obtained_value : (Result /= Void) or (Result > problem.max_value) or (Result < problem.min_value)
+			valid_obtained_value : (Result <= problem.max_value) or (Result >= problem.min_value)
 		end
 
 
 	set_max_depth (new_max_depth: INTEGER)
 			-- Sets the maximum depth to be used for search.
-		require else
-			valid_max_depth_parameter : new_max_depth /= Void and new_max_depth >= 0
 		do
 			max_depth := new_max_depth
-		ensure then
-			valid_max_depth_value : max_depth = new_max_depth
 		end
 
 
@@ -157,9 +149,14 @@ feature
 
 	obtained_successor: S
 
+	default_max_depth : INTEGER
+		-- Integer Constant default_max_depth used in make.
+		once
+			Result := 5
+		end
+
 
 invariant
 		-- List of all class invariants
-	obtained_successor_is_inconsistent: search_performed implies ((obtained_value >= problem.min_value and obtained_value <= problem.max_value) and obtained_successor /= Void)
-
+	obtained_successor_is_consistent: search_performed implies ((obtained_value >= problem.min_value and obtained_value <= problem.max_value) and obtained_successor /= Void)
 end
