@@ -42,8 +42,8 @@ feature -- Creation
 			set_max_number_of_sideways_moves (10)
 				-- Default value of maximum number of sideways moves.
 
-			set_best_heuristic_partial_solution_allowed (true)
-				-- Search engine can return best heuristic partial solution by default.
+			set_best_heuristic_partial_solution_allowed (false)
+				-- Search engine can't return best heuristic partial solution by default.
 
 			reset_engine
 
@@ -77,7 +77,7 @@ feature {NONE} -- Implementation
 
 
 			from -- Neighbors loop.
-					neighbors_list.start
+				neighbors_list.start
 			until
 				is_current_maximum_state_updated or neighbors_list.exhausted
 					-- Exits the loop as soon as found a neighbor with better heuristic value or when there aren't more neighbors.

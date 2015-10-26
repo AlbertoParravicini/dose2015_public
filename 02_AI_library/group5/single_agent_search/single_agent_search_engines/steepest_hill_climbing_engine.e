@@ -48,7 +48,7 @@ feature {NONE} -- Implementation
 
 
 			from -- Neighbors loop.
-					neighbors_list.start
+				neighbors_list.start
 			until
 				neighbors_list.exhausted
 					-- Exits the loop when there aren't more neighbors.
