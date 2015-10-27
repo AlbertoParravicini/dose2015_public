@@ -28,7 +28,7 @@ feature
 		require
 			new_problem /= Void
 		do
-			set_max_depth(5)
+			set_max_depth(default_depth)
 			problem := new_problem
 			reset_engine
 		end
@@ -46,7 +46,7 @@ feature
 
 feature {NONE} -- Implementation function/routines
 
-	negamax (a_state: S; current_max_depth: INTEGER; a_alfa: INTEGER; a_beta: INTEGER): TUPLE[state: S; value: INTEGER]
+	negascout (a_state: S; current_max_depth: INTEGER; a_alfa: INTEGER; a_beta: INTEGER): TUPLE[state: S; value: INTEGER]
 		local
 			v: INTEGER
 			negascout_result: TUPLE[state: S; value: INTEGER]
@@ -55,6 +55,7 @@ feature {NONE} -- Implementation function/routines
 			cut_done: BOOLEAN
 			alfa: INTEGER
 			beta: INTEGER
+			negascout_score: INTEGER
 		do
 			best_state := a_state
 			alfa := a_alfa
@@ -77,18 +78,25 @@ feature {NONE} -- Implementation function/routines
 				until
 					current_successors.exhausted or cut_done = true
 				loop
-					-- At each call invert the maximizing player with the minimizing player;
-					negascout_result := negamax (current_successors.item, current_max_depth - 1, -beta, -alfa)
-					
-					-- v = max (v, -result)
-					if -negascout_result.value > v then
-						v := -negascout_result.value
+					if current_successors.item /= current_successors.first then
+						negascout_result := negascout (current_successors.item, current_max_depth - 1, -alfa - 1, -alfa)
+						negascout_score := -negascout_result.value
+
+						-- if alfa < score < beta
+						if alfa < negascout_score and negascout_score < beta then
+							negascout_result := negascout (current_successors.item, current_max_depth - 1, -beta, -negascout_score)
+							negascout_score := -negascout_result.value
+						end
+
+					--else score := -pvs(child, depth-1, -beta, -alfa, -color)
+					else
+						negascout_result := negascout (current_successors.item, current_max_depth - 1, -beta, -alfa)
+						negascout_score := -negascout_result.value
 					end
 
-					-- alfa = max (alfa, v)
-					if v > alfa then
-						alfa := v
-						best_state := negascout_result.state
+					if negascout_score > alfa then
+							alfa := negascout_score
+							best_state := negascout_result.state
 					end
 
 					-- If alfa >= beta, cut the branch;
@@ -97,7 +105,7 @@ feature {NONE} -- Implementation function/routines
 					end
 					current_successors.forth
 				end
-				Result := [best_state, v]
+				Result := [best_state, alfa]
 			end
 		end
 
@@ -121,6 +129,12 @@ feature {NONE} -- Implementation function/routines
 			end
 		end
 
+	default_depth: INTEGER
+		-- Set the default depth of the algorithm
+		once
+            Result := 6
+        end
+
 feature
 
 	reset_engine
@@ -134,7 +148,7 @@ feature
 		local
 			negascout_solution: TUPLE[state: S; value: INTEGER]
 		do
-			negascout_solution := negamax (initial_state, max_depth, problem.min_value, problem.max_value)
+			negascout_solution := negascout (initial_state, max_depth, problem.min_value, problem.max_value)
 			obtained_successor := find_next_move(negascout_solution.state, initial_state)
 			obtained_value := negascout_solution.value
 			search_performed := true
