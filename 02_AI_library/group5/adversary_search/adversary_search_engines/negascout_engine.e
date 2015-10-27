@@ -65,7 +65,6 @@ feature {NONE} -- Implementation function/routines
 
 	negascout (a_state: S; current_max_depth: INTEGER; a_alfa: INTEGER; a_beta: INTEGER): TUPLE[state: S; value: INTEGER]
 		local
-			v: INTEGER
 			negascout_result: TUPLE[state: S; value: INTEGER]
 			current_successors: LIST [S]
 			best_state: S
@@ -74,10 +73,17 @@ feature {NONE} -- Implementation function/routines
 			beta: INTEGER
 			negascout_score: INTEGER
 		do
+			-- Assume that the best state is the input state (the one passed as parameter);
 			best_state := a_state
+			-- Initialize the search window;
 			alfa := a_alfa
 			beta := a_beta
 
+			-- If the input state is a terminal state, or if the maximum depth is reached,
+			-- evaluate the score of the state.
+			-- As this is a negamax algorithm, the score has to be evaluated from
+			-- the point of view of the current player, assuming that
+			-- the score for player_1 is the opposite of the score of player_2;
 			if problem.is_end (a_state) or current_max_depth = 0 then
 				if a_state.is_max then
 					Result := [a_state, problem.value (a_state)]
@@ -86,37 +92,43 @@ feature {NONE} -- Implementation function/routines
 				end
 
 			else
-				v := problem.min_value
 				cut_done := false
 
+				-- Go through the successors of the current state;
 				from
 					current_successors := problem.get_successors (a_state)
 					current_successors.start
 				until
+					-- End the search if the list is over or if the branch has been pruned;
 					current_successors.exhausted or cut_done = true
 				loop
+					-- If the current successor is not the first successor in the list:
 					if current_successors.item /= current_successors.first then
+						-- Search with a null window, as the first node is assumed to be the principal variation;
 						negascout_result := negascout (current_successors.item, current_max_depth - 1, -alfa - 1, -alfa)
 						negascout_score := -negascout_result.value
 
-						-- if alfa < score < beta
+						-- if alfa < score < beta, it means that the proof failed (i.e. the first successor isn't the principal variation).
+						-- Continue the search as a normal minimax with alfa-beta pruning;
 						if alfa < negascout_score and negascout_score < beta then
 							negascout_result := negascout (current_successors.item, current_max_depth - 1, -beta, -negascout_score)
 							negascout_score := -negascout_result.value
 						end
 
-					--else score := -pvs(child, depth-1, -beta, -alfa, -color)
+					-- If the current successor is the first successor in the list, evaluate it as a normal
+					-- minimax with alfa-beta pruning. The algorithm will assume that this is the principal variation;
 					else
 						negascout_result := negascout (current_successors.item, current_max_depth - 1, -beta, -alfa)
 						negascout_score := -negascout_result.value
 					end
 
+					-- If a new best state is found, mark it as the best_state;
 					if negascout_score > alfa then
 						alfa := negascout_score
 						best_state := negascout_result.state
 					end
 
-					-- If alfa >= beta, cut the branch;
+					-- If alfa >= beta, prune the branch;
 					if alfa >= beta then
 						cut_done := true
 					end
@@ -192,7 +204,7 @@ feature
 	-- by the two agents.
 		do
 			max_depth := new_max_depth
-		ensure
+		ensure then
 			max_depth_set: max_depth = new_max_depth
 		end
 
@@ -207,4 +219,8 @@ feature
 	-- the principal variation.
 	-- This value is obtained after performing the search;
 
+invariant
+	consistent_result: search_performed implies obtained_successor /= void
+	consistent_obtained_value: problem.min_value <= obtained_value and obtained_value <= problem.max_value
+	consisten_max_depth: max_depth >= 0
 end
