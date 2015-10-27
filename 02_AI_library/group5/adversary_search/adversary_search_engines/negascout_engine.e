@@ -25,22 +25,39 @@ create
 feature
 
 	make (new_problem: P)
+	-- Initialize the engine with a default depth value, equal to 6;
 		require
 			new_problem /= Void
 		do
-			set_max_depth(default_depth)
 			problem := new_problem
+			set_max_depth(default_depth)
+			obtained_value := 0
+			obtained_successor := void
 			reset_engine
+		ensure
+			problem_set: problem /= void and then equal(problem, new_problem)
+			default_depth_set: max_depth = default_depth
+			search_not_performed: search_performed = false
+			move_score_not_obtained: obtained_value = 0
+			move_not_obtained: obtained_successor = void
 		end
 
 	make_with_depth (new_problem: P; new_max_depth: INTEGER)
+	-- Initialize the engine with the provided depth value;
 		require
 			new_problem /= Void
-			new_max_depth > 0
 		do
 			problem := new_problem
 			set_max_depth (new_max_depth)
+			obtained_value := 0
+			obtained_successor := void
 			reset_engine
+		ensure
+			problem_set: problem /= void and then equal(problem, new_problem)
+			new_depth_set: max_depth = new_max_depth
+			search_not_performed: search_performed = false
+			move_score_not_obtained: obtained_value = 0
+			move_not_obtained: obtained_successor = void
 		end
 
 
@@ -95,8 +112,8 @@ feature {NONE} -- Implementation function/routines
 					end
 
 					if negascout_score > alfa then
-							alfa := negascout_score
-							best_state := negascout_result.state
+						alfa := negascout_score
+						best_state := negascout_result.state
 					end
 
 					-- If alfa >= beta, cut the branch;
@@ -130,7 +147,7 @@ feature {NONE} -- Implementation function/routines
 		end
 
 	default_depth: INTEGER
-		-- Set the default depth of the algorithm
+		-- Set the default depth of the algorithm;
 		once
             Result := 6
         end
@@ -138,13 +155,25 @@ feature {NONE} -- Implementation function/routines
 feature
 
 	reset_engine
+	-- Reset the engine so that a new search can be performed; the maximum depth and
+	-- the problem which is resolved by the algorithm are left unchanged;
 		do
 			search_performed := false
-			obtained_successor := void
 			obtained_value := 0
+			obtained_successor := void
+		ensure then
+			search_not_performed: search_performed = false
+			move_score_not_obtained: obtained_value = 0
+			move_not_obtained: obtained_successor = void
+			routine_invariant: max_depth = old max_depth and equal(problem, old problem)
 		end
 
 	perform_search (initial_state: S)
+	-- Perform the search of the next best available move by using a negascout
+	-- (a.k.a. principal variation search) algorithm.
+	-- It supposes the first node is in the principal variation (i.e. the most advantageous move),
+	-- then, it checks whether that is true by searching the remaining nodes with a null window (alfa = beta).
+	-- If the proof fails, then the first node was not in the principal variation, and the search continues as normal alpha-beta.
 		local
 			negascout_solution: TUPLE[state: S; value: INTEGER]
 		do
@@ -152,15 +181,30 @@ feature
 			obtained_successor := find_next_move(negascout_solution.state, initial_state)
 			obtained_value := negascout_solution.value
 			search_performed := true
+		ensure then
+			search_performed implies obtained_successor /= void
+			obtained_value_is_consistent: problem.min_value <= obtained_value and obtained_value <= problem.max_value
 		end
 
 	set_max_depth (new_max_depth: INTEGER)
+	-- Set the maximum depth of the algorithm,
+	-- which is the sum of the number of moves performed
+	-- by the two agents.
 		do
 			max_depth := new_max_depth
+		ensure
+			max_depth_set: max_depth = new_max_depth
 		end
 
 	obtained_value: INTEGER
+	-- The value (or score) associated to the principal variation,
+	-- i.e. the most advantageous sequence of actions for the current agent.
+	-- This value is obtained after performing the search;
 
 	obtained_successor: S
+	-- The node which identifies the next move to perform.
+	-- It is the first node (except the current node) found by exploring
+	-- the principal variation.
+	-- This value is obtained after performing the search;
 
 end
