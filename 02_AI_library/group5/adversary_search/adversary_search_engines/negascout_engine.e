@@ -136,14 +136,20 @@ feature {NONE} -- Implementation function/routines
 				end
 				Result := [best_state, alfa]
 			end
+			ensure then
+				routine_invariant: max_depth = old max_depth and equal(problem, old problem)
 		end
 
 	find_next_move (a_state: S; initial_state: S): S
 		-- Return the next move to perform by backtracking from
 		-- the best state found by the algorithm;
+		require
+			last_state_not_void: a_state /= void
+			initial_state_not_void: initial_state /= void
 		local
 			current_state: S
 		do
+			-- What if the initial state of the game is already an ending state?
 			if equal (a_state, initial_state) then
 				Result := a_state
 			else
@@ -156,6 +162,9 @@ feature {NONE} -- Implementation function/routines
 				end
 				Result := current_state
 			end
+		ensure
+			routine_invariant: max_depth = old max_depth and equal(problem, old problem)
+			result_is_consistent: not equal (a_state, initial_state) implies equal(initial_state, Result.parent)
 		end
 
 	default_depth: INTEGER
@@ -196,6 +205,7 @@ feature
 		ensure then
 			search_performed implies obtained_successor /= void
 			obtained_value_is_consistent: problem.min_value <= obtained_value and obtained_value <= problem.max_value
+			routine_invariant: max_depth = old max_depth and equal(problem, old problem)
 		end
 
 	set_max_depth (new_max_depth: INTEGER)
@@ -206,6 +216,7 @@ feature
 			max_depth := new_max_depth
 		ensure then
 			max_depth_set: max_depth = new_max_depth
+			routine_invariant: equal(problem, old problem)
 		end
 
 	obtained_value: INTEGER
