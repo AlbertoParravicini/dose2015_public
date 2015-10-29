@@ -13,7 +13,7 @@ note
 	revision: "$Revision: 0.1 $"
 
 class
-	MINIMAX_ENGINE [RULE -> ANY, S -> ADVERSARY_SEARCH_STATE [RULE], P -> ADVERSARY_SEARCH_PROBLEM [RULE, S]]
+	MINIMAX_ENGINE [RULE -> ANY, reference S -> ADVERSARY_SEARCH_STATE [RULE], P -> ADVERSARY_SEARCH_PROBLEM [RULE, S]]
 
 inherit
 	ADVERSARY_SEARCH_ENGINE [RULE, S, P]
@@ -30,11 +30,13 @@ feature -- Creation
 			new_problem /= Void
 		do
 			set_problem(new_problem)
-			search_performed := False
 			set_max_depth (default_max_depth)
+			search_performed := False
+			obtained_successor := void
 		ensure
-			valid_make_value_problem: problem = new_problem
-			valid_make_search_performed_value: not search_performed
+			problem_set: problem /= void and then equal (problem, new_problem)
+			default_depth_set: max_depth = default_max_depth
+			search_not_performed: search_performed = false
 		end
 
 
@@ -48,9 +50,11 @@ feature -- Creation
 			set_problem (new_problem)
 			set_max_depth (new_max_depth)
 			search_performed := False
+			obtained_successor := void
 		ensure
-			valid_make_value_problem: problem = new_problem
-			valid_make_search_performed_value: not search_performed
+			problem_set: problem /= void and then equal (problem, new_problem)
+			default_depth_set: max_depth = new_max_depth
+			search_not_performed: search_performed = false
 		end
 
 feature
@@ -59,6 +63,13 @@ feature
 			-- Resets engine, so that search can be restarted.
 		do
 			search_performed := False
+			obtained_successor := void
+			obtained_value := 0
+		ensure then
+			search_not_performed: search_performed = false
+			move_score_not_obtained: obtained_value = 0
+			move_not_obtained: obtained_successor = void
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
 		end
 
 	perform_search (initial_state: S)
@@ -69,8 +80,17 @@ feature
 		local
 			current_successors : LIST [S]
 			value_to_compare : INTEGER
+			random_number_generator: RANDOM
+					-- Random numbers generator to have a stochastic move choice;
+			time_seed_for_random_generator: TIME
+					-- Time variable in order to get new random numbers from random
+					-- numbers generator every time the program runs.
 		do
 			current_successors := problem.get_successors (initial_state)
+			create time_seed_for_random_generator.make_now
+					-- Initializes random generator using current time seed.
+			create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
+			random_number_generator.start
 			if not current_successors.is_empty then
 				from
 				    current_successors.start
@@ -91,10 +111,19 @@ feature
 							obtained_value := value_to_compare
 						end
 					end
+					if value_to_compare = obtained_value and (random_number_generator.item\\2) = 1 then
+							-- If the values are equal, the same successor is maintained with a 50% chance 
+						obtained_successor := current_successors.item
+						obtained_value := value_to_compare
+					end
 					current_successors.forth
 				end
 			end
 			search_performed := True
+		ensure then
+			search_performed implies obtained_successor /= void
+			obtained_value_is_consistent: problem.min_value <= obtained_value and obtained_value <= problem.max_value
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
 		end
 
 	compute_value (initial_state : S; current_depth : INTEGER) : INTEGER
@@ -142,6 +171,9 @@ feature
 			-- Sets the maximum depth to be used for search.
 		do
 			max_depth := new_max_depth
+		ensure then
+			max_depth_set: max_depth = new_max_depth
+			routine_invariant: equal (problem, old problem)
 		end
 
 
@@ -158,5 +190,7 @@ feature
 
 invariant
 		-- List of all class invariants
-	obtained_successor_is_consistent: search_performed implies ((obtained_value >= problem.min_value and obtained_value <= problem.max_value) and obtained_successor /= Void)
+	consistent_result: search_performed implies obtained_successor /= void
+	consistent_obtained_value: problem.min_value <= obtained_value and obtained_value <= problem.max_value
+	consisten_max_depth: max_depth >= 0
 end
