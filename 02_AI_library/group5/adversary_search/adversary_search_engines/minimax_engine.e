@@ -37,6 +37,7 @@ feature -- Creation
 			problem_set: problem /= void and then equal (problem, new_problem)
 			default_depth_set: max_depth = default_max_depth
 			search_not_performed: search_performed = false
+			move_not_obtained: obtained_successor = void
 		end
 
 
@@ -55,6 +56,7 @@ feature -- Creation
 			problem_set: problem /= void and then equal (problem, new_problem)
 			default_depth_set: max_depth = new_max_depth
 			search_not_performed: search_performed = false
+			move_not_obtained: obtained_successor = void
 		end
 
 feature
@@ -95,11 +97,11 @@ feature
 				from
 				    current_successors.start
 					obtained_successor := current_successors.item
-					obtained_value := compute_value (obtained_successor, 0)
+					obtained_value := compute_value (obtained_successor, 1)
 				until
 					current_successors.exhausted
 				loop
-					value_to_compare := compute_value (current_successors.item, 0)
+					value_to_compare := compute_value (current_successors.item, 1)
 					if initial_state.is_max then
 						if (value_to_compare > obtained_value)  then
 							obtained_successor := current_successors.item
