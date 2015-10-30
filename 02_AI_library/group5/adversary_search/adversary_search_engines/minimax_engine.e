@@ -98,6 +98,7 @@ feature
 				    current_successors.start
 					obtained_successor := current_successors.item
 					obtained_value := compute_value (obtained_successor, 1)
+					current_successors.forth
 				until
 					current_successors.exhausted
 				loop

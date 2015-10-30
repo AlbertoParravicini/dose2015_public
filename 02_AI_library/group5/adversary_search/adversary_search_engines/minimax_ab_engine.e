@@ -95,11 +95,12 @@ feature
 				from
 				    current_successors.start
 					obtained_successor := current_successors.item
-					obtained_value := compute_value (obtained_successor, 0, problem.min_value, problem.max_value)
+					obtained_value := compute_value (obtained_successor, 1, problem.min_value, problem.max_value)
+					current_successors.forth
 				until
 					current_successors.exhausted
 				loop
-					value_to_compare := compute_value (current_successors.item, 0, problem.min_value, problem.max_value)
+					value_to_compare := compute_value (current_successors.item, 1, problem.min_value, problem.max_value)
 					if initial_state.is_max then
 						if (value_to_compare > obtained_value)  then
 							obtained_successor := current_successors.item
