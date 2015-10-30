@@ -44,7 +44,7 @@ feature -- Creation
 			problem_is_not_void: problem = other_problem
 			search_performed_is_false: not search_performed
 			is_search_successful_is_false: not is_search_successful
-			stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal(stack.item, problem.initial_state))
+			stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal (stack.item, problem.initial_state))
 			nr_of_visited_states_is_zero: nr_of_visited_states = 0
 			cycle_checking_is_false: cycle_checking = false
 		end
@@ -150,9 +150,9 @@ feature -- Status setting
 		ensure then
 			search_performed_is_false: not search_performed
 			is_search_successful_is_false: not is_search_successful
-			stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal(stack.item, problem.initial_state))
+			stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal (stack.item, problem.initial_state))
 			nr_of_visited_states_is_zero: nr_of_visited_states = 0
-			cycle_checking_is_false:cycle_checking=false
+			cycle_checking_is_false: cycle_checking = false
 		end
 
 feature -- Status Report
@@ -160,20 +160,8 @@ feature -- Status Report
 	path_to_obtained_solution: LIST [S]
 			-- Returns the path to the solution obtained from performed search.
 			-- If there is no path, an empty list is returned
-		local
-			current_state: S
-			path: LINKED_LIST [S]
 		do
-			from
-				current_state := obtained_solution
-				create path.make
-			until
-				current_state = void
-			loop
-				path.put_front (current_state)
-				current_state := current_state.parent
-			end
-			Result := path
+			Result:=partial_path(successful_state)
 		ensure then
 				-- First member of the list is the starting state,
 				-- ending position of the list is the searched state
@@ -181,13 +169,15 @@ feature -- Status Report
 			last_state_is_consistent: Result.is_empty or else problem.is_successful (Result.last)
 			empty_list_is_consistent: (Result.is_empty implies (not is_search_successful)) and ((not is_search_successful) implies Result.is_empty)
 				-- Variables that must not change
-			problem_invariant: equal(problem, old problem)
+			problem_invariant: equal (problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: equal(stack, old stack)
+			stack_invariant: equal (stack, old stack)
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: equal(successful_state, old successful_state)
+			successful_state_invariant: equal (successful_state, old successful_state)
+			-- Check that the path is valid
+		path_is_valid: across generate_list_of_integers(Result.count-1) as i all equal(Result.i_th(i.item), Result.i_th (i.item + 1).parent) end
 
 		end
 
@@ -201,14 +191,13 @@ feature -- Status Report
 			successful_search_has_a_valid_result: is_search_successful implies problem.is_successful (Result)
 			unsuccessful_search_has_void_result: (not is_search_successful) implies Result = void
 				-- Variables that must not change
-			problem_invariant: equal(problem, old problem)
+			problem_invariant: equal (problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: equal(stack, old stack)
+			stack_invariant: equal (stack, old stack)
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: equal(successful_state, old successful_state)
-
+			successful_state_invariant: equal (successful_state, old successful_state)
 		end
 
 	is_search_successful: BOOLEAN
@@ -247,20 +236,23 @@ feature {NONE}
 			end
 			Result := path
 		ensure
-			first_element_is_initial_state: equal(Result.first, problem.initial_state)
-			last_element_is_given_state: equal(Result.last, state)
+			first_element_is_initial_state: equal (Result.first, problem.initial_state)
+			last_element_is_given_state: equal (Result.last, state)
 				-- Variables that must not change
-			problem_invariant: equal(problem, old problem)
+			problem_invariant: equal (problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: equal(stack, old stack)
+			stack_invariant: equal (stack, old stack)
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			cycle_checking_invariant: cycle_checking = old cycle_checking
-			successful_state_invariant: equal(successful_state, old successful_state)
+			successful_state_invariant: equal (successful_state, old successful_state)
+			-- Check that the path is valid
+		path_is_valid: across generate_list_of_integers(Result.count-1) as i all equal(Result.i_th(i.item), Result.i_th (i.item + 1).parent) end
+
 		end
 
 	sort_list_with_tuples (my_list: LIST [TUPLE [state: S; value: REAL]])
-			-- sorts the given list from the state with the highest value to the one with the lowest value
+			-- sorts the given list from the state with the lowesr value to the one with the highest value
 			-- insertion sort
 		local
 			i, j: INTEGER
@@ -286,9 +278,32 @@ feature {NONE}
 				i := i + 1
 			end
 		ensure
-			my_list_contains_only_previous_elements: across my_list as element all (old my_list).has(element.item) end
+			my_list_contains_only_previous_elements: across my_list as element all (old my_list).has (element.item) end
 			my_list_contains_all_previous_elements: across (old my_list) as element all my_list.has (element.item) end
 			my_list_has_the_correct_length: my_list.count = (old my_list.count)
+			list_is_ordered: across generate_list_of_integers (my_list.count-1) as int all my_list.i_th (int.item).value<= my_list.i_th (int.item+1).value end
+		end
+
+	generate_list_of_integers (int: INTEGER): LIST [INTEGER]
+			-- Auxiliary function that generates a list of integers from 1 to int, used in some postconditions
+		require
+			int > 0
+		local
+			my_list: LINKED_LIST [INTEGER]
+			current_int: INTEGER
+		do
+			from
+				create my_list.make
+				current_int := 1
+			until
+				current_int = int + 1
+			loop
+				my_list.extend (current_int)
+				current_int := current_int + 1
+			end
+			Result := my_list
+		ensure
+			result_contains_integers_from_1_to_int: across Result as i all Result.i_th (i.item) = i.item end and Result.count = int
 		end
 
 feature
@@ -299,14 +314,14 @@ feature
 		do
 			cycle_checking := true
 		ensure
-			cycle_checking_is_true: cycle_checking=true
-			-- Variables that must not change
-			problem_invariant: equal(problem, old problem)
+			cycle_checking_is_true: cycle_checking = true
+				-- Variables that must not change
+			problem_invariant: equal (problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: equal(stack, old stack)
+			stack_invariant: equal (stack, old stack)
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
-			successful_state_invariant: equal(successful_state, old successful_state)
+			successful_state_invariant: equal (successful_state, old successful_state)
 		end
 
 	disable_cycle_checking
@@ -314,14 +329,14 @@ feature
 		do
 			cycle_checking := false
 		ensure
-			cycle_checking_is_false: cycle_checking=false
-			-- Variables that must not change
-			problem_invariant: equal(problem, old problem)
+			cycle_checking_is_false: cycle_checking = false
+				-- Variables that must not change
+			problem_invariant: equal (problem, old problem)
 			search_performed_invariant: search_performed = old search_performed
 			is_search_successful_invariant: is_search_successful = old is_search_successful
-			stack_invariant: equal(stack, old stack)
+			stack_invariant: equal (stack, old stack)
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
-			successful_state_invariant: equal(successful_state, old successful_state)
+			successful_state_invariant: equal (successful_state, old successful_state)
 		end
 
 invariant

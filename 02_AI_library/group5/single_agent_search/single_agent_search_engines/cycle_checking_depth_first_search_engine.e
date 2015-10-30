@@ -137,20 +137,8 @@ feature -- Status Report
 	path_to_obtained_solution: LIST [S]
 			-- Returns the path to the solution obtained from performed search.
 			-- If there is no path, an empty list is returned
-		local
-			current_state: S
-			path: LINKED_LIST [S]
 		do
-			from
-				current_state := obtained_solution
-				create path.make
-			until
-				current_state = void
-			loop
-				path.put_front (current_state)
-				current_state := current_state.parent
-			end
-			Result := path
+			Result := partial_path(successful_state)
 		ensure then
 				-- First member of the list is the starting state,
 				-- ending position of the list is the searched state
@@ -164,6 +152,8 @@ feature -- Status Report
 			stack_invariant: equal(stack, old stack)
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			successful_state_invariant: equal(successful_state, old successful_state)
+				-- Check that the path is valid
+			path_is_valid: across generate_list_of_integers(Result.count-1) as i all equal(Result.i_th(i.item), Result.i_th (i.item + 1).parent) end
 
 		end
 
@@ -228,8 +218,30 @@ feature {NONE}
 			stack_invariant: equal(stack, old stack)
 			nr_of_visited_states_invariant: nr_of_visited_states = old nr_of_visited_states
 			successful_state_invariant: equal(successful_state, old successful_state)
+				-- Check that the path is valid
+			path_is_valid: across generate_list_of_integers(Result.count-1) as i all equal(Result.i_th(i.item), Result.i_th (i.item + 1).parent) end
 		end
-
+	generate_list_of_integers(int: INTEGER): LIST[INTEGER]
+			-- Auxiliary function that generates a list of integers from 1 to int, used in some postconditions
+			require
+				int > 0
+			local
+				my_list:LINKED_LIST[INTEGER]
+				current_int:INTEGER
+			do
+				from
+					create my_list.make
+					current_int:=1
+				until
+					current_int=int+1
+				loop
+					my_list.extend (current_int)
+					current_int:=current_int+1
+				end
+				Result:=my_list
+			ensure
+				result_contains_integers_from_1_to_int: across Result as i all Result.i_th(i.item)=i.item end and Result.count=int
+			end
 invariant
 		-- List of all class invariants
 	stack_is_void: stack /= void
