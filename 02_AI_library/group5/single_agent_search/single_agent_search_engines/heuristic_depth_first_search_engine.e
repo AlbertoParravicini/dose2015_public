@@ -252,7 +252,7 @@ feature {NONE}
 		end
 
 	sort_list_with_tuples (my_list: LIST [TUPLE [state: S; value: REAL]])
-			-- sorts the given list from the state with the highest value to the one with the lowest value
+			-- sorts the given list from the state with the lowesr value to the one with the highest value
 			-- insertion sort
 		local
 			i, j: INTEGER
@@ -281,6 +281,7 @@ feature {NONE}
 			my_list_contains_only_previous_elements: across my_list as element all (old my_list).has (element.item) end
 			my_list_contains_all_previous_elements: across (old my_list) as element all my_list.has (element.item) end
 			my_list_has_the_correct_length: my_list.count = (old my_list.count)
+			list_is_ordered: across generate_list_of_integers (my_list.count-1) as int all my_list.i_th (int.item).value<= my_list.i_th (int.item+1).value end
 		end
 
 	generate_list_of_integers (int: INTEGER): LIST [INTEGER]
