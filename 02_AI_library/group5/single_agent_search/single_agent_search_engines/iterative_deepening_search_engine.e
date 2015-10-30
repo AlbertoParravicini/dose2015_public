@@ -172,6 +172,9 @@ feature -- Status Report
 			successful_state_invariant: equal(successful_state, old successful_state)
 			step_invariant: step = old step
 			current_depth_invariant: current_depth = old current_depth
+				-- Check that the path is valid
+			path_is_valid: across generate_list_of_integers(Result.count-1) as i all equal(Result.i_th(i.item), Result.i_th (i.item + 1).parent) end
+
 
 		end
 
@@ -229,6 +232,28 @@ feature {NONE}
 			cycle_checking_invariant: cycle_checking = old cycle_checking
 			successful_state_invariant: equal(successful_state, old successful_state)
 			step_invariant: step = old step
+		end
+
+	generate_list_of_integers(int: INTEGER): LIST[INTEGER]
+		-- Auxiliary function that generates a list of integers from 1 to int, used in some postconditions
+		require
+			int > 0
+		local
+			my_list:LINKED_LIST[INTEGER]
+			current_int:INTEGER
+		do
+			from
+				create my_list.make
+				current_int:=1
+			until
+				current_int=int+1
+			loop
+				my_list.extend (current_int)
+				current_int:=current_int+1
+			end
+			Result:=my_list
+		ensure
+			result_contains_integers_from_1_to_int: across Result as i all Result.i_th(i.item)=i.item end and Result.count=int
 		end
 
 feature
