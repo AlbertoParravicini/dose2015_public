@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 		do
 			from
 				curr_depth := 4
-				create jar_puzzle.make
+				create jar_puzzle.make_with_initial_state (0, 13, 7)
 				create engine.make (jar_puzzle)
 				engine.set_mark_closed_state (true)
 				engine.set_check_open_state (true)
@@ -71,7 +71,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-	make_with_parameters (a_engine: SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]; a_max_depth: INTEGER; initial_value_a: INTEGER;  initial_value_b: INTEGER;  initial_value_c: INTEGER;)
+	make_with_parameters (a_engine: SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]; a_max_depth: INTEGER; a_jar_puzzle: WATER_JAR_PUZZLE)
 			-- Initialization for `Current'.
 		local
 			jar_puzzle: WATER_JAR_PUZZLE
@@ -81,7 +81,7 @@ feature {NONE} -- Initialization
 			path: LIST [WATER_JAR_PUZZLE_STATE]
 		do
 			test_engine := a_engine
-			create jar_puzzle.make_with_initial_state (initial_value_a, initial_value_b, initial_value_c)
+			jar_puzzle := a_jar_puzzle
 			test_engine.perform_search
 			if (test_engine.is_search_successful) then
 				print ("solution found: " + test_engine.obtained_solution.out + " sat depth " + curr_depth.out + ".%N")
