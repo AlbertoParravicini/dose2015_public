@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-14-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-14-0 http://www.eiffel.com/developers/xml/configuration-1-14-0.xsd" name="eiffel-ai-search" uuid="C7C425FB-CC6A-4F1D-A3D3-7765C54B8A0C">
 	<target name="eiffel-ai-search">
-		<root class="WATER_JAR_PUZZLE_SOLVER" feature="make"/>
+		<root class="TICTACTOE_GAMEPLAY" feature="make"/>
 		<option profile="true" warning="true" is_attached_by_default="false" void_safety="none">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
