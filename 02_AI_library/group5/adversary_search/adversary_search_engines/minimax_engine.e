@@ -37,6 +37,7 @@ feature -- Creation
 			problem_set: problem /= void and then equal (problem, new_problem)
 			default_depth_set: max_depth = default_max_depth
 			search_not_performed: search_performed = false
+			move_not_obtained: obtained_successor = void
 		end
 
 
@@ -55,6 +56,7 @@ feature -- Creation
 			problem_set: problem /= void and then equal (problem, new_problem)
 			default_depth_set: max_depth = new_max_depth
 			search_not_performed: search_performed = false
+			move_not_obtained: obtained_successor = void
 		end
 
 feature

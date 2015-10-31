@@ -56,6 +56,12 @@ feature -- Creation
 			closed_state_not_marked: mark_closed_states = false
 			open_state_checked: check_open_states = true
 			search_not_performed: not search_performed
+			open_reinitialized: open /= void and then open.count = 0
+			closed_reinitialized: closed /= void and then closed.count = 0
+			successful_state_resetted: successful_state = void
+			open_uses_equal: open.object_comparison = true
+			closed_uses_equal: closed.object_comparison = true
+			visited_states_reset: nr_of_visited_states = 0
 		end
 
 feature -- Search Execution
@@ -416,7 +422,7 @@ feature {NONE} -- Implementation routines / procedures
 				a_list.remove
 			end
 		ensure
-			old a_list.count > 0 implies Result /= void
+			result_is_consistent: old a_list.count > 0 implies Result /= void
 		end
 
 invariant
@@ -426,5 +432,4 @@ invariant
 	nr_of_visited_states_is_negative: nr_of_visited_states >= 0
 	successful_state_is_inconsistent: search_performed implies (is_search_successful implies problem.is_successful (successful_state))
 	successful_state_is_inconsistent: search_performed implies ((successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful)
-
 end

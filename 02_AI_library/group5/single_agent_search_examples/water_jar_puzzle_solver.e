@@ -20,7 +20,7 @@ feature {NONE} -- Initialization
 		local
 			jar_puzzle: WATER_JAR_PUZZLE
 
-			engine: A_STAR_SEARCH_ENGINE[STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
+			engine: BEST_FIRST_SEARCH_ENGINE[STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
 
 			curr_depth: INTEGER
 			found: BOOLEAN
@@ -32,8 +32,8 @@ feature {NONE} -- Initialization
 				create jar_puzzle.make
 				create engine.make (jar_puzzle)
 
-				engine.set_mark_closed_state (true)
-				engine.set_check_open_state (true)
+				--engine.set_mark_closed_state (true)
+				--engine.set_check_open_state (true)
 
 
 
