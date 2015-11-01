@@ -102,7 +102,8 @@ feature {NONE} -- Implementation function/routines
 				from
 					current_successors := problem.get_successors (a_state)
 					if order_moves = true then
-						order_successors (current_successors)
+						current_successors := merge_sort (current_successors)
+						-- order_successors (current_successors)
 					end
 					current_successors.start
 				until
@@ -181,10 +182,10 @@ feature {NONE} -- Implementation function/routines
 			Result := 6
 		end
 
-	order_successors (successors: LIST[S])
-		-- Order the successors based on their heuristic value, in descending order:
-		-- the first element has the highest value, meaning that ti is a better state for the
-		-- maximizing player;
+	order_successors (successors: LIST [S])
+			-- Order the successors based on their heuristic value, in descending order:
+			-- the first element has the highest value, meaning that it is a better state for the
+			-- maximizing player;
 		local
 			i, j: INTEGER
 			temp_state1: S
@@ -208,6 +209,72 @@ feature {NONE} -- Implementation function/routines
 				successors.i_th (j + 1) := temp_state1
 				i := i + 1
 			end
+		end
+
+	merge_sort (a_list: LIST [S]): LIST [S]
+			-- Order the successors based on their heuristic value, in descending order:
+			-- the first element has the highest value, meaning that it is a better state for the
+			-- maximizing player;
+		local
+			left: LIST [S]
+			right: LIST [S]
+			middle: INTEGER
+		do
+			if a_list.count <= 1 then
+				Result := a_list
+			else
+				middle := a_list.count // 2
+				a_list.start
+				left := a_list.duplicate (middle)
+				a_list.go_i_th (middle + 1)
+				right := a_list.duplicate (a_list.count - middle)
+				left := merge_sort (left)
+				right := merge_sort (right)
+				Result := merge (left, right)
+			end
+		end
+
+	merge (left: LIST [S]; right: LIST [S]): LIST [S]
+		-- Routine used as part of the merge sort algorithm:
+		-- the two lists passed as parameter are merged in a way
+		-- that the resulting list is in descending order;
+		local
+			ordered_list: LINKED_LIST [S]
+		do
+			from
+				create ordered_list.make
+				left.start
+				right.start
+			until
+				left.is_empty or right.is_empty
+			loop
+				if problem.value (left.first) >= problem.value (right.first) then
+					ordered_list.extend (left.first)
+					left.remove
+				else
+					ordered_list.extend (right.first)
+					right.remove
+				end
+			end
+
+				-- Either left or right may have elements left;
+			from
+				left.start
+			until
+				left.is_empty
+			loop
+				ordered_list.extend (left.first)
+				left.remove
+			end
+			from
+				right.start
+			until
+				right.is_empty
+			loop
+				ordered_list.extend (right.first)
+				right.remove
+			end
+			Result := ordered_list
 		end
 
 feature
@@ -243,16 +310,16 @@ feature
 		do
 			if max_depth = 0 then
 				create time_seed_for_random_generator.make_now
-				-- Initializes random generator using current time seed.
+					-- Initializes random generator using current time seed.
 				create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
 				random_number_generator.start
 
-				-- Select a random move from the successors of the current state;
+					-- Select a random move from the successors of the current state;
 				current_successors := problem.get_successors (initial_state)
 				obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
 				obtained_value := problem.value (obtained_successor)
 			else
-				-- If max_depth > 0, perform a real negascout search;
+					-- If max_depth > 0, perform a real negascout search;
 				negascout_solution := negascout (initial_state, max_depth, problem.min_value, problem.max_value)
 				obtained_successor := find_next_move (negascout_solution.state, initial_state)
 				obtained_value := negascout_solution.value
