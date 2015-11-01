@@ -35,6 +35,7 @@ feature
 			set_max_depth (default_depth)
 			obtained_value := 0
 			obtained_successor := void
+			order_moves := true
 			reset_engine
 		ensure
 			problem_set: problem /= void and then equal (problem, new_problem)
@@ -42,6 +43,7 @@ feature
 			search_not_performed: search_performed = false
 			move_score_not_obtained: obtained_value = 0
 			move_not_obtained: obtained_successor = void
+			order_moves_set: order_moves = true
 		end
 
 	make_with_depth (new_problem: P; new_max_depth: INTEGER)
@@ -53,6 +55,7 @@ feature
 			set_max_depth (new_max_depth)
 			obtained_value := 0
 			obtained_successor := void
+			order_moves := true
 			reset_engine
 		ensure
 			problem_set: problem /= void and then equal (problem, new_problem)
@@ -60,6 +63,7 @@ feature
 			search_not_performed: search_performed = false
 			move_score_not_obtained: obtained_value = 0
 			move_not_obtained: obtained_successor = void
+			order_moves_set: order_moves = true
 		end
 
 feature {NONE} -- Implementation function/routines
@@ -97,7 +101,9 @@ feature {NONE} -- Implementation function/routines
 					-- Go through the successors of the current state;
 				from
 					current_successors := problem.get_successors (a_state)
-					order_successors (current_successors)
+					if order_moves = true then
+						order_successors (current_successors)
+					end
 					current_successors.start
 				until
 						-- End the search if the list is over or if the branch has been pruned;
@@ -139,7 +145,7 @@ feature {NONE} -- Implementation function/routines
 				Result := [best_state, alfa]
 			end
 		ensure then
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
 		end
 
 	find_next_move (a_state: S; initial_state: S): S
@@ -165,7 +171,7 @@ feature {NONE} -- Implementation function/routines
 				Result := current_state
 			end
 		ensure
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
 			result_is_consistent: not equal (a_state, initial_state) implies equal (initial_state, Result.parent)
 		end
 
@@ -176,7 +182,9 @@ feature {NONE} -- Implementation function/routines
 		end
 
 	order_successors (successors: LIST[S])
-		-- Order the successors based on their heuristic value
+		-- Order the successors based on their heuristic value, in descending order:
+		-- the first element has the highest value, meaning that ti is a better state for the
+		-- maximizing player;
 		local
 			i, j: INTEGER
 			temp_state1: S
@@ -215,7 +223,7 @@ feature
 			search_not_performed: search_performed = false
 			move_score_not_obtained: obtained_value = 0
 			move_not_obtained: obtained_successor = void
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
 		end
 
 	perform_search (initial_state: S)
@@ -253,19 +261,32 @@ feature
 		ensure then
 			search_performed implies obtained_successor /= void
 			obtained_value_is_consistent: problem.min_value <= obtained_value and obtained_value <= problem.max_value
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
 		end
+
+feature -- Status setting
 
 	set_max_depth (new_max_depth: INTEGER)
 			-- Set the maximum depth of the algorithm,
 			-- which is the sum of the number of moves performed
-			-- by the two agents.
+			-- by the two agents;
 		do
 			max_depth := new_max_depth
 		ensure then
 			max_depth_set: max_depth = new_max_depth
-			routine_invariant: equal (problem, old problem)
+			routine_invariant: equal (problem, old problem) and old order_moves = order_moves
 		end
+
+	set_order_moves (choice: BOOLEAN)
+			-- Set whether to order the successors or not;
+		do
+			order_moves := choice
+		ensure
+			order_moves_set: order_moves = choice
+			routine_invariant: equal (problem, old problem) and old max_depth = max_depth
+		end
+
+feature -- Status report
 
 	obtained_value: INTEGER
 			-- The value (or score) associated to the principal variation,
@@ -277,6 +298,12 @@ feature
 			-- It is the first node (except the current node) found by exploring
 			-- the principal variation.
 			-- This value is obtained after performing the search;
+
+	order_moves: BOOLEAN
+			-- The value holds whether the successors of a given states are ordered
+			-- or not before being expanded; ordering the successors leads on average to a lower number of
+			-- visited states, as it is more probable that the real principal variation is
+			-- among the first successors in the list;
 
 invariant
 	consistent_result: search_performed implies obtained_successor /= void
