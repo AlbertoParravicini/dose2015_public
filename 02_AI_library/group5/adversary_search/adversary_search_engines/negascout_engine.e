@@ -24,6 +24,8 @@ create
 
 feature
 
+	num_visited_states: INTEGER
+
 	make (new_problem: P)
 			-- Initialize the engine with a default depth value, equal to 6;
 		require
@@ -95,6 +97,7 @@ feature {NONE} -- Implementation function/routines
 					-- Go through the successors of the current state;
 				from
 					current_successors := problem.get_successors (a_state)
+					order_successors (current_successors)
 					current_successors.start
 				until
 						-- End the search if the list is over or if the branch has been pruned;
@@ -124,6 +127,7 @@ feature {NONE} -- Implementation function/routines
 					if negascout_score > alfa then
 						alfa := negascout_score
 						best_state := negascout_result.state
+						num_visited_states := num_visited_states + 1
 					end
 
 						-- If alfa >= beta, prune the branch;
@@ -169,6 +173,33 @@ feature {NONE} -- Implementation function/routines
 			-- Set the default depth of the algorithm;
 		once
 			Result := 6
+		end
+
+	order_successors (successors: LIST[S])
+		-- Order the successors based on their heuristic value
+		local
+			i, j: INTEGER
+			temp_state1: S
+			temp_state2: S
+		do
+			from
+				i := 2
+			until
+				i = successors.count + 1
+			loop
+				temp_state1 := successors.i_th (i)
+				j := i - 1
+				from
+				until
+					j < 1 or problem.value (successors.i_th (j)) >= problem.value (temp_state1)
+				loop
+					temp_state2 := successors.i_th (j)
+					successors.i_th (j + 1) := temp_state2
+					j := j - 1
+				end
+				successors.i_th (j + 1) := temp_state1
+				i := i + 1
+			end
 		end
 
 feature
