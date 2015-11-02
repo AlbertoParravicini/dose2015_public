@@ -33,7 +33,8 @@ feature
 			set_max_depth (default_depth)
 			obtained_value := 0
 			obtained_successor := void
-			order_moves := true
+			start_from_best := true
+			order_moves := false
 			reset_engine
 		ensure
 			problem_set: problem /= void and then equal (problem, new_problem)
@@ -41,7 +42,8 @@ feature
 			search_not_performed: search_performed = false
 			move_score_not_obtained: obtained_value = 0
 			move_not_obtained: obtained_successor = void
-			order_moves_set: order_moves = true
+			start_from_best_true: start_from_best = true
+			order_moves_false: order_moves = false
 		end
 
 	make_with_depth (new_problem: P; new_max_depth: INTEGER)
@@ -53,7 +55,8 @@ feature
 			set_max_depth (new_max_depth)
 			obtained_value := 0
 			obtained_successor := void
-			order_moves := true
+			start_from_best := true
+			order_moves := false
 			reset_engine
 		ensure
 			problem_set: problem /= void and then equal (problem, new_problem)
@@ -61,7 +64,8 @@ feature
 			search_not_performed: search_performed = false
 			move_score_not_obtained: obtained_value = 0
 			move_not_obtained: obtained_successor = void
-			order_moves_set: order_moves = true
+			start_from_best_true: start_from_best = true
+			order_moves_false: order_moves = false
 		end
 
 feature {NONE} -- Implementation function/routines
@@ -100,8 +104,11 @@ feature {NONE} -- Implementation function/routines
 				from
 					current_successors := problem.get_successors (a_state)
 
-					-- Optionally, order the successors based on their heuristic value;
-					if order_moves = true then
+						-- Optionally, pick the best state as the presumed principal variation or
+						-- order the successors based on their heuristic value;
+					if start_from_best = true then
+						pick_best (current_successors)
+					elseif order_moves = true then
 						current_successors := merge_sort (current_successors)
 					end
 					current_successors.start
@@ -144,7 +151,7 @@ feature {NONE} -- Implementation function/routines
 				Result := [best_state, alfa]
 			end
 		ensure then
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves and old start_from_best = start_from_best
 		end
 
 	find_next_move (a_state: S; initial_state: S): S
@@ -170,7 +177,7 @@ feature {NONE} -- Implementation function/routines
 				Result := current_state
 			end
 		ensure
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves and old start_from_best = start_from_best
 			result_is_consistent: not equal (a_state, initial_state) implies equal (initial_state, Result.parent)
 		end
 
@@ -180,6 +187,42 @@ feature {NONE} -- Implementation function/routines
 			Result := 6
 		end
 
+	pick_best (a_list: LIST [S])
+		-- Put the best item contained in the list (i.e. the one with highest heuristic value)
+		-- as the first element of the list;
+		require
+			a_list /= void
+		local
+			best_value: INTEGER
+			best_state: S
+			best_state_pos: INTEGER
+		do
+			from
+				a_list.start
+				if not a_list.is_empty then
+					best_value := problem.value (a_list.first)
+					best_state := a_list.first
+					best_state_pos := 1
+					a_list.forth
+				end
+			until
+				a_list.exhausted
+			loop
+				if problem.value (a_list.item) > best_value then
+					best_value := problem.value (a_list.item)
+					best_state := a_list.item
+					best_state_pos := a_list.index
+				end
+				a_list.forth
+			end
+			if not a_list.is_empty then
+				a_list.go_i_th (best_state_pos)
+				a_list.swap (1)
+			end
+		ensure
+			size_not_changed: old a_list.count = a_list.count
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves and old start_from_best = start_from_best
+		end
 
 	merge_sort (a_list: LIST [S]): LIST [S]
 			-- Order the successors based on their heuristic value, in descending order:
@@ -204,36 +247,47 @@ feature {NONE} -- Implementation function/routines
 				right := merge_sort (right)
 				Result := merge (left, right)
 			end
-
 		ensure
 			result_not_void: Result /= void
 			result_size_consistent: Result.count = a_list.count
 			list_item_not_modified: across Result as curr_state all a_list.has (curr_state.item) end
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves and old start_from_best = start_from_best
 		end
 
 	merge (left: LIST [S]; right: LIST [S]): LIST [S]
-		-- Routine used as part of the merge sort algorithm:
-		-- the two lists passed as parameter are merged in a way
-		-- that the resulting list is in descending order;
+			-- Routine used as part of the merge sort algorithm:
+			-- the two lists passed as parameter are merged in a way
+			-- that the resulting list is in descending order;
 		require
 			left_not_void: left /= void
 			right_not_void: right /= void
 		local
 			ordered_list: LINKED_LIST [S]
+			left_curr_value: INTEGER
+			right_curr_value: INTEGER
 		do
 			from
 				create ordered_list.make
 				left.start
 				right.start
+					-- Saving the current values leads to a small but not negligible optimization;
+				left_curr_value := problem.value (left.first)
+				right_curr_value := problem.value (right.first)
 			until
 				left.is_empty or right.is_empty
 			loop
-				if problem.value (left.first) >= problem.value (right.first) then
+				if left_curr_value >= right_curr_value then
 					ordered_list.extend (left.first)
 					left.remove
+					if not left.is_empty then
+						left_curr_value := problem.value (left.first)
+					end
 				else
 					ordered_list.extend (right.first)
 					right.remove
+					if not right.is_empty then
+						right_curr_value := problem.value (right.first)
+					end
 				end
 			end
 
@@ -257,6 +311,7 @@ feature {NONE} -- Implementation function/routines
 			Result := ordered_list
 		ensure
 			result_size_is_consistent: Result /= void and then Result.count = old (left.count) + old (right.count)
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves and old start_from_best = start_from_best
 		end
 
 feature
@@ -272,7 +327,7 @@ feature
 			search_not_performed: search_performed = false
 			move_score_not_obtained: obtained_value = 0
 			move_not_obtained: obtained_successor = void
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves and old start_from_best = start_from_best
 		end
 
 	perform_search (initial_state: S)
@@ -310,7 +365,7 @@ feature
 		ensure then
 			search_performed implies obtained_successor /= void
 			obtained_value_is_consistent: problem.min_value <= obtained_value and obtained_value <= problem.max_value
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves and old start_from_best = start_from_best
 		end
 
 feature -- Status setting
@@ -323,7 +378,7 @@ feature -- Status setting
 			max_depth := new_max_depth
 		ensure then
 			max_depth_set: max_depth = new_max_depth
-			routine_invariant: equal (problem, old problem) and old order_moves = order_moves
+			routine_invariant: equal (problem, old problem) and old order_moves = order_moves and old start_from_best = start_from_best
 		end
 
 	set_order_moves (choice: BOOLEAN)
@@ -332,7 +387,19 @@ feature -- Status setting
 			order_moves := choice
 		ensure
 			order_moves_set: order_moves = choice
-			routine_invariant: equal (problem, old problem) and old max_depth = max_depth
+			routine_invariant: equal (problem, old problem) and old max_depth = max_depth and old start_from_best = start_from_best
+		end
+
+	set_start_from_best (choice: BOOLEAN)
+			-- Set the value of the "start_from_best" parameter.
+			-- When the successors of a state are calculated, pick the best state (in term of heuristic value)
+			-- as the presumed principal variation; this on average can reduce the number of visited states
+			-- and the overall computation time, especially with high search depth;
+		do
+			start_from_best := choice
+		ensure
+			order_moves_set: order_moves = choice
+			routine_invariant: equal (problem, old problem) and old max_depth = max_depth and old order_moves = order_moves
 		end
 
 feature -- Status report
@@ -353,6 +420,15 @@ feature -- Status report
 			-- or not before being expanded; ordering the successors leads on average to a lower number of
 			-- visited states, as it is more probable that the real principal variation is
 			-- among the first successors in the list;
+			-- if both "start_from_best" and "order_moves" are set to true,
+			-- "start_from_best" is the only one considered;
+
+	start_from_best: BOOLEAN
+			-- When the successors of a state are calculated, pick the best state (in term of heuristic value)
+			-- as the presumed principal variation; this on average can reduce the number of visited states
+			-- and the overall computation time, especially with high search depth;
+			-- if both "start_from_best" and "order_moves" are set to true,
+			-- "start_from_best" is the only one considered;
 
 invariant
 	consistent_result: search_performed implies obtained_successor /= void
