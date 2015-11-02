@@ -24,8 +24,6 @@ create
 
 feature
 
-	num_visited_states: INTEGER
-
 	make (new_problem: P)
 			-- Initialize the engine with a default depth value, equal to 6;
 		require
@@ -101,9 +99,10 @@ feature {NONE} -- Implementation function/routines
 					-- Go through the successors of the current state;
 				from
 					current_successors := problem.get_successors (a_state)
+
+					-- Optionally, order the successors based on their heuristic value;
 					if order_moves = true then
 						current_successors := merge_sort (current_successors)
-						-- order_successors (current_successors)
 					end
 					current_successors.start
 				until
@@ -134,7 +133,6 @@ feature {NONE} -- Implementation function/routines
 					if negascout_score > alfa then
 						alfa := negascout_score
 						best_state := negascout_result.state
-						num_visited_states := num_visited_states + 1
 					end
 
 						-- If alfa >= beta, prune the branch;
@@ -182,39 +180,13 @@ feature {NONE} -- Implementation function/routines
 			Result := 6
 		end
 
-	order_successors (successors: LIST [S])
-			-- Order the successors based on their heuristic value, in descending order:
-			-- the first element has the highest value, meaning that it is a better state for the
-			-- maximizing player;
-		local
-			i, j: INTEGER
-			temp_state1: S
-			temp_state2: S
-		do
-			from
-				i := 2
-			until
-				i = successors.count + 1
-			loop
-				temp_state1 := successors.i_th (i)
-				j := i - 1
-				from
-				until
-					j < 1 or problem.value (successors.i_th (j)) >= problem.value (temp_state1)
-				loop
-					temp_state2 := successors.i_th (j)
-					successors.i_th (j + 1) := temp_state2
-					j := j - 1
-				end
-				successors.i_th (j + 1) := temp_state1
-				i := i + 1
-			end
-		end
 
 	merge_sort (a_list: LIST [S]): LIST [S]
 			-- Order the successors based on their heuristic value, in descending order:
 			-- the first element has the highest value, meaning that it is a better state for the
 			-- maximizing player;
+		require
+			a_list_not_void: a_list /= void
 		local
 			left: LIST [S]
 			right: LIST [S]
@@ -232,12 +204,20 @@ feature {NONE} -- Implementation function/routines
 				right := merge_sort (right)
 				Result := merge (left, right)
 			end
+
+		ensure
+			result_not_void: Result /= void
+			result_size_consistent: Result.count = a_list.count
+			list_item_not_modified: across Result as curr_state all a_list.has (curr_state.item) end
 		end
 
 	merge (left: LIST [S]; right: LIST [S]): LIST [S]
 		-- Routine used as part of the merge sort algorithm:
 		-- the two lists passed as parameter are merged in a way
 		-- that the resulting list is in descending order;
+		require
+			left_not_void: left /= void
+			right_not_void: right /= void
 		local
 			ordered_list: LINKED_LIST [S]
 		do
@@ -275,6 +255,8 @@ feature {NONE} -- Implementation function/routines
 				right.remove
 			end
 			Result := ordered_list
+		ensure
+			result_size_is_consistent: Result /= void and then Result.count = old (left.count) + old (right.count)
 		end
 
 feature
@@ -376,5 +358,4 @@ invariant
 	consistent_result: search_performed implies obtained_successor /= void
 	consistent_obtained_value: problem.min_value <= obtained_value and obtained_value <= problem.max_value
 	consisten_max_depth: max_depth >= 0
-
 end
