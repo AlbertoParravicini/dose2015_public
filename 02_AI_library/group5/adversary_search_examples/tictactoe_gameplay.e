@@ -24,7 +24,7 @@ feature -- Initialization
 		do
 			create initial_state.make
 			create problem.make
-			create engine.make_with_depth (problem, 6)
+			create engine.make (problem)
 
 			engine.perform_search (initial_state)
 			print ("Obtained value: " + engine.obtained_value.out + "%N")

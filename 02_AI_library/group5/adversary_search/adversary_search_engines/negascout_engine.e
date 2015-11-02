@@ -33,6 +33,7 @@ feature
 			set_max_depth (default_depth)
 			obtained_value := 0
 			obtained_successor := void
+			order_moves := true
 			reset_engine
 		ensure
 			problem_set: problem /= void and then equal (problem, new_problem)
@@ -40,6 +41,7 @@ feature
 			search_not_performed: search_performed = false
 			move_score_not_obtained: obtained_value = 0
 			move_not_obtained: obtained_successor = void
+			order_moves_set: order_moves = true
 		end
 
 	make_with_depth (new_problem: P; new_max_depth: INTEGER)
@@ -51,6 +53,7 @@ feature
 			set_max_depth (new_max_depth)
 			obtained_value := 0
 			obtained_successor := void
+			order_moves := true
 			reset_engine
 		ensure
 			problem_set: problem /= void and then equal (problem, new_problem)
@@ -58,6 +61,7 @@ feature
 			search_not_performed: search_performed = false
 			move_score_not_obtained: obtained_value = 0
 			move_not_obtained: obtained_successor = void
+			order_moves_set: order_moves = true
 		end
 
 feature {NONE} -- Implementation function/routines
@@ -95,6 +99,11 @@ feature {NONE} -- Implementation function/routines
 					-- Go through the successors of the current state;
 				from
 					current_successors := problem.get_successors (a_state)
+
+					-- Optionally, order the successors based on their heuristic value;
+					if order_moves = true then
+						current_successors := merge_sort (current_successors)
+					end
 					current_successors.start
 				until
 						-- End the search if the list is over or if the branch has been pruned;
@@ -135,7 +144,7 @@ feature {NONE} -- Implementation function/routines
 				Result := [best_state, alfa]
 			end
 		ensure then
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
 		end
 
 	find_next_move (a_state: S; initial_state: S): S
@@ -161,7 +170,7 @@ feature {NONE} -- Implementation function/routines
 				Result := current_state
 			end
 		ensure
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
 			result_is_consistent: not equal (a_state, initial_state) implies equal (initial_state, Result.parent)
 		end
 
@@ -169,6 +178,85 @@ feature {NONE} -- Implementation function/routines
 			-- Set the default depth of the algorithm;
 		once
 			Result := 6
+		end
+
+
+	merge_sort (a_list: LIST [S]): LIST [S]
+			-- Order the successors based on their heuristic value, in descending order:
+			-- the first element has the highest value, meaning that it is a better state for the
+			-- maximizing player;
+		require
+			a_list_not_void: a_list /= void
+		local
+			left: LIST [S]
+			right: LIST [S]
+			middle: INTEGER
+		do
+			if a_list.count <= 1 then
+				Result := a_list
+			else
+				middle := a_list.count // 2
+				a_list.start
+				left := a_list.duplicate (middle)
+				a_list.go_i_th (middle + 1)
+				right := a_list.duplicate (a_list.count - middle)
+				left := merge_sort (left)
+				right := merge_sort (right)
+				Result := merge (left, right)
+			end
+
+		ensure
+			result_not_void: Result /= void
+			result_size_consistent: Result.count = a_list.count
+			list_item_not_modified: across Result as curr_state all a_list.has (curr_state.item) end
+		end
+
+	merge (left: LIST [S]; right: LIST [S]): LIST [S]
+		-- Routine used as part of the merge sort algorithm:
+		-- the two lists passed as parameter are merged in a way
+		-- that the resulting list is in descending order;
+		require
+			left_not_void: left /= void
+			right_not_void: right /= void
+		local
+			ordered_list: LINKED_LIST [S]
+		do
+			from
+				create ordered_list.make
+				left.start
+				right.start
+			until
+				left.is_empty or right.is_empty
+			loop
+				if problem.value (left.first) >= problem.value (right.first) then
+					ordered_list.extend (left.first)
+					left.remove
+				else
+					ordered_list.extend (right.first)
+					right.remove
+				end
+			end
+
+				-- Either left or right may have elements left;
+			from
+				left.start
+			until
+				left.is_empty
+			loop
+				ordered_list.extend (left.first)
+				left.remove
+			end
+			from
+				right.start
+			until
+				right.is_empty
+			loop
+				ordered_list.extend (right.first)
+				right.remove
+			end
+			Result := ordered_list
+		ensure
+			result_size_is_consistent: Result /= void and then Result.count = old (left.count) + old (right.count)
 		end
 
 feature
@@ -184,7 +272,7 @@ feature
 			search_not_performed: search_performed = false
 			move_score_not_obtained: obtained_value = 0
 			move_not_obtained: obtained_successor = void
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
 		end
 
 	perform_search (initial_state: S)
@@ -204,16 +292,16 @@ feature
 		do
 			if max_depth = 0 then
 				create time_seed_for_random_generator.make_now
-				-- Initializes random generator using current time seed.
+					-- Initializes random generator using current time seed.
 				create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
 				random_number_generator.start
 
-				-- Select a random move from the successors of the current state;
+					-- Select a random move from the successors of the current state;
 				current_successors := problem.get_successors (initial_state)
 				obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
 				obtained_value := problem.value (obtained_successor)
 			else
-				-- If max_depth > 0, perform a real negascout search;
+					-- If max_depth > 0, perform a real negascout search;
 				negascout_solution := negascout (initial_state, max_depth, problem.min_value, problem.max_value)
 				obtained_successor := find_next_move (negascout_solution.state, initial_state)
 				obtained_value := negascout_solution.value
@@ -222,19 +310,32 @@ feature
 		ensure then
 			search_performed implies obtained_successor /= void
 			obtained_value_is_consistent: problem.min_value <= obtained_value and obtained_value <= problem.max_value
-			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
+			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves
 		end
+
+feature -- Status setting
 
 	set_max_depth (new_max_depth: INTEGER)
 			-- Set the maximum depth of the algorithm,
 			-- which is the sum of the number of moves performed
-			-- by the two agents.
+			-- by the two agents;
 		do
 			max_depth := new_max_depth
 		ensure then
 			max_depth_set: max_depth = new_max_depth
-			routine_invariant: equal (problem, old problem)
+			routine_invariant: equal (problem, old problem) and old order_moves = order_moves
 		end
+
+	set_order_moves (choice: BOOLEAN)
+			-- Set whether to order the successors or not;
+		do
+			order_moves := choice
+		ensure
+			order_moves_set: order_moves = choice
+			routine_invariant: equal (problem, old problem) and old max_depth = max_depth
+		end
+
+feature -- Status report
 
 	obtained_value: INTEGER
 			-- The value (or score) associated to the principal variation,
@@ -247,9 +348,14 @@ feature
 			-- the principal variation.
 			-- This value is obtained after performing the search;
 
+	order_moves: BOOLEAN
+			-- The value holds whether the successors of a given states are ordered
+			-- or not before being expanded; ordering the successors leads on average to a lower number of
+			-- visited states, as it is more probable that the real principal variation is
+			-- among the first successors in the list;
+
 invariant
 	consistent_result: search_performed implies obtained_successor /= void
 	consistent_obtained_value: problem.min_value <= obtained_value and obtained_value <= problem.max_value
 	consisten_max_depth: max_depth >= 0
-
 end
