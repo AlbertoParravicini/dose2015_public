@@ -30,10 +30,20 @@ feature {NONE} -- Implementation attributes
 			-- List of the frontier, the states that can be expanded and visited, with their costs.
 			-- The best item (i.e. the one of lowest cost) is removed at each iteration of the main loop, an evaluated;
 
+			-- using a linked list instead of a different data structure (an priority heap, for instance)
+			-- makes item insertion and retrieval slower, but makes other operations (e.g. iterating on the list)
+			-- easier to perform; moreover finding a specific state would still require to iterate on the data structure
+			-- (unless an hashmap is used, but then it would be harder to get the first item of the queue...);
+
 	closed: LINKED_LIST [TUPLE [state: S; cost: REAL]]
 			-- List of the states that have been already visited, and the cost associated to them.
 			-- Optional data structure which is useful to not visit the same states twice, unless a
-			-- better path to them is found; Re
+			-- better path to them is found;
+			
+			-- using a linked list instead of a different data structure (an priority heap, for instance)
+			-- makes item insertion and retrieval slower, but makes other operations (e.g. iterating on the list)
+			-- easier to perform; moreover finding a specific state would still require to iterate on the data structure
+			-- (unless an hashmap is used, but then it would be harder to get the first item of the list...);
 
 	successful_state: S
 			-- The successful state, the result of the search;
@@ -104,7 +114,9 @@ feature -- Search Execution
 					-- and remove it from the "open" list;
 				current_tuple := remove_best_item (open)
 				current_state := current_tuple.state
-					-- Calculate how far the current_state is from the start, optimization useful at a later stage;
+					-- Calculate how far the current_state is from the start:
+					-- this optimization is useful at a later stage, so that this calculation
+					-- isn't unnecessarily repeated;
 				current_state_path_cost := path_cost (current_state)
 
 					-- Add the current state to the list of visited states;

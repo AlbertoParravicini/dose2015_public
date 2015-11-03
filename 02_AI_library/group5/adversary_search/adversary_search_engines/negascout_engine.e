@@ -189,7 +189,8 @@ feature {NONE} -- Implementation function/routines
 
 	pick_best (a_list: LIST [S])
 		-- Put the best item contained in the list (i.e. the one with highest heuristic value)
-		-- as the first element of the list;
+		-- as the first element of the list; this approach is faster than ordering the entire list,
+		-- and in some cases provides even better results in terms of number of visited states;
 		require
 			a_list /= void
 		local
@@ -227,7 +228,11 @@ feature {NONE} -- Implementation function/routines
 	merge_sort (a_list: LIST [S]): LIST [S]
 			-- Order the successors based on their heuristic value, in descending order:
 			-- the first element has the highest value, meaning that it is a better state for the
-			-- maximizing player;
+			-- maximizing player; with a complexity of theta(b*logb), the merge sort
+			-- might be sightly slower than other algorithms (e.g the insertion sort)
+			-- under specific circumstances (e.g a partially ordered list);
+			-- against a problem with an high branching factor "b", the merge sort
+			-- generally yelds better results, though;
 		require
 			a_list_not_void: a_list /= void
 		local
@@ -270,7 +275,8 @@ feature {NONE} -- Implementation function/routines
 				create ordered_list.make
 				left.start
 				right.start
-					-- Saving the current values leads to a small but not negligible optimization;
+					-- Saving the current values leads to a small but not negligible optimization,
+					-- at the expense of lower code readability;
 				left_curr_value := problem.value (left.first)
 				right_curr_value := problem.value (right.first)
 			until
