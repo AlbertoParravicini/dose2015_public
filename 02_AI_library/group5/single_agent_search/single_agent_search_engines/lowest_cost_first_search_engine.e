@@ -51,165 +51,69 @@ feature -- Search Execution
 			-- The result of the search is indicated in
 			-- is_search_successful.
 		local
-			frontier_state : FERRED_STATE[RULE,S]
-			aux: FERRED_STATE[RULE,S]
 			current_state : S
-			current_successors:LIST[S]
-
+			current_state_path_cost : REAL_32
+			current_successors : LINKED_LIST[S]
+			current_tuple : TUPLE [state: S; cost: REAL]
+			current_child : S
+			current_path_child : REAL_32
 		do
+			create current_successors.make
+			current_state := problem.initial_state
+			current_state_path_cost := problem.cost (current_state)
+			current_tuple := [current_state,current_state_path_cost]
+			frontier.extend (current_tuple)
 
-			if problem.is_successful (problem.initial_state) then
+			if problem.is_successful (current_state) then
 				is_search_successful := true
-				successful_state := problem.initial_state
-			else
-				create aux.make
-				create frontier_state.make_with_params(problem.initial_state,problem.cost(problem.initial_state))
-				frontier.put (frontier_state)
-				from
-				until
-					is_search_successful or frontier.is_empty
-				loop
-					frontier_state := frontier.item
-					current_state := frontier_state.state
-					frontier.remove
-					if(problem.is_successful (current_state)) then
-						successful_state := current_state
-						is_search_successful:= true
-						explored.extend(current_state)
-						nr_of_visited_states := nr_of_visited_states + 1
-					else
-						if (not is_search_successful) then
-							current_successors:=problem.get_successors (current_state)
-							explored.extend(current_state)
-							nr_of_visited_states:=nr_of_visited_states + 1
-							from
-								current_successors.start
-							until
-								current_successors.exhausted or is_search_successful
-							loop
-								--  n = current succesor
-								--	if n is not in explored
-		        				--		if n is not in frontier
-		         				--		 frontier.add(n)
-		        				--		else if n is in frontier with higher cost
-		          				--		replace existing node with n
+				successful_state := current_state
+			end
 
-								successful_state := current_successors.item
+			from
+			until
+				frontier.is_empty
+			loop
 
-								if(not explored.has(successful_state))then
-									if(not stateInfrontier(successful_state)) then
-										aux.set_state (successful_state)
-										aux.set_cost(problem.cost(successful_state))
-										frontier.put(aux)
-									else
-										if(stateInFrontier(successful_state) and (costStateInFrontier(successful_state) > problem.cost(successful_state))) then
-											successful_state.set_parent (current_state)
-											setCostInFrontier(successful_state,problem.cost (successful_state))
-										end
-									end
-								end
-								current_successors.forth
+				current_successors.wipe_out
+				-- Pick the most promising state (i.e the one with lowest cost) from the frontier
+				-- and remove it from the "frontier" list;
+				current_tuple := remove_best_item (frontier)
+				current_state := current_tuple.state
+				-- Calculate how far the current_state is from the start.
+				current_state_path_cost := current_tuple.cost
+				explored.extend(current_state)
+				nr_of_visited_states := nr_of_visited_states + 1
+
+				if problem.is_successful (current_state) then
+					is_search_successful := true
+					successful_state := current_state
+				end
+
+				current_successors.append(problem.get_successors (current_state))
+				--for each of node's neighbors n
+				across
+						current_successors as curr_successor
+					loop
+						current_child := curr_successor.item
+						current_path_child := current_state_path_cost + problem.cost (current_child)
+						--if n is not in explored and n is not in frontier
+						if(not (explored.has(current_child)) and not (state_in_frontier(current_child,frontier))) then
+								frontier.extend ([current_child,current_path_child])
+						else
+							--n is in frontier with higher cost
+          					--replace existing node with n
+							if(state_in_frontier(current_child,frontier) and cost_in_frontier(current_child,frontier) > (current_path_child)) then
+								current_state:=current_child
+								current_state_path_cost:=current_path_child
+								current_successors.wipe_out
+								current_successors.append(problem.get_successors (current_state))
+								frontier:=replace_in_frontier([current_child,current_state_path_cost],frontier)
 							end
 						end
 					end
-					search_performed := True
-				end
 			end
+			search_performed := true
 		end
-
-feature
-	stateInFrontier(search_state : S): BOOLEAN
-			--It contains the state frontier
-	local
-		res:BOOLEAN
-		state_current : S
-		frontier_current : FERRED_STATE[RULE,S]
-		aux_frontier :LINKED_PRIORITY_QUEUE[FERRED_STATE[RULE,S]]
-	do
-		create aux_frontier.make
-		create frontier_current.make
-		res := false
-		if (not frontier.is_empty) then
-			from
-			until
-				res = true or frontier.is_empty
-			loop
-				frontier_current := frontier.item
-				state_current := frontier_current.state
-				if(state_current.is_equal(search_state)) then
-					res:= true
-				end
-				aux_frontier.put (frontier.item)
-				frontier.remove
-			end
-		end
-		frontier:=aux_frontier
-		Result:=res
-	ensure
-		result_false_if_void: search_state = void implies Result = false
-	end
-
-
-feature
-	costStateInFrontier(search_state : S): REAL_32
-			--Cost the state contain in a frontier
-	local
-		stop : BOOLEAN
-		state_current : S
-		cost_current : REAL_32
-		frontier_current : FERRED_STATE[RULE,S]
-		aux_frontier :LINKED_PRIORITY_QUEUE[FERRED_STATE[RULE,S]]
-	do
-		create aux_frontier.make
-		create frontier_current.make
-		from
-		until
-			stop or frontier.is_empty
-		loop
-			frontier_current := frontier.item
-			state_current := frontier_current.state
-			if(state_current.is_equal(search_state)) then
-				stop:=true
-				cost_current:= frontier_current.cost
-			end
-			aux_frontier.put (frontier.item)
-			frontier.remove
-		end
-		frontier:=aux_frontier
-		Result:= cost_current
-	end
-
-
-
-feature
-	setCostInFrontier(search_state : S ; new_cost : REAL_32)
-			-- Changes the cost of a state in frontier
-	local
-		stop : BOOLEAN
-		state_current : S
-		frontier_current : FERRED_STATE[RULE,S]
-		aux_frontier : LINKED_PRIORITY_QUEUE[FERRED_STATE[RULE,S]]
-	do
-		create aux_frontier.make
-		from
-		until
-			stop or frontier.is_empty
-		loop
-
-			create frontier_current.make
-			frontier_current:= frontier.item
-			state_current := frontier_current.state
-			if(state_current.is_equal(search_state)) then
-				frontier_current.set_cost(new_cost)
-				frontier.replace (frontier_current)
-				stop:=true
-			end
-			aux_frontier.put (frontier.item)
-			frontier.remove
-		end
-		frontier:=aux_frontier
-	end
-
 
 feature
 	reset_engine
@@ -232,7 +136,7 @@ feature
 
 feature -- Status Report
 
-	path_to_obtained_solution: LIST [S]
+	path_to_obtained_solution: LINKED_LIST [S]
 			-- Returns the path to the solution obtained from performed search.
 		local
 			current_state: S
@@ -277,8 +181,107 @@ feature -- Status Report
 
 	nr_of_visited_states: INTEGER
 			-- Number of states visited in the performed search.
+
 feature{NONE}
-	frontier :LINKED_PRIORITY_QUEUE[FERRED_STATE[RULE,S]]
+
+	cost_in_frontier(current_s : S ; state_list : LINKED_LIST [TUPLE [state: S; cost: REAL_32]]) : REAL_32
+			--Return the cost in the frontier
+		require
+			state_list/= void
+		local
+			found : BOOLEAN
+		do
+			found := false
+			from
+				state_list.start
+			until
+				(found or state_list.exhausted)
+			loop
+				if (current_s.is_equal(state_list.item.state)) then
+					found := true
+					Result:= state_list.item.cost
+				else
+					state_list.forth
+				end
+			end
+		end
+
+	remove_best_item (a_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]): TUPLE [state: S; cost: REAL]
+			-- Remove the best item, i.e. the one with lowest cost, from the given list "a_list";
+	require
+		a_list /= void
+	local
+		best_item_index: INTEGER
+	do
+		from
+			best_item_index := 1
+			a_list.start
+			Result := a_list.first
+		until
+			a_list.exhausted
+		loop
+			if a_list.item.cost < Result.cost then
+				Result := a_list.item
+				best_item_index := a_list.index
+			end
+			a_list.forth
+		end
+		if a_list.count > 0 then
+			a_list.go_i_th (best_item_index)
+			a_list.remove
+		end
+	ensure
+		result_is_consistent: old a_list.count > 0 implies Result /= void
+	end
+
+
+	state_in_frontier(current_s : S ; state_list :LINKED_LIST [TUPLE [state: S; cost: REAL]]) :BOOLEAN
+			-- the state is in the frontier		
+		require
+			state_list /= void
+		local
+			found : BOOLEAN
+		do
+			found := false
+			from
+				state_list.start
+			until
+				(found or state_list.exhausted)
+			loop
+				if (current_s.is_equal(state_list.item.state)) then
+					found := true
+				end
+				state_list.forth
+			end
+			Result := found
+		end
+
+
+	replace_in_frontier(current_s : TUPLE [state: S; cost: REAL_32] ; state_list :LINKED_LIST [TUPLE [state: S; cost: REAL_32]]) : LINKED_LIST [TUPLE [state: S; cost: REAL_32]]
+			-- replaces a state in frontier
+		require
+			state_list /= void
+		local
+			replace : BOOLEAN
+		do
+			replace := false
+			from
+				state_list.start
+			until
+				(replace or state_list.exhausted)
+			loop
+				if (current_s.state.is_equal(state_list.item.state)) then
+					state_list.replace (current_s)
+					replace := true
+				else
+					state_list.forth
+				end
+			end
+			Result:= state_list
+		end
+
+
+	frontier :LINKED_LIST[TUPLE[state : S;cost : REAL_32]]
 			-- Priority queue contatining states
 
 	explored: LINKED_LIST[S]
