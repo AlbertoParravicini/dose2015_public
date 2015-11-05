@@ -39,7 +39,7 @@ feature {NONE} -- Implementation attributes
 			-- List of the states that have been already visited, and the cost associated to them.
 			-- Optional data structure which is useful to not visit the same states twice, unless a
 			-- better path to them is found;
-			
+
 			-- using a linked list instead of a different data structure (an priority heap, for instance)
 			-- makes item insertion and retrieval slower, but makes other operations (e.g. iterating on the list)
 			-- easier to perform; moreover finding a specific state would still require to iterate on the data structure
@@ -168,42 +168,6 @@ feature -- Search Execution
 							current_successors.forth
 						end
 					end -- End of loop on successors;
-
-						-- If both the "closed" list and the "open" list are checked to see if the state was already present
-						-- with higher cost, it is possible to test the successfulness of the current successors without losing the
-						-- optimality of the solution;
-					if mark_closed_states = true and check_open_states = true then
-
-							-- Remove successors which aren't successful
-						from
-							current_successors.start
-						until
-							current_successors.exhausted
-						loop
-							if not problem.is_successful (current_successors.item) then
-								current_successors.remove
-							else
-								current_successors.forth
-							end
-						end
-
-							-- Of the remaining states, which are successful, pick the least expensive.
-						if current_successors.count > 0 then
-							from
-								current_successors.start
-								successful_state := current_successors.first
-							until
-								current_successors.exhausted
-							loop
-								if total_cost (current_successors.item) < total_cost (successful_state) then
-									successful_state := current_successors.item
-								end
-								current_successors.forth
-							end
-							is_search_successful := true
-							closed.extend (current_tuple)
-						end
-					end -- End of the optional successful state check loop
 				end
 			end -- End of the main loop;
 			search_performed := true
@@ -245,7 +209,9 @@ feature -- Status Setting
 			-- Set whether to memorize the visited states or not; when a new state is evaluated,
 			-- it is checked if the state was already visited before at a higher cost: if so,
 			-- the old state and its cost are replaced with the new one.
-			-- It is recommended to have this setting activated if the state space cardinality is rather small;
+			-- It is recommended to have this setting activated if the state space cardinality is rather small.
+			-- Substituting the state, instead of just checking for its presence, guarantees a sightly smaller list size,
+			-- but it doesn't slow down the algorithm as the list would be scanned anyway;
 		require
 			search_not_performed: search_performed = false
 			search_not_successful: is_search_successful = false
@@ -264,7 +230,9 @@ feature -- Status Setting
 			-- Set whether to memorize the visited states or not; when a new state is evaluated,
 			-- it is checked if the state was already put in the queue with a higher cost: if so,
 			-- the old state and its cost are replaced with the new one.
-			-- It is recommended to have this setting activated if the state space cardinality is rather small;
+			-- It is recommended to have this setting activated if the state space cardinality is rather small.
+			-- Substituting the state, instead of just checking for its presence, guarantees a sightly smaller list size,
+			-- but it doesn't slow down the algorithm as the list would be scanned anyway;
 		require
 			search_not_performed: search_performed = false
 			search_not_successful: is_search_successful = false
