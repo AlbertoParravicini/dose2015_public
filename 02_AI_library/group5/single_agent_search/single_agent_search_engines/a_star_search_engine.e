@@ -88,22 +88,25 @@ feature -- Search Execution
 			current_tuple: TUPLE [state: S; cost: REAL]
 			current_successors: LINKED_LIST [S]
 			useful_state: BOOLEAN
+			current_successor_path_cost: REAL
 		do
 			create current_successors.make
 			current_state := problem.initial_state
 			current_state_path_cost := path_cost (current_state)
 			current_tuple := [current_state, current_state_path_cost + total_cost (current_state)]
 			open.extend (current_tuple)
-			nr_of_visited_states := nr_of_visited_states + 1
 
 				-- End if the first state is successful;
 			if problem.is_successful (current_state) then
 				is_search_successful := true
 				successful_state := current_state
+				nr_of_visited_states := nr_of_visited_states + 1
 			end
+
 			if mark_closed_states = true then
 				closed.extend (current_tuple)
 			end
+
 			from
 			until
 				open.is_empty or is_search_successful = true
@@ -139,6 +142,7 @@ feature -- Search Execution
 						current_successors.exhausted or is_search_successful = true
 					loop
 						useful_state := false
+						current_successor_path_cost := current_state_path_cost + total_cost (current_successors.item)
 
 							-- If "mark_closed_states" is set to true,
 							-- check if the current successor was already visited with a higher cost:
@@ -146,7 +150,7 @@ feature -- Search Execution
 							-- or if it is the first time it is visited,
 							-- proceed to evaluate its presence in the "open" list;
 						if mark_closed_states = true then
-							useful_state := replace_list_state (closed, current_successors.item)
+							useful_state := replace_list_state (closed, [current_successors.item, current_successor_path_cost])
 						end
 
 							-- If "check_open_states" is set to true,
@@ -154,19 +158,16 @@ feature -- Search Execution
 							-- if so, replace it in the "open" list; if it is not present, add it;
 						if check_open_states = true then
 							if mark_closed_states = false or (mark_closed_states = true and useful_state = true) then
-								useful_state := replace_list_state (open, current_successors.item)
+								useful_state := replace_list_state (open, [current_successors.item, current_successor_path_cost])
 							end
 						end
 
 							-- Add the current successor to the open list, along with its cost;
 						if (mark_closed_states = false or useful_state = true) and (check_open_states = false or useful_state = true) then
-							open.extend ([current_successors.item, current_state_path_cost + total_cost (current_successors.item)])
+							open.extend ([current_successors.item, current_successor_path_cost])
 						end
-						if mark_closed_states = true and check_open_states = true and useful_state = false then
-							current_successors.remove
-						else
-							current_successors.forth
-						end
+
+						current_successors.forth
 					end -- End of loop on successors;
 				end
 			end -- End of the main loop;
@@ -311,6 +312,8 @@ feature {NONE} -- Implementation routines / procedures
 			current_cost: REAL
 			current_state: S
 			first_state_found: BOOLEAN
+			-- Saving the parent of the current state is a small optimization;
+			current_parent: S
 		do
 			from
 				current_cost := 0
@@ -319,14 +322,15 @@ feature {NONE} -- Implementation routines / procedures
 				first_state_found = true
 			loop
 				Result := Result + problem.cost (current_state)
-				if current_state.parent = void then
+				current_parent := current_state.parent
+				if current_parent = void then
 					first_state_found := true
 				else
-					current_state := current_state.parent
+					current_state := current_parent
 				end
 			end
 		ensure
-			Result >= 0
+			non_negative_result: Result >= 0
 		end
 
 	total_cost (a_state: S): REAL
@@ -342,12 +346,13 @@ feature {NONE} -- Implementation routines / procedures
 			result_non_negative: Result >= 0
 		end
 
-	replace_list_state (a_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]; a_state: S): BOOLEAN
+	replace_list_state (a_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]; a_tuple: TUPLE[state: S; cost: REAL]): BOOLEAN
 			-- Check if a state is already present in closed with a lower cost, if so replace it;
 			-- Returns true if the state was substituted or if the state wasn't found;
 		require
 			a_list /= void
-			a_state /= void
+			a_tuple /= void
+			a_tuple.state /= void
 		local
 			state_substituted: BOOLEAN
 			a_state_cost: REAL
@@ -356,16 +361,15 @@ feature {NONE} -- Implementation routines / procedures
 			from
 				state_substituted := false
 				a_list.start
-				a_state_cost := path_cost (a_state) + total_cost (a_state)
 				already_present := false
 				a_list.compare_objects
 			until
 				a_list.exhausted or state_substituted = true
 			loop
-				if equal (a_list.item.state, a_state) then
+				if equal (a_list.item.state, a_tuple.state) then
 					already_present := true
-					if a_list.item.cost > a_state_cost then
-						a_list.replace ([a_state, a_state_cost])
+					if a_list.item.cost > a_tuple.cost then
+						a_list.replace ([a_tuple.state, a_tuple.cost])
 						state_substituted := true
 					end
 				end
@@ -374,7 +378,7 @@ feature {NONE} -- Implementation routines / procedures
 			Result := not already_present or state_substituted
 		ensure
 			a_list_size_not_changed: old a_list.count = a_list.count
-			state_already_present_with_higher_cost: Result = false implies across a_list as a_tuple some equal (a_tuple.item.state, a_state) end
+			state_already_present_with_higher_cost: Result = false implies across a_list as curr_tuple some equal (curr_tuple.item.state, a_tuple.state) end
 		end
 
 	remove_best_item (a_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]): TUPLE [state: S; cost: REAL]

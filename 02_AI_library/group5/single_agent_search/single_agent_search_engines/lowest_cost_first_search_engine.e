@@ -88,7 +88,9 @@ feature -- Search Execution
 					-- Calculate how far the current_state is from the start.
 				current_state_path_cost := current_tuple.cost
 
-				explored.extend (current_tuple)
+				if mark_explored_states = true then
+					explored.extend (current_tuple)
+				end
 
 				nr_of_visited_states := nr_of_visited_states + 1
 				if problem.is_successful (current_state) then
