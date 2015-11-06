@@ -106,7 +106,7 @@ feature -- Search Execution
 						current_successors_with_heuristic_value.exhausted
 					loop
 							-- For each state:
-							-- 1) check if already visited
+							-- 1) check if is an ancestor (optional)
 							-- 2) check if successful
 							-- 3) if successful, set the result
 						if (cycle_checking) then
@@ -140,6 +140,8 @@ feature -- Status setting
 
 	reset_engine
 			-- Resets engine, so that search can be restarted.
+			-- After a reset, the user can restart the search immediately,
+			-- optionally he can enable cycle checking
 		do
 			create stack.make
 			stack.put (problem.initial_state)
@@ -207,19 +209,19 @@ feature -- Status Report
 			-- Number of states visited in the performed search.
 
 feature {NONE}
-	-- Local variables
 
 	stack: LINKED_STACK [S]
-			-- Stack of the states that will be visited, LIFO
+			-- Stack of the states that will be visited, LIFO policy
 
 	successful_state: S
 			-- Searched state
 
 	cycle_checking: BOOLEAN
 			-- If true, the algorithm will avoid cycles
+			-- If false, the algorithm will not avoid cycles
 
 	partial_path (state: S): LIST [S]
-			-- Returns the path to the solution obtained from performed search.
+			-- Returns the path from the initial state to the given state
 			-- If there is no path, an empty list is returned
 		local
 			current_state: S
@@ -252,8 +254,8 @@ feature {NONE}
 		end
 
 	sort_list_with_tuples (my_list: LIST [TUPLE [state: S; value: REAL]])
-			-- sorts the given list from the state with the lowesr value to the one with the highest value
-			-- insertion sort
+			-- Sorts the given list from the state with the lowest value to the one with the highest value.
+			-- It performs an insertion sort
 		local
 			i, j: INTEGER
 			temp_tuple: TUPLE [state: S; value: REAL]
