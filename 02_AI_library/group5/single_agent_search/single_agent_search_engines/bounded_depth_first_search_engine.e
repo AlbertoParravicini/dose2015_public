@@ -134,6 +134,8 @@ feature -- Search Execution
 
 	reset_engine
 			-- Resets engine, so that search can be restarted.
+			-- The user can immediately restart the search, optionally he can enable cycle checking
+			-- using the given routine
 		do
 			create stack.make
 			stack.put (0, problem.initial_state)
@@ -231,16 +233,17 @@ feature -- Status Report
 feature {NONE}
 
 	stack: LINKED_STACK [TUPLE [depth: INTEGER; state: S]]
-			-- Where the states will be saved
+			-- Where the states will be saved, LIFO policy
 
 	cycle_checking: BOOLEAN
 			-- If true, the algorithm will avoid cycles
+			-- If false, the algorithm will not avoid cycles
 
 	successful_state: S
-			-- Searched state
+			-- Searched state, is consistent with the problem if and only if the search is successful
 
 	partial_path (state: S): LIST [S]
-			-- Returns the path to the solution obtained from performed search.
+			-- Returns the path from the initial state to the given state
 			-- If there is no path, an empty list is returned
 		local
 			current_state: S
