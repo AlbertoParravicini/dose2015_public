@@ -32,8 +32,10 @@ feature {NONE} -- Initialization
 				create jar_puzzle.make
 				create engine.make (jar_puzzle)
 
-				engine.set_mark_closed_state (false)
+				--engine.set_mark_closed_state (false)
 				--engine.set_check_open_state (false)
+
+
 
 			until
 				found or curr_depth=20
@@ -63,7 +65,7 @@ feature {NONE} -- Initialization
 					curr_depth := curr_depth+1
 					engine.reset_engine
 
-					-- engine.set_max_depth (curr_depth)
+				 --engine.set_max_depth (curr_depth)
 				end
 			end
 		end
