@@ -32,7 +32,7 @@ feature {NONE} -- Initialization
 				create jar_puzzle.make
 				create engine.make (jar_puzzle)
 
-				--engine.set_mark_closed_state (true)
+				engine.set_mark_explored_states (false)
 				--engine.set_check_open_state (true)
 
 

@@ -16,7 +16,7 @@ note
 	revision: "$Revision: 0.1 $"
 
 class
-	LOWEST_COST_FIRST_SEARCH_ENGINE [RULE -> ANY, S -> SEARCH_STATE [RULE], P -> STATE_COST_SEARCH_PROBLEM [RULE, S]]
+	LOWEST_COST_FIRST_SEARCH_ENGINE [RULE -> ANY, reference S -> SEARCH_STATE [RULE], P -> STATE_COST_SEARCH_PROBLEM [RULE, S]]
 
 inherit
 
@@ -32,13 +32,19 @@ feature -- Creation
 			-- LOWEST_COST_FIRST_SEARCH_ENGINE with a problem
 		require
 			other_problem /= Void
+			other_problem.initial_state /= Void
 		do
 			set_problem (other_problem)
-			mark_explored_states := true
+			mark_explored_states := false
 			reset_engine
 		ensure
-			problem = other_problem
-			not search_performed
+			problem_set: problem /= void and then equal(problem, other_problem)
+			explored_state_not_marked: mark_explored_states = false
+			search_not_performed: not search_performed
+			explored_reinitialized: explored /= void and then explored.count = 0
+			successful_state_resetted: successful_state = void
+		    explored_uses_equal: explored.object_comparison = true
+			visited_states_reset: nr_of_visited_states = 0
 		end
 
 feature -- Search Execution
@@ -63,10 +69,11 @@ feature -- Search Execution
 			current_state_path_cost := problem.cost (current_state)
 			current_tuple := [current_state, current_state_path_cost]
 			frontier.extend (current_tuple)
-			nr_of_visited_states := nr_of_visited_states + 1
+
 			if problem.is_successful (current_state) then
 				is_search_successful := true
 				successful_state := current_state
+				nr_of_visited_states := nr_of_visited_states + 1
 			end
 
 			from
@@ -98,29 +105,35 @@ feature -- Search Execution
 					current_path_child := current_state_path_cost + problem.cost (current_child)
 
 					if (mark_explored_states = true) then
-						if not (state_in_frontier (current_child, explored)) then
+						if not (state_in_list (current_child, explored)) then
 							useful_state := true
 						elseif
-							cost_in_frontier (current_child, explored) > (current_path_child)
+							cost_in_list (current_child, explored) > (current_path_child)
 						then
-							explored := replace_in_frontier ([current_child, current_state_path_cost], explored)
+							explored := replace_in_list ([current_child, current_state_path_cost], explored)
 							useful_state := true
 						end
 					end
 
 						--if n is not in explored and n is not in frontier
-					if ((mark_explored_states = false or (mark_explored_states = true and useful_state = true)) and not (state_in_frontier (current_child, frontier))) then
+					if ((mark_explored_states = false or (mark_explored_states = true and useful_state = true)) and not (state_in_list (current_child, frontier))) then
 						frontier.extend ([current_child, current_path_child])
 					else
 							-- If current_child is already in the frontier, but with an higher cost,
 							-- replace the existing state with current_child and its cost;
-						if (state_in_frontier (current_child, frontier) and cost_in_frontier (current_child, frontier) > (current_path_child)) then
-							frontier := replace_in_frontier ([current_child, current_state_path_cost], frontier)
+						if (state_in_list (current_child, frontier) and cost_in_list (current_child, frontier) > (current_path_child)) then
+							frontier := replace_in_list ([current_child, current_state_path_cost], frontier)
 						end
 					end
 				end
 			end
 			search_performed := true
+		ensure then
+			no_visited_states: nr_of_visited_states > old nr_of_visited_states
+			at_least_one_state_visited: mark_explored_states = true implies (explored.count > old explored.count)
+			search_successful_nec: is_search_successful implies problem.is_successful (successful_state)
+			search_successful_suc: (search_performed = true and successful_state /= void and then problem.is_successful (successful_state)) implies is_search_successful
+			routine_invariant: old mark_explored_states = mark_explored_states and equal(problem, old problem)
 		end
 
 	reset_engine
@@ -133,11 +146,15 @@ feature -- Search Execution
 			nr_of_visited_states := 0
 			frontier.compare_objects
 			explored.compare_objects
+			successful_state := void
 		ensure then
-			successful_state_resetted: successful_state = void
 			search_not_performed: search_performed = false
 			search_not_successful: is_search_successful = false
-			no_visited_states: nr_of_visited_states = 0
+			closed_reinitialized: explored /= void and then explored.count = 0
+			successful_state_resetted: successful_state = void
+			explored_uses_equal: explored.object_comparison = true
+			visited_states_reset: nr_of_visited_states = 0
+			routine_invariant: old mark_explored_states = mark_explored_states and equal(problem, old problem)
 		end
 
 feature -- Status Report
@@ -167,6 +184,7 @@ feature -- Status Report
 			first_state_is_consistent: Result.is_empty or else equal (Result.first, problem.initial_state)
 			last_state_is_consistent: Result.is_empty or else problem.is_successful (Result.last)
 			empty_list_is_consistent: (Result.is_empty implies (not is_search_successful)) and ((not is_search_successful) implies Result.is_empty)
+			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_explored_states = mark_explored_states and equal(problem, old problem) and equal(explored, old explored) and equal(successful_state, old successful_state)
 		end
 
 	obtained_solution: detachable S
@@ -179,6 +197,7 @@ feature -- Status Report
 			if_result_exists_not_void: (is_search_successful and search_performed) implies Result = successful_state
 			successful_search: is_search_successful implies problem.is_successful (Result)
 			unsuccessful_search: (not is_search_successful) implies Result = void
+			routine_invariant: old search_performed = search_performed and old is_search_successful = is_search_successful and old mark_explored_states = mark_explored_states and equal(problem, old problem) and equal(explored, old explored) and equal(successful_state, old successful_state)
 		end
 
 	is_search_successful: BOOLEAN
@@ -188,6 +207,9 @@ feature -- Status Report
 			-- Number of states visited in the performed search.
 
 	mark_explored_states: BOOLEAN
+			-- Memorize the visited states in a list, then when a new state is generated, check if it was already visited:
+			-- if it was visited at a higher cost, replace it with the new state and the new cost;
+
 
 feature -- Status setting
 
@@ -212,8 +234,8 @@ feature -- Status setting
 
 feature {NONE}
 
-	cost_in_frontier (current_s: S; state_list: LINKED_LIST [TUPLE [state: S; cost: REAL_32]]): REAL_32
-			-- Return the cost of a given state contained in the frontier;
+	cost_in_list (current_s: S; state_list: LINKED_LIST [TUPLE [state: S; cost: REAL_32]]): REAL_32
+			-- Return the cost of a given state contained in the given list;
 		require
 			current_s /= void
 			state_list /= void
@@ -233,6 +255,8 @@ feature {NONE}
 					state_list.forth
 				end
 			end
+		ensure
+			result_is_positive: Result >= 0
 		end
 
 	remove_best_item (a_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]): TUPLE [state: S; cost: REAL]
@@ -263,8 +287,8 @@ feature {NONE}
 			result_is_consistent: old a_list.count > 0 implies Result /= void
 		end
 
-	state_in_frontier (current_s: S; state_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]): BOOLEAN
-			-- Is the state contained in the frontier?
+	state_in_list(current_s: S; state_list: LINKED_LIST [TUPLE [state: S; cost: REAL]]): BOOLEAN
+			-- Is the state contained in the given list?
 		require
 			current_s /= void
 			state_list /= void
@@ -283,10 +307,13 @@ feature {NONE}
 				state_list.forth
 			end
 			Result := found
+		ensure
+			result_consistent_nec: Result = true implies across state_list as curr_state some equal(curr_state.item.state, current_s) end
+			result_consistent_suf: across state_list as curr_state some equal(curr_state.item.state, current_s) end implies Result = true
 		end
 
-	replace_in_frontier (current_s: TUPLE [state: S; cost: REAL_32]; state_list: LINKED_LIST [TUPLE [state: S; cost: REAL_32]]): LINKED_LIST [TUPLE [state: S; cost: REAL_32]]
-			-- replaces a state in frontier
+	replace_in_list (current_s: TUPLE [state: S; cost: REAL_32]; state_list: LINKED_LIST [TUPLE [state: S; cost: REAL_32]]): LINKED_LIST [TUPLE [state: S; cost: REAL_32]]
+			-- Replaces a state contained in the given list;
 		require
 			current_s /= void
 			state_list /= void
@@ -307,13 +334,18 @@ feature {NONE}
 				end
 			end
 			Result := state_list
+		ensure
+			result_not_void: Result /= void
+			result_contains_given_state: across Result as curr_item some equal(curr_item.item.state, current_s) and curr_item.item.cost = current_s.cost end
 		end
 
 	frontier: LINKED_LIST [TUPLE [state: S; cost: REAL_32]]
 			-- Priority queue contatining states
 
 	explored: LINKED_LIST [TUPLE [state: S; cost: REAL_32]]
-			-- States visited
+			-- List of the states that have been already visited, and the cost associated to them.
+			-- Optional data structure which is useful to not visit the same states twice, unless a
+			-- better path to them is found;
 
 	successful_state: S
 			-- Successful state
