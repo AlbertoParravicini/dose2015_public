@@ -210,16 +210,17 @@ feature -- Status Report
 feature {NONE}
 
 	current_depth: INTEGER
-			-- current depth
+			-- Current depth that is the max depth of the current depth first search
 
 	successful_state: S
-			-- solution state
+			-- Solution state
 
 	cycle_checking: BOOLEAN
 			-- If true, the algorithm will avoid cycles
+			-- If false, the algorithm will not avoid cycles
 
 	go_deeper
-			-- increases current depth according to step
+			-- Increases current depth according to step
 		do
 			current_depth := current_depth + step
 		ensure
