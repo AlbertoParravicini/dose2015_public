@@ -35,8 +35,11 @@ feature -- Initialisation
 		end
 
 feature {NONE}
+
 	jar_a: INTEGER
+
 	jar_b: INTEGER
+
 	jar_c: INTEGER
 
 feature

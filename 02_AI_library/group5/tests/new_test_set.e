@@ -8,7 +8,7 @@ note
 	testing: "type/manual"
 
 class
-	WATER_JAR_TEST_CLASS
+	A_STAR_TEST
 
 inherit
 	EQA_TEST_SET
@@ -29,7 +29,7 @@ feature -- Test routines
 			create engine.make (jar_puzzle)
 			engine.set_check_open_state (true)
 			engine.set_mark_closed_state (true)
-			create solver.make_with_parameters (engine, -1, jar_puzzle)
+			create solver.make_with_parameters (engine, jar_puzzle)
 
 
 			search_result := engine.is_search_successful

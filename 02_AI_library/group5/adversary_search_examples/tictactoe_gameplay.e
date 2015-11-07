@@ -13,18 +13,18 @@ class
 create
 	make
 
-feature -- Initialisation
+feature -- Initialization
 
 	make
 		local
-			engine: MINIMAX_ENGINE[STRING, TICTACTOE_STATE, TICTACTOE]
+			engine: NEGASCOUT_ENGINE[STRING, TICTACTOE_STATE, TICTACTOE]
 			problem: TICTACTOE
 			initial_state: TICTACTOE_STATE
 			current_state: TICTACTOE_STATE
 		do
 			create initial_state.make
 			create problem.make
-			create engine.make_with_depth (problem, 6)
+			create engine.make (problem)
 
 			engine.perform_search (initial_state)
 			print ("Obtained value: " + engine.obtained_value.out + "%N")

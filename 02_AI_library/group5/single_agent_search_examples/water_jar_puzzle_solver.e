@@ -26,54 +26,64 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		local
 			jar_puzzle: WATER_JAR_PUZZLE
-			engine: A_STAR_SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
+			engine: BOUNDED_BREADTH_FIRST_SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
 			curr_depth: INTEGER
 			found: BOOLEAN
 			i: INTEGER
 			path: LIST [WATER_JAR_PUZZLE_STATE]
 		do
-			from
-				curr_depth := 4
-				create jar_puzzle.make_with_initial_state (0, 13, 7)
-				create engine.make (jar_puzzle)
-				engine.set_mark_closed_state (true)
-				engine.set_check_open_state (true)
-			until
-				found or curr_depth = 20
-			loop
-				engine.perform_search
-				if (engine.is_search_successful) then
-					print ("solution found: " + engine.obtained_solution.out + " sat depth " + curr_depth.out + ".%N")
-					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
-					print ("path to solution: %N")
-					from
-						i := 1
-						path := engine.path_to_obtained_solution
-					until
-						i > path.count
-					loop
-						if path.i_th (i).rule_applied /= Void then
-								-- skips the first state that has void rule
-							print ("    " + path.i_th (i).rule_applied + "%N")
-						end
-						print (path.i_th (i).out + "%N")
-						i := i + 1
-					end
-					found := True
-				else
-					print ("no solution found with depth " + curr_depth.out + ".%N")
-					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
-					curr_depth := curr_depth + 1
-					engine.reset_engine
+--			from
+--				curr_depth := 4
+--				create jar_puzzle.make_with_initial_state (0, 13, 7)
+--				create engine.make (jar_puzzle)
 
-						-- engine.set_max_depth (curr_depth)
-				end
-			end
+--				engine.set_max_depth (curr_depth)
+--				engine.set_check_queue (true)
+--				engine.set_mark_visited_states (true)
+
+--				--engine.set_mark_closed_state (true)
+--				--engine.set_check_open_state (true)
+--			until
+--				found or curr_depth = 20
+--			loop
+--				engine.perform_search
+--				if (engine.is_search_successful) then
+--					print ("solution found: " + engine.obtained_solution.out + " sat depth " + curr_depth.out + ".%N")
+--					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
+--					print ("path to solution: %N")
+--					from
+--						i := 1
+--						path := engine.path_to_obtained_solution
+--					until
+--						i > path.count
+--					loop
+--						if path.i_th (i).rule_applied /= Void then
+--								-- skips the first state that has void rule
+--							print ("    " + path.i_th (i).rule_applied + "%N")
+--						end
+--						print (path.i_th (i).out + "%N")
+--						i := i + 1
+--					end
+--					found := True
+--				else
+--					print ("no solution found with depth " + curr_depth.out + ".%N")
+--					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
+--					curr_depth := curr_depth + 1
+--					engine.reset_engine
 
 
+--					engine.set_max_depth (curr_depth)
+--				end
+--			end
+					create jar_puzzle.make_with_initial_state (0, 13, 7)
+					create engine.make (jar_puzzle)
+					engine.set_max_depth (20)
+					engine.set_check_queue (true)
+					engine.set_mark_visited_states (true)
+					make_with_parameters (engine, jar_puzzle)
 		end
 
-	make_with_parameters (a_engine: SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]; a_max_depth: INTEGER; a_jar_puzzle: WATER_JAR_PUZZLE)
+	make_with_parameters (a_engine: SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]; a_jar_puzzle: WATER_JAR_PUZZLE)
 			-- Used in tests
 		local
 			jar_puzzle: WATER_JAR_PUZZLE
@@ -100,6 +110,7 @@ feature {NONE} -- Initialization
 					end
 					print (path.i_th (i).out + "%N")
 					i := i + 1
+
 				end
 				found := True
 			else

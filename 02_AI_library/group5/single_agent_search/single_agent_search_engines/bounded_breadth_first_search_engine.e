@@ -121,13 +121,13 @@ feature -- Search Execution
 			if (mark_previous_states = true) then
 				marked_states.extend (current_state)
 			end
-				-- Activate it if you want to include the original state as "visited state";
-			nr_of_visited_states := nr_of_visited_states + 1
+
 
 				-- What if the first state is already successful?
 			if problem.is_successful (current_state) then
 				is_search_successful := true
 				successful_state := current_state
+				nr_of_visited_states := nr_of_visited_states + 1
 			end
 
 				-- Main loop;
@@ -146,7 +146,7 @@ feature -- Search Execution
 				current_state := current_tuple.state
 				current_depth := current_tuple.depth
 				queue.remove
-
+				nr_of_visited_states := nr_of_visited_states + 1
 					-- Check if the removed state is successful, if so don't start the main loop;
 				if (problem.is_successful (current_state)) then
 					is_search_successful := true
@@ -154,12 +154,13 @@ feature -- Search Execution
 
 						-- Get the successors of the state, if the removed state isn't successful;
 				elseif (current_depth < maximum_depth) then
+
 					current_successors.append (problem.get_successors (current_state))
+
 					from
 						current_successors.start
 					invariant
 						nr_of_visited_states_is_negative: nr_of_visited_states >= 0
-						successor_address_different_from_parent: current_successors.item /= current_state
 					until
 						current_successors.exhausted or is_search_successful
 					loop
@@ -170,7 +171,7 @@ feature -- Search Execution
 							if (mark_previous_states = true) then
 								marked_states.extend (current_successors.item)
 							end
-							nr_of_visited_states := nr_of_visited_states + 1
+
 								-- Check if the current successor is successful;
 							if problem.is_successful (current_successors.item) then
 								is_search_successful := true

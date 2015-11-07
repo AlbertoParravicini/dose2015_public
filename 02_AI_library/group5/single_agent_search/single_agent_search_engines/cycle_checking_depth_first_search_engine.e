@@ -89,13 +89,13 @@ feature -- Search Execution
 						current_successors.exhausted
 					loop
 							-- For each state:
-							-- 1) check if already visited
+							-- 1) check if the state is an ancestor
 							-- 2) check if successful
 							-- 3) if successful, set the result
 						current_partial_path := partial_path (current_state)
 						current_partial_path.compare_objects
 						if (not current_partial_path.has (current_successors.item)) then
-								-- The state hasn't been visited
+								-- The state is not an ancestor
 							if (problem.is_successful (current_successors.item)) then
 									-- If it is a successful state
 								nr_of_visited_states := nr_of_visited_states + 1
@@ -186,13 +186,13 @@ feature {NONE}
 	-- Local variables
 
 	stack: LINKED_STACK [S]
-			-- Stack of the states that will be visited, LIFO
+			-- Stack of the states that will be visited, LIFO policy
 
 	successful_state: S
 			-- Searched state
 
 	partial_path (state: S): LIST [S]
-			-- Returns the path to the solution obtained from performed search.
+			-- Returns the path from the initial state to the given state
 			-- If there is no path, an empty list is returned
 		local
 			current_state: S
