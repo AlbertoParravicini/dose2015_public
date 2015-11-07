@@ -69,10 +69,12 @@ feature {NONE} -- Initialization
 						-- engine.set_max_depth (curr_depth)
 				end
 			end
+
+
 		end
 
 	make_with_parameters (a_engine: SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]; a_max_depth: INTEGER; a_jar_puzzle: WATER_JAR_PUZZLE)
-			-- Initialization for `Current'.
+			-- Used in tests
 		local
 			jar_puzzle: WATER_JAR_PUZZLE
 			curr_depth: INTEGER
