@@ -76,19 +76,4 @@ feature {NONE} -- Initialization
 				end
 			end
 		end
-
-	make_with_parameters (a_engine: SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]; a_jar_puzzle: WATER_JAR_PUZZLE)
-			-- Used in tests
-		local
-			jar_puzzle: WATER_JAR_PUZZLE
-			curr_depth: INTEGER
-			found: BOOLEAN
-			i: INTEGER
-			path: LIST [WATER_JAR_PUZZLE_STATE]
-		do
-			test_engine := a_engine
-			jar_puzzle := a_jar_puzzle
-			test_engine.perform_search
-		end
-
 end

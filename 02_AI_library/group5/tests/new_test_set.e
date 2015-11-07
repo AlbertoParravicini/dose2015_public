@@ -25,7 +25,6 @@ feature -- Test routines
 			testing: "single-agent.search-examples/{WATER_JAR_PUZZLE_SOLVER}"
 		local
 			engine: A_STAR_SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
-			solver: WATER_JAR_PUZZLE_SOLVER
 			jar_puzzle: WATER_JAR_PUZZLE
 		do
 			nr_vis_states := 0
@@ -34,7 +33,7 @@ feature -- Test routines
 			create engine.make (jar_puzzle)
 			engine.set_check_open_state (true)
 			engine.set_mark_closed_state (true)
-			create solver.make_with_parameters (engine, jar_puzzle)
+			engine.perform_search
 			search_result := engine.is_search_successful
 		ensure
 			search_result = true
@@ -45,7 +44,6 @@ feature -- Test routines
 			testing: "single-agent.search-examples/{WATER_JAR_PUZZLE_SOLVER}"
 		local
 			engine: A_STAR_SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
-			solver: WATER_JAR_PUZZLE_SOLVER
 			jar_puzzle: WATER_JAR_PUZZLE
 		do
 			nr_vis_states := 0
@@ -54,7 +52,7 @@ feature -- Test routines
 			create engine.make (jar_puzzle)
 			engine.set_check_open_state (false)
 			engine.set_mark_closed_state (true)
-			create solver.make_with_parameters (engine, jar_puzzle)
+			engine.perform_search
 			search_result := engine.is_search_successful
 		ensure
 			search_result = true
@@ -65,7 +63,6 @@ feature -- Test routines
 			testing: "single-agent.search-examples/{WATER_JAR_PUZZLE_SOLVER}"
 		local
 			engine: A_STAR_SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
-			solver: WATER_JAR_PUZZLE_SOLVER
 			jar_puzzle: WATER_JAR_PUZZLE
 		do
 			nr_vis_states := 0
@@ -74,7 +71,7 @@ feature -- Test routines
 			create engine.make (jar_puzzle)
 			engine.set_check_open_state (false)
 			engine.set_mark_closed_state (false)
-			create solver.make_with_parameters (engine, jar_puzzle)
+			engine.perform_search
 			search_result := engine.is_search_successful
 		ensure
 			search_result = true
@@ -85,7 +82,6 @@ feature -- Test routines
 			testing: "single-agent.search-examples/{WATER_JAR_PUZZLE_SOLVER}"
 		local
 			engine: A_STAR_SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
-			solver: WATER_JAR_PUZZLE_SOLVER
 			jar_puzzle: WATER_JAR_PUZZLE
 		do
 			nr_vis_states := 0
@@ -94,7 +90,7 @@ feature -- Test routines
 			create engine.make (jar_puzzle)
 			engine.set_check_open_state (true)
 			engine.set_mark_closed_state (true)
-			create solver.make_with_parameters (engine, jar_puzzle)
+			engine.perform_search
 			search_result := engine.is_search_successful
 			nr_vis_states := engine.nr_of_visited_states
 		ensure
@@ -107,7 +103,6 @@ feature -- Test routines
 			testing: "single-agent.search-examples/{WATER_JAR_PUZZLE_SOLVER}"
 		local
 			engine: A_STAR_SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
-			solver: WATER_JAR_PUZZLE_SOLVER
 			jar_puzzle: WATER_JAR_PUZZLE
 		do
 			nr_vis_states := 0
@@ -116,7 +111,7 @@ feature -- Test routines
 			create engine.make (jar_puzzle)
 			engine.set_check_open_state (true)
 			engine.set_mark_closed_state (true)
-			create solver.make_with_parameters (engine, jar_puzzle)
+			engine.perform_search
 			search_result := engine.is_search_successful
 			nr_vis_states := engine.nr_of_visited_states
 		ensure
@@ -129,7 +124,6 @@ feature -- Test routines
 			testing: "single-agent.search-examples/{WATER_JAR_PUZZLE_SOLVER}"
 		local
 			engine: A_STAR_SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
-			solver: WATER_JAR_PUZZLE_SOLVER
 			jar_puzzle: WATER_JAR_PUZZLE
 		do
 			search_result := false
@@ -137,7 +131,7 @@ feature -- Test routines
 			create engine.make (jar_puzzle)
 			engine.set_check_open_state (true)
 			engine.set_mark_closed_state (true)
-			create solver.make_with_parameters (engine, jar_puzzle)
+			engine.perform_search
 			search_result := engine.is_search_successful
 		ensure
 			search_result = false
@@ -148,7 +142,6 @@ feature -- Test routines
 			testing: "single-agent.search-examples/{WATER_JAR_PUZZLE_SOLVER}"
 		local
 			engine: A_STAR_SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
-			solver: WATER_JAR_PUZZLE_SOLVER
 			jar_puzzle: WATER_JAR_PUZZLE
 		do
 			search_result := false
@@ -156,7 +149,7 @@ feature -- Test routines
 			create engine.make (jar_puzzle)
 			engine.set_check_open_state (true)
 			engine.set_mark_closed_state (true)
-			create solver.make_with_parameters (engine, jar_puzzle)
+			engine.perform_search
 			search_result := engine.is_search_successful
 		ensure
 			search_result = false
