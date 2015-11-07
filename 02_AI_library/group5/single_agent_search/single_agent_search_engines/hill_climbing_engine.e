@@ -61,7 +61,7 @@ feature {NONE} -- Implementation
 		-- State with heuristic value better than its neighbors.
 
 
-	update_current_maximum_state_from_neighbors (current_best_heuristic_value: REAL neighbors_list: LIST [S]): BOOLEAN
+	update_current_maximum_state_from_neighbors (current_best_heuristic_value: REAL; neighbors_list: LIST [S]): BOOLEAN
 		-- For each successor compare the current best heuristic value to find a state better than current_maximum_state.
 		-- Return true if current_maximum_state was updated.
 

@@ -15,6 +15,11 @@ note
 class
 	STEEPEST_HILL_CLIMBING_ENGINE[RULE -> ANY, S -> SEARCH_STATE[RULE], P -> HEURISTIC_SEARCH_PROBLEM [RULE, S]]
 
+
+-- To avoid duplication of many lines of code has been inherited class HILL_CLIMBING_ENGINE.
+-- The advantage is a code that is easy to update, clean and legible.
+-- The disadvantage is that the class that is inherited is to be included in the project, but this
+-- is not a real disadvantage because when you import an entire library will import all its classes.
 inherit
 	HILL_CLIMBING_ENGINE [RULE, S, P]
         redefine
@@ -28,7 +33,7 @@ create
 feature {NONE} -- Implementation
 
 
-	update_current_maximum_state_from_neighbors (a_current_best_heuristic_value: REAL neighbors_list: LIST [S]): BOOLEAN
+	update_current_maximum_state_from_neighbors (a_current_best_heuristic_value: REAL; neighbors_list: LIST [S]): BOOLEAN
 		-- For each successor compare the heuristic values to find the one with the best value.
 		-- Return true if current_maximum_state was updated.
 
