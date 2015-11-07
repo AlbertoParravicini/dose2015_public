@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		local
 			jar_puzzle: WATER_JAR_PUZZLE
-			engine: HILL_CLIMBING_ENGINE[STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
+			engine: BOUNDED_DEPTH_FIRST_SEARCH_ENGINE[STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
 			curr_depth: INTEGER
 			found: BOOLEAN
 			i: INTEGER
@@ -29,8 +29,7 @@ feature {NONE} -- Initialization
 				curr_depth := 12
 				create jar_puzzle.make
 				create engine.make (jar_puzzle)
-				-- engine.set_max_depth (curr_depth)
-				engine.set_best_heuristic_partial_solution_allowed (true)
+				engine.set_max_depth (curr_depth)
 			until
 				found or curr_depth=20
 			loop
@@ -58,7 +57,7 @@ feature {NONE} -- Initialization
 					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
 					curr_depth := curr_depth+1
 					engine.reset_engine
-					-- engine.set_max_depth (curr_depth)
+					engine.set_max_depth (curr_depth)
 				end
 			end
 		end

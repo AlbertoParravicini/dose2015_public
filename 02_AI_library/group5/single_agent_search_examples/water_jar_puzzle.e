@@ -29,7 +29,7 @@ feature
 	local
 		new_state: WATER_JAR_PUZZLE_STATE
 	do
-		create new_state.make_with_contents (0, 13, 6)
+		create new_state.make_with_contents (0, 13, 7)
 		Result := new_state
 	end
 
