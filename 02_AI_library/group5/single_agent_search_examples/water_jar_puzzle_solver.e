@@ -26,7 +26,7 @@ feature {NONE} -- Initialization
 			-- Initialization for `Current'.
 		local
 			jar_puzzle: WATER_JAR_PUZZLE
-			engine: A_STAR_SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
+			engine: HILL_CLIMBING_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
 			curr_depth: INTEGER
 			found: BOOLEAN
 			i: INTEGER
@@ -34,15 +34,10 @@ feature {NONE} -- Initialization
 		do
 			from
 				curr_depth := 4
-				create jar_puzzle.make_with_initial_state (3, 13, 4)
+				create jar_puzzle.make_with_initial_state (5, 10, 5)
 				create engine.make (jar_puzzle)
 
---				engine.set_max_depth (curr_depth)
---				engine.set_check_queue (true)
---				engine.set_mark_visited_states (true)
-
-				engine.set_mark_closed_state (false)
-				engine.set_check_open_state (false)
+				-- engine.set_max_depth (curr_depth)
 			until
 				found or curr_depth = 20
 			loop
@@ -72,7 +67,7 @@ feature {NONE} -- Initialization
 					engine.reset_engine
 
 
---					engine.set_max_depth (curr_depth)
+					-- engine.set_max_depth (curr_depth)
 				end
 			end
 		end

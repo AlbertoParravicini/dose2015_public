@@ -21,7 +21,7 @@
 			<cluster name="adversary-search" location=".\adversary_search\"/>
 			<cluster name="adversary-search-engines" location=".\adversary_search\adversary_search_engines\"/>
 			<cluster name="adversary-search-examples" location=".\adversary_search_examples\"/>
-			<tests name="tests" location="D:\Documenti\dose2015\02_AI_library\group5\tests\"/>
+			<tests name="tests" location=".\tests\"/>
 		</cluster>
 	</target>
 </system>
