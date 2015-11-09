@@ -23,10 +23,13 @@ create
 feature -- Initialisation
 
 	make
+		-- Initialize the problem with default values;
 		do
+			make_with_initial_state (0, 13, 7)
 		end
 
 	make_with_initial_state (initial_value_a: INTEGER; initial_value_b: INTEGER; initial_value_c: INTEGER)
+		-- Initialize the problem with the provided values;
 		do
 			jar_a := initial_value_a
 			jar_b := initial_value_b
