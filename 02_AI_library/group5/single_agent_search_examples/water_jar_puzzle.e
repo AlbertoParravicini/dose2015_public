@@ -11,122 +11,146 @@ class
 	WATER_JAR_PUZZLE
 
 inherit
-	HEURISTIC_SEARCH_PROBLEM[STRING,WATER_JAR_PUZZLE_STATE]
-	STATE_COST_SEARCH_PROBLEM[STRING,WATER_JAR_PUZZLE_STATE]
+	HEURISTIC_SEARCH_PROBLEM [STRING, WATER_JAR_PUZZLE_STATE]
+
+	STATE_COST_SEARCH_PROBLEM [STRING, WATER_JAR_PUZZLE_STATE]
+
+	HEURISTIC_STATE_COST_SEARCH_PROBLEM [STRING, WATER_JAR_PUZZLE_STATE]
 
 create
-	make
+	make, make_with_initial_state
 
 feature -- Initialisation
 
 	make
+		-- Initialize the problem with default values;
 		do
+			make_with_initial_state (0, 13, 7)
 		end
+
+	make_with_initial_state (initial_value_a: INTEGER; initial_value_b: INTEGER; initial_value_c: INTEGER)
+		-- Initialize the problem with the provided values;
+		do
+			jar_a := initial_value_a
+			jar_b := initial_value_b
+			jar_c := initial_value_c
+		end
+
+feature {NONE}
+
+	jar_a: INTEGER
+
+	jar_b: INTEGER
+
+	jar_c: INTEGER
 
 feature
+	-- A_max = 19
+	-- B_max = 13
+	-- C_max = 7
 
 	initial_state: WATER_JAR_PUZZLE_STATE
-	local
-		new_state: WATER_JAR_PUZZLE_STATE
-	do
-		create new_state.make_with_contents (0, 13, 7)
-		Result := new_state
-	end
+		local
+			new_state: WATER_JAR_PUZZLE_STATE
+		do
+			create new_state.make_with_contents (jar_a, jar_b, jar_c)
+			Result := new_state
 
-	get_successors (state: WATER_JAR_PUZZLE_STATE): LIST[WATER_JAR_PUZZLE_STATE]
-	local
-		successors: LINKED_LIST[WATER_JAR_PUZZLE_STATE]
-		successor: WATER_JAR_PUZZLE_STATE
-		rule: STRING
-	do
-		create successors.make
-		-- move from A to B
-		if state.contents_a>0 and state.contents_b<13 then
-			from
-				create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
-				create rule.make_from_string ("A->B")
-				successor.set_rule_applied (rule)
-			until
-				successor.contents_a=0 or successor.contents_b=13
-			loop
-				successor.set_contents_a (successor.contents_a-1)
-				successor.set_contents_b (successor.contents_b+1)
-			end
-			successors.extend (successor)
 		end
-		-- move from A to C
-		if state.contents_a>0 and state.contents_c<7 then
-			from
-				create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
-				create rule.make_from_string ("A->C")
-				successor.set_rule_applied (rule)
-			until
-				successor.contents_a=0 or successor.contents_c=7
-			loop
-				successor.set_contents_a (successor.contents_a-1)
-				successor.set_contents_c (successor.contents_c+1)
-			end
-			successors.extend (successor)
-		end
-		-- move from B to A
-		if state.contents_b>0 and state.contents_a<19 then
-			from
-				create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
-				create rule.make_from_string ("B->A")
-				successor.set_rule_applied (rule)
-			until
-				successor.contents_b=0 or successor.contents_a=19
-			loop
-				successor.set_contents_b (successor.contents_b-1)
-				successor.set_contents_a (successor.contents_a+1)
-			end
-			successors.extend (successor)
-		end
-		-- move from B to C
-		if state.contents_b>0 and state.contents_c<7 then
-			from
-				create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
-				create rule.make_from_string ("B->C")
-				successor.set_rule_applied (rule)
-			until
-				successor.contents_b=0 or successor.contents_c=7
-			loop
-				successor.set_contents_b (successor.contents_b-1)
-				successor.set_contents_c (successor.contents_c+1)
-			end
-			successors.extend (successor)
-		end
-		-- move from C to A
-		if state.contents_c>0 and state.contents_a<19 then
-			from
-				create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
-				create rule.make_from_string ("C->A")
-				successor.set_rule_applied (rule)
-			until
-				successor.contents_c=0 or successor.contents_a=19
-			loop
-				successor.set_contents_c (successor.contents_c-1)
-				successor.set_contents_a (successor.contents_a+1)
-			end
-			successors.extend (successor)
-		end
-		-- move from C to B
-		if state.contents_c>0 and state.contents_b<13 then
-			from
-				create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
-				create rule.make_from_string ("A->B")
-				successor.set_rule_applied (rule)
 
-			until
-				successor.contents_c=0 or successor.contents_b=13
-			loop
-				successor.set_contents_c (successor.contents_c-1)
-				successor.set_contents_b (successor.contents_b+1)
+	get_successors (state: WATER_JAR_PUZZLE_STATE): LIST [WATER_JAR_PUZZLE_STATE]
+		local
+			successors: LINKED_LIST [WATER_JAR_PUZZLE_STATE]
+			successor: WATER_JAR_PUZZLE_STATE
+			rule: STRING
+		do
+			create successors.make
+				-- move from A to B
+			if state.contents_a > 0 and state.contents_b < 13 then
+				from
+					create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
+					create rule.make_from_string ("A->B")
+					successor.set_rule_applied (rule)
+				until
+					successor.contents_a = 0 or successor.contents_b = 13
+				loop
+					successor.set_contents_a (successor.contents_a - 1)
+					successor.set_contents_b (successor.contents_b + 1)
+				end
+				successors.extend (successor)
 			end
-			successors.extend (successor)
+				-- move from A to C
+			if state.contents_a > 0 and state.contents_c < 7 then
+				from
+					create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
+					create rule.make_from_string ("A->C")
+					successor.set_rule_applied (rule)
+				until
+					successor.contents_a = 0 or successor.contents_c = 7
+				loop
+					successor.set_contents_a (successor.contents_a - 1)
+					successor.set_contents_c (successor.contents_c + 1)
+				end
+				successors.extend (successor)
+			end
+				-- move from B to A
+			if state.contents_b > 0 and state.contents_a < 19 then
+				from
+					create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
+					create rule.make_from_string ("B->A")
+					successor.set_rule_applied (rule)
+				until
+					successor.contents_b = 0 or successor.contents_a = 19
+				loop
+					successor.set_contents_b (successor.contents_b - 1)
+					successor.set_contents_a (successor.contents_a + 1)
+				end
+				successors.extend (successor)
+			end
+				-- move from B to C
+			if state.contents_b > 0 and state.contents_c < 7 then
+				from
+					create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
+					create rule.make_from_string ("B->C")
+					successor.set_rule_applied (rule)
+				until
+					successor.contents_b = 0 or successor.contents_c = 7
+				loop
+					successor.set_contents_b (successor.contents_b - 1)
+					successor.set_contents_c (successor.contents_c + 1)
+				end
+				successors.extend (successor)
+			end
+				-- move from C to A
+			if state.contents_c > 0 and state.contents_a < 19 then
+				from
+					create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
+					create rule.make_from_string ("C->A")
+					successor.set_rule_applied (rule)
+				until
+					successor.contents_c = 0 or successor.contents_a = 19
+				loop
+					successor.set_contents_c (successor.contents_c - 1)
+					successor.set_contents_a (successor.contents_a + 1)
+				end
+				successors.extend (successor)
+			end
+				-- move from C to B
+			if state.contents_c > 0 and state.contents_b < 13 then
+				from
+					create successor.make_with_contents_and_parent (state.contents_a, state.contents_b, state.contents_c, state)
+					create rule.make_from_string ("C->B")
+					successor.set_rule_applied (rule)
+				until
+					successor.contents_c = 0 or successor.contents_b = 13
+				loop
+					successor.set_contents_c (successor.contents_c - 1)
+					successor.set_contents_b (successor.contents_b + 1)
+				end
+				successors.extend (successor)
+			end
+			Result := successors
 		end
-		Result := successors
-	end
 
 	is_successful (state: WATER_JAR_PUZZLE_STATE): BOOLEAN
 			-- State is successful if two jars have 10 litres each.
@@ -161,7 +185,6 @@ feature {ANY} -- State Cost related routines
 			end
 		end
 
-
 feature {NONE} -- Auxiliary features
 
 	absolute_value (x: INTEGER): INTEGER
@@ -169,9 +192,8 @@ feature {NONE} -- Auxiliary features
 			if x >= 0 then
 				Result := x
 			else
-				Result := -x
+				Result := - x
 			end
 		end
-
 
 end

@@ -13,25 +13,33 @@ class
 create
 	make
 
+feature {NONE} -- Test Implementation
+
+	test_engine: SEARCH_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
+		-- The engine can be set during the construction;
+	test_depth: INTEGER
+		-- The depth of the current performed search; set it to a negative value if the algorithm has no max depth;
+
 feature {NONE} -- Initialization
 
 	make
 			-- Initialization for `Current'.
 		local
 			jar_puzzle: WATER_JAR_PUZZLE
-			engine: BOUNDED_DEPTH_FIRST_SEARCH_ENGINE[STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
+			engine: HILL_CLIMBING_ENGINE [STRING, WATER_JAR_PUZZLE_STATE, WATER_JAR_PUZZLE]
 			curr_depth: INTEGER
 			found: BOOLEAN
 			i: INTEGER
-			path: LIST[WATER_JAR_PUZZLE_STATE]
+			path: LIST [WATER_JAR_PUZZLE_STATE]
 		do
 			from
-				curr_depth := 12
-				create jar_puzzle.make
+				curr_depth := 4
+				create jar_puzzle.make_with_initial_state (5, 10, 5)
 				create engine.make (jar_puzzle)
-				engine.set_max_depth (curr_depth)
+
+				-- engine.set_max_depth (curr_depth)
 			until
-				found or curr_depth=20
+				found or curr_depth = 20
 			loop
 				engine.perform_search
 				if (engine.is_search_successful) then
@@ -42,24 +50,25 @@ feature {NONE} -- Initialization
 						i := 1
 						path := engine.path_to_obtained_solution
 					until
-						i>path.count
+						i > path.count
 					loop
 						if path.i_th (i).rule_applied /= Void then
-							-- skips the first state that has void rule
+								-- skips the first state that has void rule
 							print ("    " + path.i_th (i).rule_applied + "%N")
 						end
 						print (path.i_th (i).out + "%N")
-						i := i+1
+						i := i + 1
 					end
 					found := True
 				else
-					print ("no solution found with depth " + curr_depth.out +".%N")
+					print ("no solution found with depth " + curr_depth.out + ".%N")
 					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
-					curr_depth := curr_depth+1
+					curr_depth := curr_depth + 1
 					engine.reset_engine
-					engine.set_max_depth (curr_depth)
+
+
+					-- engine.set_max_depth (curr_depth)
 				end
 			end
 		end
-
 end
