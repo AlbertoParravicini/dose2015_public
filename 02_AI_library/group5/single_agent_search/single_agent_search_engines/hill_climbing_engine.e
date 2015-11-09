@@ -49,7 +49,7 @@ feature -- Creation
 
 		ensure
 
-			setting_done: problem = other_problem and max_number_of_sideways_moves = 10 and best_heuristic_partial_solution_allowed
+			setting_done: problem = other_problem and max_number_of_sideways_moves = 10 and not best_heuristic_partial_solution_allowed
 
 			ready_to_search: not search_performed
 		end
@@ -61,7 +61,7 @@ feature {NONE} -- Implementation
 		-- State with heuristic value better than its neighbors.
 
 
-	update_current_maximum_state_from_neighbors (current_best_heuristic_value: REAL neighbors_list: LIST [S]): BOOLEAN
+	update_current_maximum_state_from_neighbors (current_best_heuristic_value: REAL; neighbors_list: LIST [S]): BOOLEAN
 		-- For each successor compare the current best heuristic value to find a state better than current_maximum_state.
 		-- Return true if current_maximum_state was updated.
 
@@ -164,81 +164,92 @@ feature -- Search Execution
 					-- Assumes that there aren't neighbors with heuristic value better than the current maximum state.
 
 
-				if not problem.is_successful (current_maximum_state) and update_current_maximum_state_from_neighbors (current_best_heuristic_value, neighbors_list) then
-					-- If current maximum state is not the solution and was updated because it was found a neighbor better.
 
-					current_best_heuristic_value := problem.heuristic_value (current_maximum_state)
-						-- Updates current best heuristic value.
+				if problem.is_successful (current_maximum_state) then
+					-- If current maximum state is a successful state (it is a global maximum) then search is successful
+					-- and ends the main loop.
 
-					is_maximum_state_reached := false
-						-- Now it may be a new neighbor better than the new current maximum state.
+					is_search_successful := true
 
-					number_of_done_sideways_moves := 0
-						-- Resets counter of sideways moves in order to analize new heuristic value.
-				end
+				else
+
+					if update_current_maximum_state_from_neighbors (current_best_heuristic_value, neighbors_list) then
+						-- If current maximum state is not the solution and was updated because it was found a neighbor better.
+
+						current_best_heuristic_value := problem.heuristic_value (current_maximum_state)
+							-- Updates current best heuristic value.
+
+						is_maximum_state_reached := false
+							-- Now it may be a new neighbor better than the new current maximum state.
+
+						number_of_done_sideways_moves := 0
+							-- Resets counter of sideways moves in order to analize new heuristic value.
+					end
 
 
-				-- "ESCAPING SHOULDERS: SIDEWAYS MOVE" optimization.
+					-- "ESCAPING SHOULDERS: SIDEWAYS MOVE" optimization.
 
-				if is_maximum_state_reached then
-					-- Now if is_maximum_state_reached is TRUE then current maximum state is:
-					-- a global maximum or
-					-- a local maximum or
-					-- a "flat" local maximum or
-					-- a shoulder.
+					if is_maximum_state_reached then
+						-- Now if is_maximum_state_reached is TRUE then current maximum state is:
+						-- a local maximum or
+						-- a "flat" local maximum or
+						-- a shoulder.
 
 
-					from -- Shoulder loop: for each successor compares the heuristic value to remove the worst.
-						neighbors_list.start
-					until
-						neighbors_list.exhausted
-					loop
+						from -- Shoulder loop: for each successor compares the heuristic value to remove the worst.
+							neighbors_list.start
+						until
+							neighbors_list.exhausted
+						loop
 
-						if problem.heuristic_value (neighbors_list.item) > current_best_heuristic_value then
-							-- If a successor has heuristic value worse than the current maximum state then removes
-							-- it from neighbors_list, in order to obtain a neighbors_list with heuristic value equal
-							-- to the current maximum state, so it is possible to optimize search with a sideways move.
+							if problem.heuristic_value (neighbors_list.item) > current_best_heuristic_value then
+								-- If a successor has heuristic value worse than the current maximum state then removes
+								-- it from neighbors_list, in order to obtain a neighbors_list with heuristic value equal
+								-- to the current maximum state, so it is possible to optimize search with a sideways move.
 
-							neighbors_list.remove
+								neighbors_list.remove
+
+							else
+								neighbors_list.forth
+							end
+
+						end -- End Shoulder loop.
+
+
+						-- Now in neighbors_list there are only neighbors with the same heuristic value of the current maximum state.
+
+
+						if neighbors_list.count = 0 or number_of_done_sideways_moves >= max_number_of_sideways_moves then
+							-- If current maximum state has not neighbors with the same heuristic value then it is:
+							-- a local maximum
+							-- (or if it exceeds maximum number of sideways moves)
+
+
+							if best_heuristic_partial_solution_allowed then
+								-- If best heuristic partial solution is allowed then search is successful.
+
+								is_search_successful := true
+
+							end
+
 
 						else
-							neighbors_list.forth
-						end
-
-					end -- End Shoulder loop.
+							-- else current maximum state could be a shoulder, then do a sideways move.
 
 
+							-- SIDEWAYS MOVE implementation.
 
-					if neighbors_list.count = 0 or number_of_done_sideways_moves >= max_number_of_sideways_moves then
-						-- If current maximum state has not neighbors with the same heuristic value then it is:
-						-- a global maximum or
-						-- a local maximum
-						-- (or if it exceeds maximum number of sideways moves)
+							current_maximum_state := neighbors_list.i_th ((stochastic_selection_of_sideways_move.item \\ neighbors_list.count) + 1)
+								-- Now neighbors_list has only states with the same heuristic value than the current maximum state,
+								-- so it can pick one randomly to do a sideways move.
 
-
-						if problem.is_successful (current_maximum_state) or best_heuristic_partial_solution_allowed then
-							-- If current maximum state is a successful state (it is a global maximum) or a best heuristic partial solution is allowed
-							-- then search is successful
-
-							is_search_successful := true
+							number_of_done_sideways_moves := number_of_done_sideways_moves + 1
+							stochastic_selection_of_sideways_move.forth
+							is_maximum_state_reached := false
 
 						end
 
-
-					else
-						-- else current maximum state could be a shoulder, then do a sideways move.
-
-						-- SIDEWAYS MOVE implementation.
-
-						current_maximum_state := neighbors_list.i_th ((stochastic_selection_of_sideways_move.item \\ neighbors_list.count) + 1)
-							-- Now neighbors_list has only states with the same heuristic value than the current maximum state,
-							-- so it can pick one randomly to do a sideways move.
-
-						number_of_done_sideways_moves := number_of_done_sideways_moves + 1
-						stochastic_selection_of_sideways_move.forth
-						is_maximum_state_reached := false
-
-					end
+					end -- End "ESCAPING SHOULDERS: SIDEWAYS MOVE" optimization.
 
 				end
 
@@ -404,6 +415,8 @@ feature -- Status Report
 
 	max_number_of_sideways_moves: INTEGER
 		-- Maximum number of sideways moves to do to try solving "shoulder problem".
+		-- If there is not this limit and the current maximum state is a "flat" local maximum
+		-- then the algorithm starts an infinite loop.
 		-- Set to 0 if sideways moves aren't allowed.
 
 	best_heuristic_partial_solution_allowed: BOOLEAN

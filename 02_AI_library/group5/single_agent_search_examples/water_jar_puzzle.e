@@ -11,7 +11,6 @@ class
 	WATER_JAR_PUZZLE
 
 inherit
-
 	HEURISTIC_SEARCH_PROBLEM [STRING, WATER_JAR_PUZZLE_STATE]
 
 	STATE_COST_SEARCH_PROBLEM [STRING, WATER_JAR_PUZZLE_STATE]
@@ -53,6 +52,7 @@ feature
 		do
 			create new_state.make_with_contents (jar_a, jar_b, jar_c)
 			Result := new_state
+
 		end
 
 	get_successors (state: WATER_JAR_PUZZLE_STATE): LIST [WATER_JAR_PUZZLE_STATE]

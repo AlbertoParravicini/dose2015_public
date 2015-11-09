@@ -11,7 +11,7 @@ class
 	WATER_JAR_PUZZLE_SOLVER
 
 create
-	make, make_with_parameters
+	make
 
 feature {NONE} -- Test Implementation
 
