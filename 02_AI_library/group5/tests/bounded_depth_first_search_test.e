@@ -91,8 +91,8 @@ feature -- Test routines
 			nr_vis_states := 0
 			create jar_puzzle.make_with_initial_state (0, 0, 0)
 			create engine.make (jar_puzzle)
-			engine.set_max_depth (20)
-			engine.disable_cycle_checking
+			engine.set_max_depth (2)
+			engine.enable_cycle_checking
 
 			engine.perform_search
 			search_result := engine.is_search_successful
