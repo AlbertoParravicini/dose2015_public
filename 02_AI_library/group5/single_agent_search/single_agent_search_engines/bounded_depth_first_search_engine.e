@@ -123,7 +123,7 @@ feature -- Search Execution
 							current_successors.forth
 						end
 					end
-					nr_of_visited_states := nr_of_visited_states + 1
+					--nr_of_visited_states := nr_of_visited_states + 1
 				end
 			end
 			search_performed := true
