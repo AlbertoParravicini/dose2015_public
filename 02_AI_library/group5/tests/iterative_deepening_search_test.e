@@ -47,7 +47,7 @@ feature -- Test routines
 			jar_puzzle: WATER_JAR_PUZZLE
 		do
 			nr_vis_states := 0
-			create jar_puzzle.make_with_initial_state (6, 9, 5)
+			create jar_puzzle.make_with_initial_state (10, 7, 3)
 			create engine.make (jar_puzzle)
 			engine.disable_cycle_checking
 
