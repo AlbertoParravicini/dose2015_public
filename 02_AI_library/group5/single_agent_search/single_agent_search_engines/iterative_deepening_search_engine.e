@@ -37,7 +37,7 @@ feature -- Creation
 			is_search_successful := false
 			nr_of_visited_states := 0
 			set_step (1)
-			current_depth := 0
+			current_depth := 1
 			cycle_checking := false
 		ensure
 			problem_is_not_void: problem /= void
@@ -45,7 +45,7 @@ feature -- Creation
 			is_search_successful_is_false: not is_search_successful
 			nr_of_visited_states_is_zero: nr_of_visited_states = 0
 			step_is_one: step = 1
-			current_depth_is_zero: current_depth = 0
+			current_depth_is_zero: current_depth = 1
 			cycle_checking_is_false: cycle_checking = false
 		end
 
@@ -107,14 +107,14 @@ feature -- Search Execution
 			is_search_successful := false
 			nr_of_visited_states := 0
 			set_step (1)
-			current_depth := 0
+			current_depth := 1
 			cycle_checking := false
 		ensure then
 			search_performed_is_false: not search_performed
 			is_search_successful_is_false: not is_search_successful
 			nr_of_visited_states_is_zero: nr_of_visited_states = 0
 			step_is_one: step = 1
-			current_depth_is_zero: current_depth = 0
+			current_depth_is_zero: current_depth = 1
 			cycle_checking_is_false: cycle_checking = false
 		end
 

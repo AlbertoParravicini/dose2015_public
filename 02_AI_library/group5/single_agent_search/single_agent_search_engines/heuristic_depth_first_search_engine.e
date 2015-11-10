@@ -95,9 +95,9 @@ feature -- Search Execution
 					end
 
 						-- Reorder current_successors_with_heuristic_value from lower to higher heuristic value
-
-					sort_list_with_tuples (current_successors_with_heuristic_value)
-
+					if(current_successors_with_heuristic_value.count>1) then
+						sort_list_with_tuples (current_successors_with_heuristic_value)
+					end
 						-- Perform real search
 
 					from
