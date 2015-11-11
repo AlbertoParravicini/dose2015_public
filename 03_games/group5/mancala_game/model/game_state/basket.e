@@ -7,14 +7,14 @@ note
 deferred class
 	BASKET
 feature
-	clear_basket
+	--clear_basket
 		-- Set the value of stones to zero
-	add_stone
+	--add_stone
 		-- Add one stone to the basket
 
 	is_empty: BOOLEAN
 		-- Tell if the basket is empty
-	
+
 feature
 	-- Variables
 

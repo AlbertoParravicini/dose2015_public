@@ -7,10 +7,10 @@ note
 deferred class
 	GAME_STATE
 feature
-	get_current_player
+	--get_current_player
 		-- Returns the player that will do the next move
 
-	get_player_list
+	--get_player_list
 		-- Returns the list of all players
 feature
 	-- Variables
@@ -20,5 +20,5 @@ feature
 
 	-- map: GAME_MAP
 	-- player_list: LIST[PLAYER]
-	
+
 end

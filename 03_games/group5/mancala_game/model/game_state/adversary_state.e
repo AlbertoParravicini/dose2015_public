@@ -9,7 +9,7 @@ class
 inherit
 	GAME_STATE
 feature
-	is_min
+	--is_min
 
-	is_max
+	--is_max
 end

@@ -9,6 +9,6 @@ class
 inherit
 	BASKET
 feature
-	add_stones(stones: INTEGER)
+	--add_stones(stones: INTEGER)
 		-- Adds more than one stone to the basket
 end
