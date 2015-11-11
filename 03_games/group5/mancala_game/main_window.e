@@ -77,7 +77,7 @@ feature {NONE} -- Implementation, Close event
 			if question_dialog.selected_button ~ (create {EV_DIALOG_CONSTANTS}).ev_ok then
 					-- Destroy the window.
 				destroy
-				
+
 					-- End the application.
 					--| TODO: Remove next instruction if you don't want the application
 					--|       to end when the first window is closed..
@@ -96,6 +96,7 @@ feature {NONE} -- Implementation
 			-- Populate `main_container'.
 		do
 			main_container.extend (create {EV_TEXT})
+
 		ensure
 			main_container_created: main_container /= Void
 		end

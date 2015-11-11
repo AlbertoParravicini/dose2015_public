@@ -8,4 +8,14 @@ class
 	HUMAN_PLAYER
 inherit
 	PLAYER
+
+create
+	make
+
+feature
+	make
+		do
+			score := 0
+			name := "pippo"
+		end
 end

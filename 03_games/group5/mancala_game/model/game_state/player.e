@@ -7,7 +7,7 @@ note
 deferred class
 	PLAYER
 
-feature
+feature -- Status report;
 
 	score: INTEGER
 		-- Player's score
