@@ -7,6 +7,7 @@
 		</option>
 		<precompile name="vision2_pre" location="$ISE_PRECOMP\vision2-safe.ecf"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base-safe.ecf"/>
+		<library name="eiffel-ai-search" location="C:\Progetti\dose2015\02_AI_library\group5\eiffel-ai-search.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2-safe.ecf"/>
 		<cluster name="root_cluster" location=".\">
 			<file_rule>
