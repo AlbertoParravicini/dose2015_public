@@ -28,5 +28,8 @@ feature {NONE} -- Initialization
 		do
 			owner := a_owner
 			num_of_stones := starting_stones
+		ensure
+			owner_set: owner = a_owner
+			initial_stones_set: num_of_stones = starting_stones
 		end
 end

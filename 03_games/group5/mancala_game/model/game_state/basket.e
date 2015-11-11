@@ -17,14 +17,6 @@ feature -- Initialization
 			hole_is_empty: num_of_stones = 0
 		end
 
-	make_with_owner_and_value (a_owner: PLAYER; starting_stones: INTEGER)
-			-- Initialization with the provided owner and starting stones;
-		deferred
-		ensure
-			owner_set: owner = a_owner
-			initial_stones_set: num_of_stones = starting_stones
-		end
-
 feature -- Status report
 
 	is_empty: BOOLEAN
@@ -56,14 +48,14 @@ feature -- Status setting
 			stone_added: num_of_stones = old num_of_stones + 1
 		end
 
-	add_stones (stones: INTEGER)
-			-- Add the provided number of stones to the basket;
+	add_stones (additional_stones: INTEGER)
+		-- Adds more than one stone to the basket
 		require
-			stones_not_negative: stones >= 0
+			additional_stones_not_negative: additional_stones >= 0
 		do
-			num_of_stones := num_of_stones + stones
+			num_of_stones := num_of_stones + additional_stones
 		ensure
-			stones_added: num_of_stones = old num_of_stones + stones
+			additional_stones_added: num_of_stones = old num_of_stones + additional_stones
 		end
 
 	clear_basket

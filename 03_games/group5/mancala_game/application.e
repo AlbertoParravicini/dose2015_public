@@ -15,7 +15,7 @@ feature {NONE} -- Initialization
 	make_and_launch
 		local
 			l_app: EV_APPLICATION
-			hole: HOLE
+			hole: STORE
 			player : HUMAN_PLAYER
 		do
 
