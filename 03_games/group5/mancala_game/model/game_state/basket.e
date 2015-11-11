@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {BASKET}."
+	description: "Container for stones."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

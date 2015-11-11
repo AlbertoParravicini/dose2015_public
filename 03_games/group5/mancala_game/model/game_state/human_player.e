@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {HUMAN_PLAYER}."
+	description: "Human player."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

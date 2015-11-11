@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {HOLE}."
+	description: "Represents holes."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

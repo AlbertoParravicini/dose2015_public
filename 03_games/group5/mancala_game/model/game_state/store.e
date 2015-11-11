@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {STORE}."
+	description: "Represents a store."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

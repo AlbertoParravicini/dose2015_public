@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ADVERSARY_STATE}."
+	description: "State representing a Human vs AI game."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

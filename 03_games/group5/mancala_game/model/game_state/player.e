@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {PLAYER}."
+	description: "Abstract player in a Mancala game."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

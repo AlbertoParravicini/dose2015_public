@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {GAME_STATE}."
+	description: "Represents the state of a Mancala game"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
