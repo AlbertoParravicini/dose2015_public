@@ -16,7 +16,7 @@
 				<exclude>/.svn$</exclude>
 			</file_rule>
 			<cluster name="model" location=".\model\">
-				<tests name="game_state" location=".\model\game_state\"/>
+				<cluster name="game_state" location=".\model\game_state\"/>
 				<cluster name="game_logic" location=".\model\game_logic\"/>
 			</cluster>
 		</cluster>
