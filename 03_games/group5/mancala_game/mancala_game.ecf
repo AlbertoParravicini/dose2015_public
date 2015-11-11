@@ -14,8 +14,10 @@
 				<exclude>/CVS$</exclude>
 				<exclude>/.svn$</exclude>
 			</file_rule>
-			<cluster name="model" location="C:\Progetti\dose2015\03_games\group5\mancala_game\model\"/>
-			<cluster name="controller" location="C:\Progetti\dose2015\03_games\group5\mancala_game\controller\"/>
+			<cluster name="model" location="C:\Progetti\dose2015\03_games\group5\mancala_game\model\">
+				<tests name="game_state" location="c:\progetti\dose2015\03_games\group5\mancala_game\model\game_state\"/>
+				<cluster name="game_logic" location="c:\progetti\dose2015\03_games\group5\mancala_game\model\game_logic\"/>
+			</cluster>
 		</cluster>
 	</target>
 </system>
