@@ -15,12 +15,8 @@ feature {NONE} -- Initialization
 	make_and_launch
 		local
 			l_app: EV_APPLICATION
-			hole: STORE
-			player : HUMAN_PLAYER
 		do
 
-			create player.make
-			create hole.make_with_owner(player)
 			create l_app
 			prepare
 			l_app.launch

@@ -10,13 +10,12 @@ inherit
 	BASKET
 
 create
-	make_with_owner
+	make
 
 feature -- Initialitazion
-	make_with_owner (a_owner: PLAYER)
+	make
 			-- Initialization with the provided owner;
 		do
-			owner := a_owner
 			num_of_stones := 0
 		end
 
