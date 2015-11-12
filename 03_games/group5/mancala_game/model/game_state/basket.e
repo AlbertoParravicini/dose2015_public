@@ -9,11 +9,10 @@ deferred class
 
 feature -- Initialization
 
-	make_with_owner (a_owner: PLAYER)
-			-- Initialization with the provided owner;
+	make
+			-- Initialization
 		deferred
 		ensure
-			owner_set: owner = a_owner
 			hole_is_empty: num_of_stones = 0
 		end
 
@@ -35,8 +34,6 @@ feature -- Status report
 	num_of_stones: INTEGER
 			-- Number of stones in the basket;
 
-	owner: PLAYER
-			-- Tells who is the owner of the basket;
 
 feature -- Status setting
 
@@ -74,16 +71,6 @@ feature -- Status setting
 			stone_removed: num_of_stones = old num_of_stones - 1
 		end
 
-	set_owner (a_owner: PLAYER)
-			-- Set the owner of the bucket;
-		require
-			owner = void
-		do
-			owner := a_owner
-		ensure
-			owner_not_void: owner /= void
-			result_is_consistent: old (owner = void) implies owner = a_owner
-		end
 
 invariant
 	not_negative_stones: num_of_stones >= 0
