@@ -1,6 +1,6 @@
 note
 	description: "State representing a Human vs AI game."
-	author: ""
+	author: "Simone"
 	date: "$Date$"
 	revision: "$Revision$"
 
