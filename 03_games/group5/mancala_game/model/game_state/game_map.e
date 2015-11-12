@@ -67,6 +67,8 @@ feature
 			valid_position: position > 0 and position <= 2
 		do
 			Result := stores.i_th (position).num_of_stones
+		ensure
+			positive_result: Result >= 0
 		end
 
 	get_hole_value (position: INTEGER): INTEGER
@@ -75,6 +77,8 @@ feature
 			valid_position: position > 0 and position < 13
 		do
 			Result := holes.i_th (position).num_of_stones
+		ensure
+			positive_result: Result >= 0
 		end
 
 
