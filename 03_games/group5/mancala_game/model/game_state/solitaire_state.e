@@ -29,7 +29,7 @@ feature
 			no_parent: parent = void
 		end
 
-	make_from_parent_and_rule(parent: like Current, rule: ACTION, new_map: GAME_MAP, new_hole : INTEGER)
+	make_from_parent_and_rule(parent: SOLITAIRE_STATE, rule: ACTION, new_map: GAME_MAP, new_hole : INTEGER)
 		do
 			game_over:=is_game_over -- to be implemented
 			set_parent(parent)
