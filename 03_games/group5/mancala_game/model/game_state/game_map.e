@@ -23,19 +23,21 @@ feature -- Creator
 			from
 				i := 1
 			until
-				i > buckets.count
+				i > num_of_buckets
 			loop
-				buckets.put (0)
+				buckets.extend (0)
 				buckets.forth
+				i := i + 1
 			end
 				-- Filled the holes with empty holes
 			from
 				i := 1
 			until
-				i > stores.count
+				i > num_of_stores
 			loop
-				stores.put (0)
+				stores.extend (0)
 				stores.forth
+				i := i + 1
 			end
 				-- Filled the stores tiwh empty stores
 		end
@@ -106,6 +108,7 @@ feature -- Status Report
 			-- Adds more than one stone to the bucket at the given position;
 		require
 			additional_stones_not_negative: additional_stones >= 0
+			valid_position: position > 0 and position <= num_of_buckets
 		do
 			buckets.at (position) := buckets.at (position) + additional_stones
 		ensure
@@ -115,7 +118,7 @@ feature -- Status Report
 	clear_bucket (position: INTEGER)
 			-- Set the number of stones to zero in the bucket at the given position;
 		require
-			additional_stones_not_negative: additional_stones >= 0
+			valid_position: position > 0 and position <= num_of_buckets
 		do
 			buckets.at (position) := 0
 		ensure
@@ -125,7 +128,7 @@ feature -- Status Report
 	remove_stone_from_bucket (position: INTEGER)
 			-- Remove one stone from the basket;
 		require
-			additional_stones_not_negative: additional_stones >= 0
+			valid_position: position > 0 and position <= num_of_buckets
 		do
 			buckets.at (position) := buckets.at (position) - 1
 		ensure
@@ -152,4 +155,9 @@ feature {NONE} -- Implementative routines
 	stores: ARRAYED_LIST [INTEGER]
 			-- List of all store
 
+invariant
+	num_of_buckets_is_constant: buckets.count = num_of_buckets
+	num_of_stores_is_constant: stores.count = num_of_stores
+	buckets_value_is_non_negative: across buckets as curr_buc all curr_buc.item >= 0 end
+	store_value_is_non_negative: across stores as curr_store all curr_store.item >= 0 end
 end

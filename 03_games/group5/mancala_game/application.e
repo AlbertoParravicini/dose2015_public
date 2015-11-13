@@ -18,6 +18,14 @@ feature {NONE} -- Initialization
 			map: GAME_MAP
 		do
 			create map.make
+
+	
+			map.add_stone_to_bucket (1)
+			map.add_stones_to_bucket (2, 3)
+
+			print(map.get_bucket_value (1).out + "%N")
+			print(map.get_bucket_value (2).out + "%N")
+			print(map.get_bucket_value (3).out + "%N")
 			create l_app
 			prepare
 			l_app.launch
