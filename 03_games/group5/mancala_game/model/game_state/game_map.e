@@ -10,85 +10,146 @@ class
 create
 	make
 
-feature
-	-- Creator
+feature -- Creator
 
 	make
 		local
 			i: INTEGER
-			temp_hole: HOLE
-			temp_store: STORE
 		do
-			create holes.make (12)
-				-- Create holes list
-			create stores.make (2)
-				-- Create stores list
+			create buckets.make (num_of_buckets)
+				-- Create the holes list;
+			create stores.make (num_of_stores)
+				-- Create the stores list;
 			from
 				i := 1
 			until
-				i > 12
+				i > buckets.count
 			loop
-				create temp_hole.make
-				holes.put_i_th (temp_hole, i)
+				buckets.put (0)
+				buckets.forth
 			end
 				-- Filled the holes with empty holes
 			from
 				i := 1
 			until
-				i > 3
+				i > stores.count
 			loop
-				create temp_store.make
-				stores.put_i_th (temp_store, i)
+				stores.put (0)
+				stores.forth
 			end
 				-- Filled the stores tiwh empty stores
 		end
 
-feature
-	-- Getters
-	get_store (position: INTEGER): STORE
-			-- Returns the store in the given position
-		require
-			valid_position: position > 0 and position <= 2
-		do
-			Result := stores.i_th (position)
-		end
-
-	get_hole (position: INTEGER): HOLE
-			-- Returns the hole in the given position
-		require
-			valid_position: position > 0 and position < 13
-		do
-			Result := holes.i_th (position)
-		end
+feature -- Status Report
 
 	get_store_value (position: INTEGER): INTEGER
-			-- Returns the store value in the given position
+			-- Returns the number of tokens in the store at the given position;
 		require
-			valid_position: position > 0 and position <= 2
+			valid_position: position > 0 and position <= num_of_stores
 		do
-			Result := stores.i_th (position).num_of_stones
+			Result := stores.at (position)
 		ensure
 			positive_result: Result >= 0
 		end
 
-	get_hole_value (position: INTEGER): INTEGER
-			-- Returns the hole value in the given position
+	get_bucket_value (position: INTEGER): INTEGER
+			-- Returns the number of tokens in the bucket at the given position;
 		require
-			valid_position: position > 0 and position < 13
+			valid_position: position > 0 and position <= num_of_buckets
 		do
-			Result := holes.i_th (position).num_of_stones
+			Result := buckets.at (position)
 		ensure
 			positive_result: Result >= 0
 		end
 
+	is_store_empty (position: INTEGER): BOOLEAN
+			-- Is the store at the given position empty?
+		require
+			valid_position: position > 0 and position <= num_of_stores
+		do
+			if stores.at (position) = 0 then
+				Result := true
+			else
+				Result := false
+			end
+		ensure
+			result_is_consistent_nec: Result = true implies stores.at (position) = 0
+			result_is_consistent_suf: stores.at (position) = 0 implies Result = true
+		end
 
-feature {NONE}
-	-- Attributes
+	is_bucket_empty (position: INTEGER): BOOLEAN
+			-- Is the basket at the given position empty?
+		require
+			valid_position: position > 0 and position <= num_of_buckets
+		do
+			if buckets.at (position) = 0 then
+				Result := true
+			else
+				Result := false
+			end
+		ensure
+			result_is_consistent_nec: Result = true implies buckets.at (position) = 0
+			result_is_consistent_suf: buckets.at (position) = 0 implies Result = true
+		end
 
-	holes: ARRAYED_LIST [HOLE]
+	add_stone_to_bucket (position: INTEGER)
+			-- Add one stone to the bucket at the given position;
+		require
+			valid_position: position > 0 and position <= num_of_buckets
+		do
+			buckets.at (position) := buckets.at (position) + 1
+		ensure
+			stone_added: buckets.at (position) = old (buckets.at (position) + 1)
+		end
+
+	add_stones_to_bucket (additional_stones: INTEGER; position: INTEGER)
+			-- Adds more than one stone to the bucket at the given position;
+		require
+			additional_stones_not_negative: additional_stones >= 0
+		do
+			buckets.at (position) := buckets.at (position) + additional_stones
+		ensure
+			additional_stones_added: buckets.at (position) = old (buckets.at (position)) + additional_stones
+		end
+
+	clear_bucket (position: INTEGER)
+			-- Set the number of stones to zero in the bucket at the given position;
+		require
+			additional_stones_not_negative: additional_stones >= 0
+		do
+			buckets.at (position) := 0
+		ensure
+			basket_emptied: buckets.at (position) = 0
+		end
+
+	remove_stone_from_bucket (position: INTEGER)
+			-- Remove one stone from the basket;
+		require
+			additional_stones_not_negative: additional_stones >= 0
+		do
+			buckets.at (position) := buckets.at (position) - 1
+		ensure
+			stone_removed: buckets.at (position) = old (buckets.at (position)) - 1
+		end
+
+	num_of_buckets: INTEGER
+			-- The number of buckets in the map;
+		once
+			Result := 12
+		end
+
+	num_of_stores: INTEGER
+			-- The number of buckets in the map;
+		once
+			Result := 2
+		end
+
+feature {NONE} -- Implementative routines
+
+	buckets: ARRAYED_LIST [INTEGER]
 			-- List of all hole
 
-	stores: ARRAYED_LIST [STORE]
+	stores: ARRAYED_LIST [INTEGER]
 			-- List of all store
 
 end

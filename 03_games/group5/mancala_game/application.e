@@ -15,8 +15,9 @@ feature {NONE} -- Initialization
 	make_and_launch
 		local
 			l_app: EV_APPLICATION
+			map: GAME_MAP
 		do
-
+			create map.make
 			create l_app
 			prepare
 			l_app.launch
