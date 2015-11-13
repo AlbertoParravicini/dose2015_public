@@ -16,16 +16,34 @@ feature {NONE} -- Initialization
 		local
 			l_app: EV_APPLICATION
 			map: GAME_MAP
+			map2: GAME_MAP
+			i : INTEGER
 		do
 			create map.make
+			create map2.make
 
-	
-			map.add_stone_to_bucket (1)
-			map.add_stones_to_bucket (2, 3)
+			print(map.is_equal (map2).out)
 
-			print(map.get_bucket_value (1).out + "%N")
-			print(map.get_bucket_value (2).out + "%N")
-			print(map.get_bucket_value (3).out + "%N")
+			from
+				i := 1
+			until
+				i > 12
+			loop
+				map.add_stones_to_bucket (i, i)
+				i := i + 1
+			end
+
+			print(map.is_equal (map2).out)
+			from
+				i := 1
+			until
+				i > 12
+			loop
+				map2.add_stones_to_bucket (i, i)
+				i := i + 1
+			end
+			print(map.is_equal (map2).out)
+			print(map.out)
 			create l_app
 			prepare
 			l_app.launch
