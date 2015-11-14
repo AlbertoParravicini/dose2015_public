@@ -44,7 +44,7 @@ feature
 			set_parent (a_parent)
 			set_rule_applied (a_rule)
 			set_map (new_map)
-			set_hole (new_hole)
+			set_selected_hole (new_hole)
 			game_over := is_game_over
 		end
 

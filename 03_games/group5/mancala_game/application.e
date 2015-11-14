@@ -42,10 +42,10 @@ feature {NONE} -- Initialization
 			end
 			create state.make
 			state.set_map (map)
-			state.set_hole (2)
+			state.set_selected_hole (2)
 			create state2.make_from_parent_and_rule (state, void, map2, 2)
 
-			print (state.is_equal (state2).out)
+			--print (state.is_equal (state2).out)
 			create l_app
 			prepare
 			l_app.launch
