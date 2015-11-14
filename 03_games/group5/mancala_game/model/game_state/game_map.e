@@ -1,6 +1,6 @@
 note
 	description: "Container for the set of holes and stores that are in a Mancala game"
-	author: "Simone"
+	author: "Alberto"
 	date: "$Date$"
 	revision: "$Revision$"
 

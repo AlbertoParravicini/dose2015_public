@@ -50,17 +50,11 @@ feature
 
 feature -- Status setting
 
-	set_hole (new_hole: INTEGER)
+	set_selected_hole (new_hole: INTEGER)
 		do
 			selected_hole := new_hole
 		end
 
-	parent: detachable like Current
-
-	rule_applied: detachable ACTION
-			-- Rule applied to reach current state.
-			-- If the state is an initial state, rule_applied
-			-- is Void;
 
 feature -- Status report
 
@@ -81,6 +75,13 @@ feature -- Status report
 	player: PLAYER
 			-- Reference to the player of the game;
 
+	parent: detachable SOLITAIRE_STATE
+
+	rule_applied: detachable ACTION
+			-- Rule applied to reach current state.
+			-- If the state is an initial state, rule_applied
+			-- is Void;
+
 	next_player: PLAYER
 			-- Return the player who will play in the next turn;
 		do
@@ -91,16 +92,16 @@ feature -- Status report
 
 feature -- Inherited
 
-	set_parent (new_parent: detachable like Current)
+	set_parent (new_parent: SOLITAIRE_STATE)
 			-- Sets the parent for current state
 		do
-			set_parent (new_parent)
+			parent := new_parent
 		end
 
-	set_rule_applied (rule: detachable ACTION)
+	set_rule_applied (new_rule: ACTION)
 			-- Sets the rule_applied for current state
 		do
-			set_rule_applied (rule)
+			rule_applied := new_rule
 		end
 
 	is_equal (other_state: like Current): BOOLEAN
@@ -115,7 +116,6 @@ feature -- Inherited
 
 	out: STRING
 		do
-			Result := "Selected hole: " + selected_hole.out + " Map: " + map.out + "/n"
+			Result := "Selected hole: " + selected_hole.out + "%N$N Map: " + map.out + "/n"
 		end
-
 end

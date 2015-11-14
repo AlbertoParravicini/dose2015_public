@@ -1,8 +1,8 @@
 note
-	description	: "Root class for Mancala Game."
-	author		: "DOSE 2015 Group 5"
-	date		: "$Date: 2015/11/11 8:39:15 $"
-	revision	: "1.0.0"
+	description: "Root class for Mancala Game."
+	author: "DOSE 2015 Group 5"
+	date: "$Date: 2015/11/11 8:39:15 $"
+	revision: "1.0.0"
 
 class
 	APPLICATION
@@ -17,14 +17,12 @@ feature {NONE} -- Initialization
 			l_app: EV_APPLICATION
 			map: GAME_MAP
 			map2: GAME_MAP
-			i : INTEGER
+			i: INTEGER
 			state: SOLITAIRE_STATE
+			state2: SOLITAIRE_STATE
 		do
 			create map.make
 			create map2.make
-
-			print(map.is_equal (map2).out)
-
 			from
 				i := 1
 			until
@@ -34,7 +32,6 @@ feature {NONE} -- Initialization
 				i := i + 1
 			end
 
-			print(map.is_equal (map2).out)
 			from
 				i := 1
 			until
@@ -43,8 +40,12 @@ feature {NONE} -- Initialization
 				map2.add_stones_to_bucket (i, i)
 				i := i + 1
 			end
-			print(map.is_equal (map2).out)
-			print(map.out)
+			create state.make
+			state.set_map (map)
+			state.set_hole (2)
+			create state2.make_from_parent_and_rule (state, void, map2, 2)
+
+			print (state.is_equal (state2).out)
 			create l_app
 			prepare
 			l_app.launch

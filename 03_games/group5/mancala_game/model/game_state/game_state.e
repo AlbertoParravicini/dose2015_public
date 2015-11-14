@@ -1,6 +1,6 @@
 note
 	description: "Represents the state of a Mancala game"
-	author: "Simone"
+	author: "Alberto"
 	date: "$Date$"
 	revision: "$Revision$"
 
