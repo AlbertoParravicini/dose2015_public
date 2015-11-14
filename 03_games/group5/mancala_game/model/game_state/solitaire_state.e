@@ -44,11 +44,11 @@ feature
 
 			-- Every bucket has to contain at least one stone;				
 			from
-				current_tokens := max_tokens
+				current_tokens := {GAME_CONSTANTS}.num_of_tokens
 			until
-				current_tokens = max_tokens - map.num_of_buckets
+				current_tokens = {GAME_CONSTANTS}.num_of_tokens - {GAME_CONSTANTS}.num_of_buckets
 			loop
-				map.add_stone_to_bucket (max_tokens - current_tokens + 1)
+				map.add_token_to_bucket ({GAME_CONSTANTS}.num_of_tokens - current_tokens + 1)
 				current_tokens := current_tokens - 1
 			end
 
@@ -61,7 +61,7 @@ feature
 			until
 				current_tokens = 0
 			loop
-				map.add_stone_to_bucket ((random_number_generator.item \\ (map.num_of_buckets) + 1))
+				map.add_token_to_bucket ((random_number_generator.item \\ ({GAME_CONSTANTS}.num_of_buckets) + 1))
 				random_number_generator.forth
 				current_tokens := current_tokens - 1
 			end
@@ -123,12 +123,6 @@ feature -- Status report
 			Result := player
 		ensure then
 			next_player_consistent: equal (player, Result)
-		end
-
-	max_tokens: INTEGER
-			-- The number of tokens used in the game
-		once
-			Result := 48
 		end
 
 feature -- Inherited

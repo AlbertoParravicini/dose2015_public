@@ -20,8 +20,11 @@ feature {NONE} -- Initialization
 			i: INTEGER
 			state: SOLITAIRE_STATE
 			state2: SOLITAIRE_STATE
+			problem: SOLITAIRE_PROBLEM
+			action: ACTION_SELECT
 		do
 			create map.make
+			create action.make(12)
 --			create map2.make
 --			from
 --				i := 1
@@ -41,7 +44,7 @@ feature {NONE} -- Initialization
 --				i := i + 1
 --			end
 			create state.make
-			
+
 		--	state.set_selected_hole (2)
 		--	create state2.make_from_parent_and_rule (state, void, map2, 2)
 			print (state.out)
