@@ -7,15 +7,14 @@ note
 deferred class
 	GAME_STATE
 
-feature
-	-- Getters
-	is_game_over
+feature	-- Getters
+
+	is_game_over: BOOLEAN
 			-- Is the game over?
-		do
-			Result:=game_over
+		deferred
 		end
 
-feature {NONE}
+feature 
 	-- Variables
 
 	game_over: BOOLEAN

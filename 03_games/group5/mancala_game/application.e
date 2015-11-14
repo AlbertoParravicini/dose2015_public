@@ -18,6 +18,7 @@ feature {NONE} -- Initialization
 			map: GAME_MAP
 			map2: GAME_MAP
 			i : INTEGER
+			state: SOLITAIRE_STATE
 		do
 			create map.make
 			create map2.make

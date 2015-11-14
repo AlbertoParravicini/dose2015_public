@@ -6,100 +6,120 @@ note
 
 class
 	SOLITAIRE_STATE
-inherit
-	GAME_STATE
 
-	SEARCH_STATE[STRING]
-		-- Rules are represented as strings in this case.
-		-- TODO: change to object event
-		redefine
-			is_equal, out
+inherit
+
+	GAME_STATE
+		undefine
+			is_equal,
+			out
 		end
+
+	SEARCH_STATE [ACTION]
+			-- Rules are represented as strings in this case.
+			-- TODO: change to object event
+		redefine
+			is_equal,
+			out
+		end
+
 create
 	make, make_from_parent_and_rule
+
 feature
 	-- Creator
+
 	make
 		do
-			game_over:=false
+			game_over := false
 			create map.make
-			selected_hole:= -1
+			selected_hole := -1
 		ensure
 			no_rule_applied: rule_applied = void
 			no_parent: parent = void
 		end
 
-	make_from_parent_and_rule(parent: SOLITAIRE_STATE, rule: ACTION, new_map: GAME_MAP, new_hole : INTEGER)
+	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION; new_map: GAME_MAP; new_hole: INTEGER)
 		do
-			game_over:=is_game_over -- to be implemented
-			set_parent(parent)
-			set_rule_applied(rule)
-			set_map(new_map)
-			set_hole(new_hole)
+			game_over := is_game_over -- to be implemented
+			set_parent (a_parent)
+			set_rule_applied (a_rule)
+			set_map (new_map)
+			set_hole (new_hole)
 		end
+
 feature
 	-- Setter
-	set_map(new_map: GAME_MAP)
+
+	set_map (new_map: GAME_MAP)
 		do
-			map:=new_map
+			map := new_map
 		end
 
-	set_hole(new_hole:INTEGER)
+	set_hole (new_hole: INTEGER)
 		do
-			selected_hole:=new_hole
-		end
-feature
-	-- Getter
-	get_selected_hole : INTEGER
-		-- Returns the selected hole
-		do
-			Result:=selected_hole
+			selected_hole := new_hole
 		end
 
-	get_map : GAME_MAP
-		-- Returns game map
+	parent: detachable like Current
 		do
-			Result:=map
+		end
+
+	rule_applied: detachable ACTION
+			-- Rule applied to reach current state.
+			-- If the state is an initial state, rule_applied
+			-- is Void.
+		do
 		end
 
 feature
 	-- Operations
-	is_game_over : BOOLEAN
+
+	is_game_over: BOOLEAN
+			-- When the last stone distributed in a round is
+			-- placed in an empty hole, the player loses and the game is over;
 		do
-			Result:=(map.get_hole_value(selected_hole) = true)
+			if parent /= void then
+				Result := (map.get_bucket_value (selected_hole) = 1 and parent.map.get_bucket_value (selected_hole) = 0)
+			else
+				Result := false
+			end
 		end
+
 feature
 	-- Inherited
+
 	set_parent (new_parent: detachable like Current)
 			-- Sets the parent for current state
 		do
-			parent = new_parent
+			set_parent (new_parent)
 		end
 
-	set_rule_applied (rule: detachable RULE)
+	set_rule_applied (rule: detachable ACTION)
 			-- Sets the rule_applied for current state
 		do
-			rule_applied = rule
+			set_rule_applied (rule)
 		end
 
-	is_equal (other: like Current): BOOLEAN
+	is_equal (other_state: like Current): BOOLEAN
 			-- Compares current state with another state other.
 			-- Considered equal iff same map and same selected state.
-		local
-			map_is_equal: BOOLEAN
-			selected_hole_is_equal: BOOLEAN
 		do
-			selected_hole_is_equal:= (selected_hole = other.get_selected_hole)
-			map_is_equal:= (map = other.get_map)
-			Result:= selected_hole_is_equal and map_is_equal
+			Result := (selected_hole = other_state.selected_hole)
+			if Result = true then
+				Result := map.is_equal (other_state.map)
+			end
 		end
 
 	out: STRING
-	do
-		Result := "Selected hole: "+selected_hole.out+" Map: "+map.out+"/n"
-	end
+		do
+			Result := "Selected hole: " + selected_hole.out + " Map: " + map.out + "/n"
+		end
+
 feature
 	-- Variables
-		selected_hole: INTEGER
+
+	selected_hole: INTEGER
 			-- Target of the next move, it's the ending position after having moved in the previous state
+
 end
