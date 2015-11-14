@@ -41,20 +41,14 @@ feature
 
 	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION; new_map: GAME_MAP; new_hole: INTEGER)
 		do
-			game_over := is_game_over -- to be implemented
 			set_parent (a_parent)
 			set_rule_applied (a_rule)
 			set_map (new_map)
 			set_hole (new_hole)
+			game_over := is_game_over
 		end
 
-feature
-	-- Setter
-
-	set_map (new_map: GAME_MAP)
-		do
-			map := new_map
-		end
+feature -- Status setting
 
 	set_hole (new_hole: INTEGER)
 		do
@@ -62,18 +56,13 @@ feature
 		end
 
 	parent: detachable like Current
-		do
-		end
 
 	rule_applied: detachable ACTION
 			-- Rule applied to reach current state.
 			-- If the state is an initial state, rule_applied
-			-- is Void.
-		do
-		end
+			-- is Void;
 
-feature
-	-- Operations
+feature -- Status report
 
 	is_game_over: BOOLEAN
 			-- When the last stone distributed in a round is
@@ -86,8 +75,21 @@ feature
 			end
 		end
 
-feature
-	-- Inherited
+	selected_hole: INTEGER
+			-- Target of the next move, it's the ending position after having moved in the previous state;
+
+	player: PLAYER
+			-- Reference to the player of the game;
+
+	next_player: PLAYER
+			-- Return the player who will play in the next turn;
+		do
+			Result := player
+		ensure then
+			next_player_consistent: equal (player, Result)
+		end
+
+feature -- Inherited
 
 	set_parent (new_parent: detachable like Current)
 			-- Sets the parent for current state
@@ -115,11 +117,5 @@ feature
 		do
 			Result := "Selected hole: " + selected_hole.out + " Map: " + map.out + "/n"
 		end
-
-feature
-	-- Variables
-
-	selected_hole: INTEGER
-			-- Target of the next move, it's the ending position after having moved in the previous state
 
 end
