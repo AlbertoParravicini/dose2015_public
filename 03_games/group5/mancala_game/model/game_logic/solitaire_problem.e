@@ -45,6 +45,11 @@ feature
 			-- To be implemented
 		end
 
+	is_successful(state: SOLITAIRE_STATE) : BOOLEAN
+		do
+			-- To be implemented
+		end
+
 feature
 	-- Heuristic search related routines
 
