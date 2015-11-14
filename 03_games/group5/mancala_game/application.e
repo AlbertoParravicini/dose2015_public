@@ -22,9 +22,13 @@ feature {NONE} -- Initialization
 			state2: SOLITAIRE_STATE
 			problem: SOLITAIRE_PROBLEM
 			action: ACTION_SELECT
+			action2: ACTION_ROTATE
+			enum: ENUM_ROTATE
 		do
 			create map.make
 			create action.make(12)
+
+			create action2.make ((create {ENUM_ROTATE}).clockwise)
 --			create map2.make
 --			from
 --				i := 1

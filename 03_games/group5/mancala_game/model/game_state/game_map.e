@@ -271,5 +271,5 @@ invariant
 	num_of_stores_is_constant: stores.count = {GAME_CONSTANTS}.num_of_stores
 	buckets_value_is_non_negative: across buckets as curr_buc all curr_buc.item >= 0 end
 	store_value_is_non_negative: across stores as curr_store all curr_store.item >= 0 end
-
+--	num_of_tokens_is_constant: across stores as curr_store from sum := 0 loop sum := sum + curr_store.item end end
 end

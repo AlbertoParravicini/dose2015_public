@@ -50,7 +50,7 @@ feature
 
 				--FIXTHIS
 
-				--rule := [create ACTION_ROTATE.make(ENUM_ROTATE.clockwise), state.selected_hole]
+				rule := [create {ACTION_ROTATE}.make((create {ENUM_ROTATE}).clockwise), state.selected_hole]
 				-- TODO: get map from state and modify it
 				-- TODO: create new state setting parent and other things
 			create successor.make
@@ -59,7 +59,7 @@ feature
 				-- Rotate counter-clockwise
 			create successor.make
 
-				--rule:= [create ACTION_ROTATE.make(ENUM_ROTATE.countter_clockwise), state.selected_hole]
+				rule:= [create {ACTION_ROTATE}.make((create {ENUM_ROTATE}).counter_clockwise), state.selected_hole]
 				-- TODO: get map from state and modify it
 				-- TODO: create new state setting parent and other things
 			successors.extend (successor)
