@@ -41,8 +41,30 @@ feature
 		end
 
 	get_successors (state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
+		local
+			successors: LINKED_LIST[SOLITAIRE_STATE]
+			successor: SOLITAIRE_STATE
+			rule: TUPLE[ACTION_ROTATE, INTEGER]
 		do
 			-- To be implemented
+			create successors.make
+
+			-- Rotate ClockWise
+			rule:= [create ACTION_ROTATE.make(ENUM_ROTATE.clockwise), state.selected_hole]
+				-- TODO: get map from state and modify it
+				-- TODO: create new state setting parent and other things
+			create successor.make
+			successors.extend (successor)
+
+			-- Rotate Counter ClockWise
+			create successor.make
+			rule:= [create ACTION_ROTATE.make(ENUM_ROTATE.countter_clockwise), state.selected_hole]
+			-- TODO: get map from state and modify it
+			-- TODO: create new state setting parent and other things
+			successors.extend(successor)
+
+			-- Return
+			Result:=successors
 		end
 
 	is_successful(state: SOLITAIRE_STATE) : BOOLEAN
