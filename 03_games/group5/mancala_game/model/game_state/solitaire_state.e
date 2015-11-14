@@ -30,9 +30,42 @@ feature
 	-- Creator
 
 	make
+		local
+			current_tokens: INTEGER
+			random_number_generator: RANDOM
+				-- Random numbers generator to have a random bucket to which a token will be added;
+			time_seed_for_random_generator: TIME
+				-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
+
 		do
 			game_over := false
 			create map.make
+
+
+			-- Every bucket has to contain at least one stone;				
+			from
+				current_tokens := max_tokens
+			until
+				current_tokens = max_tokens - map.num_of_buckets
+			loop
+				map.add_stone_to_bucket (max_tokens - current_tokens + 1)
+				current_tokens := current_tokens - 1
+			end
+
+			create time_seed_for_random_generator.make_now
+				-- Initializes random generator using current time seed.
+			create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
+			random_number_generator.start
+
+			from
+			until
+				current_tokens = 0
+			loop
+				map.add_stone_to_bucket ((random_number_generator.item \\ (map.num_of_buckets) + 1))
+				random_number_generator.forth
+				current_tokens := current_tokens - 1
+			end
+
 			selected_hole := -1
 		ensure
 			no_rule_applied: rule_applied = void
@@ -51,6 +84,7 @@ feature
 feature -- Status setting
 
 	set_selected_hole (new_hole: INTEGER)
+			-- Set the hole selected by the player, on which the next move will be performed;
 		do
 			selected_hole := new_hole
 		end
@@ -76,6 +110,7 @@ feature -- Status report
 			-- Reference to the player of the game;
 
 	parent: detachable SOLITAIRE_STATE
+			-- The parent of this state; it is void if this is the first state;
 
 	rule_applied: detachable ACTION
 			-- Rule applied to reach current state.
@@ -88,6 +123,12 @@ feature -- Status report
 			Result := player
 		ensure then
 			next_player_consistent: equal (player, Result)
+		end
+
+	max_tokens: INTEGER
+			-- The number of tokens used in the game
+		once
+			Result := 48
 		end
 
 feature -- Inherited
@@ -116,6 +157,6 @@ feature -- Inherited
 
 	out: STRING
 		do
-			Result := "Selected hole: " + selected_hole.out + "%N$N Map: " + map.out + "/n"
+			Result := "Selected hole: " + selected_hole.out + "%N%N Map: " + map.out + "/n"
 		end
 end

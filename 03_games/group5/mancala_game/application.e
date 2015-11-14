@@ -22,29 +22,29 @@ feature {NONE} -- Initialization
 			state2: SOLITAIRE_STATE
 		do
 			create map.make
-			create map2.make
-			from
-				i := 1
-			until
-				i > 12
-			loop
-				map.add_stones_to_bucket (i, i)
-				i := i + 1
-			end
+--			create map2.make
+--			from
+--				i := 1
+--			until
+--				i > 12
+--			loop
+--				map.add_stones_to_bucket (i, i)
+--				i := i + 1
+--			end
 
-			from
-				i := 1
-			until
-				i > 12
-			loop
-				map2.add_stones_to_bucket (i, i)
-				i := i + 1
-			end
+--			from
+--				i := 1
+--			until
+--				i > 12
+--			loop
+--				map2.add_stones_to_bucket (i, i)
+--				i := i + 1
+--			end
 			create state.make
-			state.set_map (map)
-			state.set_selected_hole (2)
-			create state2.make_from_parent_and_rule (state, void, map2, 2)
-
+			
+		--	state.set_selected_hole (2)
+		--	create state2.make_from_parent_and_rule (state, void, map2, 2)
+			print (state.out)
 			--print (state.is_equal (state2).out)
 			create l_app
 			prepare
