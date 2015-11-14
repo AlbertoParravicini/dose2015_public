@@ -24,11 +24,19 @@ feature {NONE} -- Initialization
 			action: ACTION_SELECT
 			action2: ACTION_ROTATE
 			enum: ENUM_ROTATE
+
 		do
 			create map.make
 			create action.make(12)
 
+
+
 			create action2.make ((create {ENUM_ROTATE}).clockwise)
+
+			if action2.rotation = (create {ENUM_ROTATE}).clockwise then
+				print("ok")
+			end
+
 --			create map2.make
 --			from
 --				i := 1

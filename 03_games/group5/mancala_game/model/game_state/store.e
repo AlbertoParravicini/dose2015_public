@@ -1,33 +1,33 @@
---note
---	description: "Represents a store."
---	author: ""
---	date: "$Date$"
---	revision: "$Revision$"
+note
+	description: "Represents a store."
+	author: ""
+	date: "$Date$"
+	revision: "$Revision$"
 
---class
---	STORE
---inherit
---	BASKET
+class
+	STORE
+inherit
+	BASKET
 
---create
---	make
+create
+	make
 
---feature -- Initialitazion
---	make
---			-- Initialization with the provided owner;
---		do
---			num_of_stones := 0
---		end
+feature -- Initialitazion
+	make
+			-- Initialization with the provided owner;
+		do
+			num_of_stones := 0
+		end
 
---feature	-- Status setting
+feature	-- Status setting
 
---	set_stones (new_stones_amount: INTEGER)
---		-- Set the amount of stones in the basket
---		require
---			new_stones_amount_not_negative: new_stones_amount >= 0
---		do
---			num_of_stones := new_stones_amount
---		ensure
---			new_stones_amount_set: num_of_stones = new_stones_amount
---		end
---end
+	set_stones (new_stones_amount: INTEGER)
+		-- Set the amount of stones in the basket
+		require
+			new_stones_amount_not_negative: new_stones_amount >= 0
+		do
+			num_of_stones := new_stones_amount
+		ensure
+			new_stones_amount_set: num_of_stones = new_stones_amount
+		end
+end
