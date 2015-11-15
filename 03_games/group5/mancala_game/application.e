@@ -29,7 +29,10 @@ feature {NONE} -- Initialization
 
 			create problem.make
 			create engine.make (problem)
+			engine.set_check_open_state (true)
+			engine.set_mark_closed_state (true)
 
+			print (problem.initial_state.out + "%N%N%N")
 			engine.perform_search
 
 			if (engine.is_search_successful) then
@@ -72,17 +75,17 @@ feature {NONE} -- Initialization
 			-- avoid to violate the invariant of class EV_APPLICATION.
 		do
 				-- create and initialize the first window.
-			create first_window
+			--create first_window
 
 				-- Show the first window.
 				--| TODO: Remove this line if you don't want the first
 				--|       window to be shown at the start of the program.
-			first_window.show
+			--first_window.show
 		end
 
 feature {NONE} -- Implementation
 
-	first_window: MAIN_WINDOW
+	--first_window: MAIN_WINDOW
 			-- Main window.
 
 end -- class APPLICATION

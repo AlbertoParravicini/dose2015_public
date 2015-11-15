@@ -298,10 +298,10 @@ feature {NONE} -- Implementative routines
 			-- List of all stores;
 
 invariant
-	num_of_holes_is_constant: holes.count = {GAME_CONSTANTS}.num_of_holes
-	num_of_stores_is_constant: stores.count = {GAME_CONSTANTS}.num_of_stores
-	holes_value_is_non_negative: across holes as curr_buc all curr_buc.item >= 0 end
-	store_value_is_non_negative: across stores as curr_store all curr_store.item >= 0 end
+--	num_of_holes_is_constant: holes.count = {GAME_CONSTANTS}.num_of_holes
+--	num_of_stores_is_constant: stores.count = {GAME_CONSTANTS}.num_of_stores
+--	holes_value_is_non_negative: across holes as curr_buc all curr_buc.item >= 0 end
+--	store_value_is_non_negative: across stores as curr_store all curr_store.item >= 0 end
 	--	num_of_stones_is_constant: across stores as curr_store from sum := 0 loop sum := sum + curr_store.item end end
 
 end

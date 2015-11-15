@@ -38,6 +38,7 @@ feature
 			-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
 
 		do
+			create player.make_with_initial_values ("pippo", 0)
 			create map.make
 
 				-- Every hole has to contain at least one stone;
@@ -70,6 +71,7 @@ feature
 	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION; new_map: GAME_MAP; new_hole: INTEGER)
 		do
 			set_parent (a_parent)
+			player := a_parent.player
 			set_rule_applied (a_rule)
 			set_map (new_map)
 			set_selected_hole (new_hole)
@@ -105,6 +107,7 @@ feature -- Status setting
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
 						map.add_stone_to_store (2)
+						player.increment_score
 						stones_to_distribute := stones_to_distribute - 1
 					else
 							-- More than 1 stone left
@@ -124,6 +127,7 @@ feature -- Status setting
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
 						map.add_stone_to_store (1)
+						player.increment_score
 						stones_to_distribute := stones_to_distribute - 1
 					else
 							-- More than 1 stone left
@@ -207,7 +211,7 @@ feature -- Status report
 	selected_hole: INTEGER
 			-- Target of the next move, it's the ending position after having moved in the previous state;
 
-	player: PLAYER
+	player: HUMAN_PLAYER
 			-- Reference to the player of the game;
 
 	parent: detachable SOLITAIRE_STATE
@@ -244,7 +248,7 @@ feature -- Inherited
 			-- Compares current state with another state other.
 			-- Considered equal iff same map and same selected state.
 		do
-			Result := (selected_hole = other_state.selected_hole) and then (map.is_equal (other_state.map))
+			Result := (selected_hole = other_state.selected_hole) and then (map.is_equal (other_state.map)) and player.is_equal (other_state.player)
 		end
 
 	out: STRING

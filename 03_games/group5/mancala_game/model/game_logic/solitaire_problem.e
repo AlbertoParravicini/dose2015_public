@@ -15,6 +15,7 @@ inherit
 
 	HEURISTIC_STATE_COST_SEARCH_PROBLEM [ACTION, SOLITAIRE_STATE]
 
+
 create
 	make, make_with_initial_state
 
@@ -58,11 +59,12 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 				loop
 					create successor_1.make
 					successor_1.set_selected_hole (current_selection)
-						-- TODO: NEED A COPY CONSTRUCTOR make_from_map
+
 					successor_1.set_map (create {GAME_MAP}.make_from_map(a_state.map))
 
 					successor_1.set_rule_applied (create {ACTION_SELECT}.make (current_selection))
 					successors.extend (successor_1)
+					current_selection := current_selection + 1
 				end -- End Loop
 
 			else -- This is not the first state, i.e the first hole was already selected;
