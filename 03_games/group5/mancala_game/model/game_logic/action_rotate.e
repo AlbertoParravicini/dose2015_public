@@ -26,9 +26,9 @@ feature
 	out : STRING
 		do
 			if (rotation = (create {ENUM_ROTATE}).clockwise) then
-				Result:="Rotaion: Clockwise"
+				Result:="Rotation: Clockwise"
 			else
-				Result:="Rotation: CounterClockWise"
+				Result:="Rotation: Counter-Clockwise"
 			end
 		end
 

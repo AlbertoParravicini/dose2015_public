@@ -38,148 +38,60 @@ feature
 	initial_state: SOLITAIRE_STATE
 			-- The initial state of the problem;
 
-	get_successors (state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
+get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 		local
 			successors: LINKED_LIST [SOLITAIRE_STATE]
-			successor: SOLITAIRE_STATE
-				--rule: TUPLE [ACTION_ROTATE, INTEGER]
+			successor_1: SOLITAIRE_STATE
+            successor_2: SOLITAIRE_STATE
 			current_selection: INTEGER
-			current_state: SOLITAIRE_STATE
-			current_stones: INTEGER
 		do
 			create successors.make
 
-			if (state.selected_hole = -1 and state.parent = void) then
+            if a_state.is_game_over then -- Do nothing
+
+			elseif (a_state.selected_hole = -1 and a_state.parent = void) then
 					-- In the first state no first hole has been selected and the parent is void;
 				from
 					current_selection := 1
 				until
 					current_selection > {GAME_CONSTANTS}.num_of_holes
 				loop
-					create current_state.make
-					current_state.set_selected_hole (current_selection)
-						-- TODO: NEED A COPY CONSTRUCTOR
-					current_state.set_map (state.map)
+					create successor_1.make
+					successor_1.set_selected_hole (current_selection)
+						-- TODO: NEED A COPY CONSTRUCTOR make_from_map
+					successor_1.set_map (create {GAME_MAP}.make_from_map(a_state.map))
 
-					current_state.set_rule_applied (create {ACTION_SELECT}.make(current_selection))
-					successors.extend (current_state)
+					successor_1.set_rule_applied (create {ACTION_SELECT}.make (current_selection))
+					successors.extend (successor_1)
 				end -- End Loop
-					-- SO FAR NO SYNTAX ERRORS
 
-			else
-					-- First hole has been selected
+			else -- This is not the first state, i.e the first hole was already selected;
 
-					------------------------------------------------------------------------------------
-					-- How it works:
-					-- 1) empty the selected_hole, because it is the hole where the rule is applied
-					-- 2) according to cw / ccw rule, calculate the new selected_hole
-					-- 3) drop a stone and repeat
-					-- 4) if the selected hole is a special one (next to a store),
-					--    check the number of stones left and see what to do
-					------------------------------------------------------------------------------------
+                -- Two successors must be created: one for the clockwise move, another for the counter-clockwise movement;
 
-					-- Rotate clockwise
-					-- DEEP COPY DOESNT WORK
-				--create successor.make_from_parent_and_rule (state, [create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise), state.selected_hole], deep_copy (state.map), state.selected_hole)
-					-- Change successor map and selected_hole
-				from
-					current_stones := successor.map.get_hole_value (successor.selected_hole)
-					successor.map.clear_hole (state.selected_hole)
-				until
-					current_stones = 0
-				loop
-						--					if((successor.selected_hole <= {GAME_CONSTANTS}.num_of_buckets) and (successor.selected_hole >( ({GAME_CONSTANTS}.num_of_buckets / 2)+1))) then
-						--						-- Example: 7<selected_hole<=12
-						--						-- first update the position and then change the value of the position
-						--						successor.selected_hole:=successor.selected_hole-1
-						--						successor.map.add_token_to_store (successor.selected_hole)
-						--						current_stones := current_stones - 1
-						--					else if (successor.selected_hole = (({GAME_CONSTANTS}.num_of_buckets / 2) +1)) then
-						--						-- Example: selected_hole = 7
-						--						if(current_stones = 1) then
-						--							-- Only 1 stone left
-						--							successor.map.add_token_to_store (1)
-						--							current_stones := current_stones - 1
-						--						else
-						--							-- More than 1 stone left
-						--							successor.selected_hole:=1
-						--							successor.map.add_token_to_bucket (successor.selected_hole)
-						--							current_stones := current_stones - 1
-						--						end -- End inner if
-						--					else if ((successor.selected_hole >= 1) and ( successor.selected_hole < ({GAME_CONSTANTS}.num_of_buckets / 2))) then
-						--						-- Example: 1<= selected_hole < 6
-						--						successor.selected_hole:=successor.selected_hole+1
-						--						successor.map.add_token_to_store (successor.selected_hole)
-						--						current_stones := current_stones - 1
-						--					else if ( successor.selected_hole = ({GAME_CONSTANTS}.num_of_buckets /2)) then
-						--						-- Example: selected_hole = 6
-						--						if(current_stones = 1) then
-						--							-- Only 1 stone left
-						--							successor.map.add_token_to_store (2)
-						--							current_stones := current_stones - 1
-						--						else
-						--							-- More than 1 stone left
-						--							successor.selected_hole:={GAME_CONSTANTS}.num_of_buckets
-						--							successor.map.add_token_to_bucket (successor.selected_hole)
-						--							current_stones := current_stones - 1
-						--						end -- End inner if
-						--					end -- End multiple if
-				end -- End CW loop
-					--				-- Check if game over
-					--				successor.game_over:= is_game_over(successor)
-					--				-- Add successor to successors
-					--				successors.extend (successor)
+                -- Rotate clockwise;
+                -- Create a new state whose map is equal to the one of the current state;
+                create successor_1.make_from_parent_and_rule(a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise),
+                create {GAME_MAP}.make_from_map(a_state.map), a_state.selected_hole)
 
-					--				-- Rotate counter-clockwise
-					--				create successor.make_from_parent_and_rule (state, [create {ACTION_ROTATE}.make((create {ENUM_ROTATE}).counter_clockwise), state.selected_hole], deep_copy(state.map), state.selected_hole)
-					--				-- Change successor map and selected_hole
-					--				from
-					--					current_stones:=successor.map.get_bucket_value (successor.selected_hole)
-					--					successor.map.clear_bucket (state.selected_hole)
-					--				until
-					--					current_stones = 0
-					--				loop
-					--					if((successor.selected_hole < {GAME_CONSTANTS}.num_of_buckets) and (successor.selected_hole >=(({GAME_CONSTANTS}.num_of_buckets / 2)+1))) then
-					--						-- Example: 7<=selected_hole<12
-					--						-- first update the position and then change the value of the position
-					--						successor.selected_hole:=successor.selected_hole+1
-					--						successor.map.add_token_to_store (successor.selected_hole)
-					--						current_stones := current_stones - 1
-					--					else if (successor.selected_hole = 1) then
-					--						-- Example: selected_hole = 1
-					--						if(current_stones = 1) then
-					--							-- Only 1 stone left
-					--							successor.map.add_token_to_store (1)
-					--							current_stones := current_stones - 1
-					--						else
-					--							-- More than 1 stone left
-					--							successor.selected_hole:= ({GAME_CONSTANTS}.num_of_buckets / 2)+1
-					--							successor.map.add_token_to_bucket (successor.selected_hole)
-					--							current_stones := current_stones - 1
-					--						end -- End inner if
-					--					else if ((successor.selected_hole > 1) and (successor.selected_hole <= ({GAME_CONSTANTS}.num_of_buckets / 2))) then
-					--						-- Example: 1< selected_hole <= 6
-					--						successor.selected_hole:=successor.selected_hole-1
-					--						successor.map.add_token_to_store (successor.selected_hole)
-					--						current_stones := current_stones - 1
-					--					else if ( successor.selected_hole = {GAME_CONSTANTS}.num_of_buckets) then
-					--						-- Example: selected_hole = 12
-					--						if(current_stones = 1) then
-					--							-- Only 1 stone left
-					--							successor.map.add_token_to_store (2)
-					--							current_stones := current_stones - 1
-					--						else
-					--							-- More than 1 stone left
-					--							successor.selected_hole:={GAME_CONSTANTS}.num_of_buckets/2
-					--							successor.map.add_token_to_bucket (successor.selected_hole)
-					--							current_stones := current_stones - 1
-					--						end -- End inner if
-					--					end -- End multiple ifs
-					--				end -- End CCW loop
-					--				-- Check if game over
-					--				successor.game_over:= is_game_over(successor)
-					--				-- Add successor to successors
-					--				successors.extend (successor)
+                -- Clockwise movement;
+                -- Empties the current_hole, distributes the stones clockwise, updates the score, updates the current_hole;
+                successor_1.move_clockwise
+
+
+                -- Rotate counter-clockwise;
+                -- Create a new state whose map is equal to the one of the current state;
+                create successor_2.make_from_parent_and_rule(a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise),
+                create {GAME_MAP}.make_from_map(a_state.map), a_state.selected_hole)
+
+                -- Counter-clockwise movement;
+                -- Empties the current_hole, distributes the stones counter-clockwise, updates the score, updates the current_hole;
+                successor_2.move_counter_clockwise
+
+			    successors.extend (successor_1)
+                successors.extend (successor_2)
+
+
 			end -- End external if
 
 			Result := successors
@@ -195,7 +107,7 @@ feature
 	-- Heuristic search related routines
 
 	heuristic_value (state: SOLITAIRE_STATE): REAL
-			-- Return the remaining number of stones in the game; 
+			-- Return the remaining number of stones in the game;
 		do
 			Result := {GAME_CONSTANTS}.num_of_stones - state.player.score
 		end
