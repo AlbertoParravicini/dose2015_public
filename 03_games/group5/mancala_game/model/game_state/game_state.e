@@ -9,8 +9,10 @@ deferred class
 
 feature -- Status Report
 
-	game_over: BOOLEAN
+	is_game_over: BOOLEAN
 		-- Is the game over?
+		deferred
+		end
 
 	map: GAME_MAP
 			-- Map of the game

@@ -35,14 +35,12 @@ feature
 			random_number_generator: RANDOM
 				-- Random numbers generator to have a random hole to which a stone will be added;
 			time_seed_for_random_generator: TIME
-				-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
+			-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
 
 		do
-			game_over := false
 			create map.make
 
-
-			-- Every hole has to contain at least one stone;				
+				-- Every hole has to contain at least one stone;
 			from
 				current_stones := {GAME_CONSTANTS}.num_of_stones
 			until
@@ -51,12 +49,10 @@ feature
 				map.add_stone_to_hole ({GAME_CONSTANTS}.num_of_stones - current_stones + 1)
 				current_stones := current_stones - 1
 			end
-
 			create time_seed_for_random_generator.make_now
 				-- Initializes random generator using current time seed.
 			create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
 			random_number_generator.start
-
 			from
 			until
 				current_stones = 0
@@ -65,7 +61,6 @@ feature
 				random_number_generator.forth
 				current_stones := current_stones - 1
 			end
-
 			selected_hole := -1
 		ensure
 			no_rule_applied: rule_applied = void
@@ -89,18 +84,21 @@ feature -- Status setting
 			selected_hole := new_hole
 		end
 
-
 feature -- Status report
 
 	is_game_over: BOOLEAN
-			-- When the last stone distributed in a round is
-			-- placed in an empty hole, the player loses and the game is over;
+			-- When the last stone distributed in a round was
+			-- placed in an empty hole and there was no increase in the score,
+			-- the player loses and the game is over;
+		local
+			placed_in_empty_hole: BOOLEAN
+			no_store_increase: BOOLEAN
 		do
 			if parent /= void then
-				Result := (map.get_hole_value (selected_hole) = 1 and parent.map.get_hole_value (selected_hole) = 0)
-			else
-				Result := false
+				placed_in_empty_hole := (state.map.get_hole_value (state.selected_hole) = 1)
+				no_store_increase := (state.map.get_store_value (1) = state.parent.map.get_store_value (1)) and (state.map.get_store_value (2) = state.parent.map.get_store_value (2))
 			end
+			Result := placed_in_empty_hole and no_store_increase
 		end
 
 	selected_hole: INTEGER
@@ -143,14 +141,12 @@ feature -- Inherited
 			-- Compares current state with another state other.
 			-- Considered equal iff same map and same selected state.
 		do
-			Result := (selected_hole = other_state.selected_hole)
-			if Result = true then
-				Result := map.is_equal (other_state.map)
-			end
+			Result := (selected_hole = other_state.selected_hole) and then (map.is_equal (other_state.map))
 		end
 
 	out: STRING
 		do
 			Result := "Selected hole: " + selected_hole.out + "%N%N Map: " + map.out + "/n"
 		end
+
 end
