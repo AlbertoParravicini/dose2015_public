@@ -27,39 +27,32 @@ feature {NONE} -- Initialization
 
 		do
 			create map.make
-			create action.make(12)
+--			create action.make(12)
 
 
 
-			create action2.make ((create {ENUM_ROTATE}).clockwise)
+--			create action2.make ((create {ENUM_ROTATE}).clockwise)
 
-			if action2.rotation = (create {ENUM_ROTATE}).clockwise then
-				print("ok")
+--			if action2.rotation = (create {ENUM_ROTATE}).clockwise then
+--				print("ok")
+--			end
+
+			from
+				i := 1
+			until
+				i > 12
+			loop
+				map.add_stones_to_hole (i, i)
+				i := i + 1
 			end
 
---			create map2.make
---			from
---				i := 1
---			until
---				i > 12
---			loop
---				map.add_stones_to_hole (i, i)
---				i := i + 1
---			end
-
---			from
---				i := 1
---			until
---				i > 12
---			loop
---				map2.add_stones_to_hole (i, i)
---				i := i + 1
---			end
-			create state.make
+			create map2.make_from_map (map)
+		--	create state.make
 
 		--	state.set_selected_hole (2)
 		--	create state2.make_from_parent_and_rule (state, void, map2, 2)
-			print (state.out)
+			print (map.out + "%N%N")
+			print (map2.out)
 			--print (state.is_equal (state2).out)
 			create l_app
 			prepare

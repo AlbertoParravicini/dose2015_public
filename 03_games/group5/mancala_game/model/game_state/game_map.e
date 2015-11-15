@@ -11,11 +11,12 @@ inherit
 
 	ANY
 		redefine
-			is_equal, out
+			is_equal,
+			out
 		end
 
 create
-	make
+	make, make_from_map
 
 feature -- Creator
 
@@ -47,6 +48,37 @@ feature -- Creator
 				i := i + 1
 			end
 				-- Create a list of empty stores;
+		end
+
+	make_from_map (other_map: GAME_MAP)
+			-- Copy constructor: it creates a map which is a copy of another map given as input;
+		local
+			i: INTEGER
+		do
+			create holes.make ({GAME_CONSTANTS}.num_of_holes)
+				-- Create the holes list;
+			create stores.make ({GAME_CONSTANTS}.num_of_stores)
+				-- Create the stores list;
+			from
+				i := 1
+			until
+				i > {GAME_CONSTANTS}.num_of_holes
+			loop
+				holes.extend (other_map.get_hole_value (i))
+				holes.forth
+				i := i + 1
+			end
+				-- Create a list of holes whose value is the same of the other map;
+			from
+				i := 1
+			until
+				i > {GAME_CONSTANTS}.num_of_stores
+			loop
+				stores.extend (other_map.get_store_value (i))
+				stores.forth
+				i := i + 1
+			end
+				-- Create a list of empty stores whose value is the same of the other map;
 		end
 
 feature -- Status Report
@@ -129,7 +161,6 @@ feature -- Status Report
 				end
 				stores.forth
 			end
-
 			Result := equal_map
 		end
 
@@ -141,7 +172,7 @@ feature -- Status Report
 			output: STRING
 		do
 			output := ""
-			-- Print the top row of holes;
+				-- Print the top row of holes;
 			from
 				holes.finish
 				output.append ("   ")
@@ -151,7 +182,7 @@ feature -- Status Report
 				output.append (holes.item.out + " ")
 				holes.back
 			end
-			-- Print the stores;
+				-- Print the stores;
 			from
 				stores.start
 				output.append ("%N ")
@@ -161,7 +192,7 @@ feature -- Status Report
 				output.append (stores.item.out + "             ")
 				stores.forth
 			end
-			-- Print the bottom row of holes;
+				-- Print the bottom row of holes;
 			from
 				holes.start
 				output.append ("%N   ")
@@ -271,5 +302,6 @@ invariant
 	num_of_stores_is_constant: stores.count = {GAME_CONSTANTS}.num_of_stores
 	holes_value_is_non_negative: across holes as curr_buc all curr_buc.item >= 0 end
 	store_value_is_non_negative: across stores as curr_store all curr_store.item >= 0 end
---	num_of_stones_is_constant: across stores as curr_store from sum := 0 loop sum := sum + curr_store.item end end
+	--	num_of_stones_is_constant: across stores as curr_store from sum := 0 loop sum := sum + curr_store.item end end
+
 end

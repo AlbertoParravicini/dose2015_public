@@ -73,7 +73,6 @@ feature
 			set_rule_applied (a_rule)
 			set_map (new_map)
 			set_selected_hole (new_hole)
-			game_over := is_game_over
 		end
 
 feature -- Status setting
@@ -95,8 +94,8 @@ feature -- Status report
 			no_store_increase: BOOLEAN
 		do
 			if parent /= void then
-				placed_in_empty_hole := (state.map.get_hole_value (state.selected_hole) = 1)
-				no_store_increase := (state.map.get_store_value (1) = state.parent.map.get_store_value (1)) and (state.map.get_store_value (2) = state.parent.map.get_store_value (2))
+				placed_in_empty_hole := (map.get_hole_value (selected_hole) = 1)
+				no_store_increase := (map.get_store_value (1) = parent.map.get_store_value (1)) and (map.get_store_value (2) = parent.map.get_store_value (2))
 			end
 			Result := placed_in_empty_hole and no_store_increase
 		end
