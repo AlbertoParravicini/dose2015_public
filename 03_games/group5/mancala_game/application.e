@@ -43,7 +43,7 @@ feature {NONE} -- Initialization
 --			until
 --				i > 12
 --			loop
---				map.add_stones_to_bucket (i, i)
+--				map.add_stones_to_hole (i, i)
 --				i := i + 1
 --			end
 
@@ -52,7 +52,7 @@ feature {NONE} -- Initialization
 --			until
 --				i > 12
 --			loop
---				map2.add_stones_to_bucket (i, i)
+--				map2.add_stones_to_hole (i, i)
 --				i := i + 1
 --			end
 			create state.make

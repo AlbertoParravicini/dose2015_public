@@ -69,9 +69,9 @@ feature
 		end
 
 	is_successful (state: SOLITAIRE_STATE): BOOLEAN
-		-- Is the state successful, i.e. is the player score equal to the number of tokens in the game?
+		-- Is the state successful, i.e. is the player score equal to the number of stones in the game?
 		do
-			Result := state.player.score = {GAME_CONSTANTS}.num_of_tokens
+			Result := state.player.score = {GAME_CONSTANTS}.num_of_stones
 		end
 
 feature

@@ -17,13 +17,13 @@ create
 feature
 	-- Creation
 
-	make (bucket: INTEGER)
+	make (hole: INTEGER)
 		require
-			bucket_not_valid: bucket > 0 and bucket <= {GAME_CONSTANTS}.num_of_buckets
+			hole_not_valid: hole > 0 and hole <= {GAME_CONSTANTS}.num_of_holes
 		do
-			selection := bucket
+			selection := hole
 		ensure
-			selection = bucket
+			selection = hole
 		end
 
 feature
@@ -33,7 +33,7 @@ feature
 		do
 			Result := selection
 		ensure
-			Result > 0 and Result < {GAME_CONSTANTS}.num_of_buckets
+			Result > 0 and Result < {GAME_CONSTANTS}.num_of_holes
 		end
 
 feature {NONE}

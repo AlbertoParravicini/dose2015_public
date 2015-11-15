@@ -31,9 +31,9 @@ feature
 
 	make
 		local
-			current_tokens: INTEGER
+			current_stones: INTEGER
 			random_number_generator: RANDOM
-				-- Random numbers generator to have a random bucket to which a token will be added;
+				-- Random numbers generator to have a random hole to which a stone will be added;
 			time_seed_for_random_generator: TIME
 				-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
 
@@ -42,14 +42,14 @@ feature
 			create map.make
 
 
-			-- Every bucket has to contain at least one stone;				
+			-- Every hole has to contain at least one stone;				
 			from
-				current_tokens := {GAME_CONSTANTS}.num_of_tokens
+				current_stones := {GAME_CONSTANTS}.num_of_stones
 			until
-				current_tokens = {GAME_CONSTANTS}.num_of_tokens - {GAME_CONSTANTS}.num_of_buckets
+				current_stones = {GAME_CONSTANTS}.num_of_stones - {GAME_CONSTANTS}.num_of_holes
 			loop
-				map.add_token_to_bucket ({GAME_CONSTANTS}.num_of_tokens - current_tokens + 1)
-				current_tokens := current_tokens - 1
+				map.add_stone_to_hole ({GAME_CONSTANTS}.num_of_stones - current_stones + 1)
+				current_stones := current_stones - 1
 			end
 
 			create time_seed_for_random_generator.make_now
@@ -59,11 +59,11 @@ feature
 
 			from
 			until
-				current_tokens = 0
+				current_stones = 0
 			loop
-				map.add_token_to_bucket ((random_number_generator.item \\ ({GAME_CONSTANTS}.num_of_buckets) + 1))
+				map.add_stone_to_hole ((random_number_generator.item \\ ({GAME_CONSTANTS}.num_of_holes) + 1))
 				random_number_generator.forth
-				current_tokens := current_tokens - 1
+				current_stones := current_stones - 1
 			end
 
 			selected_hole := -1
@@ -97,7 +97,7 @@ feature -- Status report
 			-- placed in an empty hole, the player loses and the game is over;
 		do
 			if parent /= void then
-				Result := (map.get_bucket_value (selected_hole) = 1 and parent.map.get_bucket_value (selected_hole) = 0)
+				Result := (map.get_hole_value (selected_hole) = 1 and parent.map.get_hole_value (selected_hole) = 0)
 			else
 				Result := false
 			end

@@ -23,20 +23,20 @@ feature -- Creator
 		local
 			i: INTEGER
 		do
-			create buckets.make ({GAME_CONSTANTS}.num_of_buckets)
-				-- Create the buckets list;
+			create holes.make ({GAME_CONSTANTS}.num_of_holes)
+				-- Create the holes list;
 			create stores.make ({GAME_CONSTANTS}.num_of_stores)
 				-- Create the stores list;
 			from
 				i := 1
 			until
-				i > {GAME_CONSTANTS}.num_of_buckets
+				i > {GAME_CONSTANTS}.num_of_holes
 			loop
-				buckets.extend (0)
-				buckets.forth
+				holes.extend (0)
+				holes.forth
 				i := i + 1
 			end
-				-- Create a list of empty buckets;
+				-- Create a list of empty holes;
 			from
 				i := 1
 			until
@@ -52,7 +52,7 @@ feature -- Creator
 feature -- Status Report
 
 	get_store_value (position: INTEGER): INTEGER
-			-- Returns the number of tokens in the store at the given position;
+			-- Returns the number of stones in the store at the given position;
 		require
 			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_stores
 		do
@@ -61,12 +61,12 @@ feature -- Status Report
 			positive_result: Result >= 0
 		end
 
-	get_bucket_value (position: INTEGER): INTEGER
-			-- Returns the number of tokens in the bucket at the given position;
+	get_hole_value (position: INTEGER): INTEGER
+			-- Returns the number of stones in the hole at the given position;
 		require
-			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_buckets
+			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_holes
 		do
-			Result := buckets.at (position)
+			Result := holes.at (position)
 		ensure
 			positive_result: Result >= 0
 		end
@@ -86,19 +86,19 @@ feature -- Status Report
 			result_is_consistent_suf: stores.at (position) = 0 implies Result = true
 		end
 
-	is_bucket_empty (position: INTEGER): BOOLEAN
+	is_hole_empty (position: INTEGER): BOOLEAN
 			-- Is the basket at the given position empty?
 		require
-			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_buckets
+			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_holes
 		do
-			if buckets.at (position) = 0 then
+			if holes.at (position) = 0 then
 				Result := true
 			else
 				Result := false
 			end
 		ensure
-			result_is_consistent_nec: Result = true implies buckets.at (position) = 0
-			result_is_consistent_suf: buckets.at (position) = 0 implies Result = true
+			result_is_consistent_nec: Result = true implies holes.at (position) = 0
+			result_is_consistent_suf: holes.at (position) = 0 implies Result = true
 		end
 
 	is_equal (other_map: like Current): BOOLEAN
@@ -107,16 +107,16 @@ feature -- Status Report
 		do
 			equal_map := true
 
-				-- Compare the buckets;
+				-- Compare the holes;
 			from
-				buckets.start
+				holes.start
 			until
-				buckets.exhausted or equal_map = false
+				holes.exhausted or equal_map = false
 			loop
-				if not equal (buckets.item, other_map.get_bucket_value (buckets.index)) then
+				if not equal (holes.item, other_map.get_hole_value (holes.index)) then
 					equal_map := false
 				end
-				buckets.forth
+				holes.forth
 			end
 				-- Compare the stores;
 			from
@@ -141,15 +141,15 @@ feature -- Status Report
 			output: STRING
 		do
 			output := ""
-			-- Print the top row of buckets;
+			-- Print the top row of holes;
 			from
-				buckets.finish
+				holes.finish
 				output.append ("   ")
 			until
-				buckets.index <= {GAME_CONSTANTS}.num_of_buckets // 2
+				holes.index <= {GAME_CONSTANTS}.num_of_holes // 2
 			loop
-				output.append (buckets.item.out + " ")
-				buckets.back
+				output.append (holes.item.out + " ")
+				holes.back
 			end
 			-- Print the stores;
 			from
@@ -161,64 +161,64 @@ feature -- Status Report
 				output.append (stores.item.out + "             ")
 				stores.forth
 			end
-			-- Print the bottom row of buckets;
+			-- Print the bottom row of holes;
 			from
-				buckets.start
+				holes.start
 				output.append ("%N   ")
 			until
-				buckets.index > {GAME_CONSTANTS}.num_of_buckets / 2
+				holes.index > {GAME_CONSTANTS}.num_of_holes / 2
 			loop
-				output.append (buckets.item.out + " ")
-				buckets.forth
+				output.append (holes.item.out + " ")
+				holes.forth
 			end
 			Result := output
 		end
 
 feature -- Status settings
 
-	add_token_to_bucket (position: INTEGER)
-			-- Add one token to the bucket at the given position;
+	add_stone_to_hole (position: INTEGER)
+			-- Add one stone to the hole at the given position;
 		require
-			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_buckets
+			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_holes
 		do
-			buckets.at (position) := buckets.at (position) + 1
+			holes.at (position) := holes.at (position) + 1
 		ensure
-			stone_added: buckets.at (position) = old (buckets.at (position) + 1)
+			stone_added: holes.at (position) = old (holes.at (position) + 1)
 		end
 
-	add_tokens_to_bucket (additional_stones: INTEGER; position: INTEGER)
-			-- Adds more than one token to the bucket at the given position;
+	add_stones_to_hole (additional_stones: INTEGER; position: INTEGER)
+			-- Adds more than one stone to the hole at the given position;
 		require
 			additional_stones_not_negative: additional_stones >= 0
-			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_buckets
+			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_holes
 		do
-			buckets.at (position) := buckets.at (position) + additional_stones
+			holes.at (position) := holes.at (position) + additional_stones
 		ensure
-			additional_stones_added: buckets.at (position) = old (buckets.at (position)) + additional_stones
+			additional_stones_added: holes.at (position) = old (holes.at (position)) + additional_stones
 		end
 
-	clear_bucket (position: INTEGER)
-			-- Set the number of tokens to zero in the bucket at the given position;
+	clear_hole (position: INTEGER)
+			-- Set the number of stones to zero in the hole at the given position;
 		require
-			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_buckets
+			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_holes
 		do
-			buckets.at (position) := 0
+			holes.at (position) := 0
 		ensure
-			basket_emptied: buckets.at (position) = 0
+			basket_emptied: holes.at (position) = 0
 		end
 
-	remove_token_from_bucket (position: INTEGER)
-			-- Remove one token from the basket;
+	remove_stone_from_hole (position: INTEGER)
+			-- Remove one stone from the basket;
 		require
-			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_buckets
+			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_holes
 		do
-			buckets.at (position) := buckets.at (position) - 1
+			holes.at (position) := holes.at (position) - 1
 		ensure
-			stone_removed: buckets.at (position) = old (buckets.at (position)) - 1
+			stone_removed: holes.at (position) = old (holes.at (position)) - 1
 		end
 
-	add_token_to_store (position: INTEGER)
-			-- Add one token to the bucket at the given position;
+	add_stone_to_store (position: INTEGER)
+			-- Add one stone to the hole at the given position;
 		require
 			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_stores
 		do
@@ -227,8 +227,8 @@ feature -- Status settings
 			stone_added: stores.at (position) = old (stores.at (position) + 1)
 		end
 
-	add_tokens_to_store (additional_stones: INTEGER; position: INTEGER)
-			-- Adds more than one token to the bucket at the given position;
+	add_stones_to_store (additional_stones: INTEGER; position: INTEGER)
+			-- Adds more than one stone to the hole at the given position;
 		require
 			additional_stones_not_negative: additional_stones >= 0
 			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_stores
@@ -239,7 +239,7 @@ feature -- Status settings
 		end
 
 	clear_store (position: INTEGER)
-			-- Set the number of tokens to zero in the bucket at the given position;
+			-- Set the number of stones to zero in the hole at the given position;
 		require
 			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_stores
 		do
@@ -248,8 +248,8 @@ feature -- Status settings
 			store_emptied: stores.at (position) = 0
 		end
 
-	remove_token_from_store (position: INTEGER)
-			-- Remove one token from the basket;
+	remove_stone_from_store (position: INTEGER)
+			-- Remove one stone from the basket;
 		require
 			valid_position: position > 0 and position <= {GAME_CONSTANTS}.num_of_stores
 		do
@@ -260,16 +260,16 @@ feature -- Status settings
 
 feature {NONE} -- Implementative routines
 
-	buckets: ARRAYED_LIST [INTEGER]
-			-- List of all buckets;
+	holes: ARRAYED_LIST [INTEGER]
+			-- List of all holes;
 
 	stores: ARRAYED_LIST [INTEGER]
 			-- List of all stores;
 
 invariant
-	num_of_buckets_is_constant: buckets.count = {GAME_CONSTANTS}.num_of_buckets
+	num_of_holes_is_constant: holes.count = {GAME_CONSTANTS}.num_of_holes
 	num_of_stores_is_constant: stores.count = {GAME_CONSTANTS}.num_of_stores
-	buckets_value_is_non_negative: across buckets as curr_buc all curr_buc.item >= 0 end
+	holes_value_is_non_negative: across holes as curr_buc all curr_buc.item >= 0 end
 	store_value_is_non_negative: across stores as curr_store all curr_store.item >= 0 end
---	num_of_tokens_is_constant: across stores as curr_store from sum := 0 loop sum := sum + curr_store.item end end
+--	num_of_stones_is_constant: across stores as curr_store from sum := 0 loop sum := sum + curr_store.item end end
 end
