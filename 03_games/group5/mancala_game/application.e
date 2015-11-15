@@ -15,6 +15,7 @@ feature {NONE} -- Initialization
 	make_and_launch
 		local
 			-- l_app: EV_APPLICATION
+			player_1: HUMAN_PLAYER
 		do
 
 			-- create l_app
@@ -23,6 +24,8 @@ feature {NONE} -- Initialization
 
 			print("Mancala Game:%N%N")
 
+			create player_1.make
+			print(player_1.name + " - " + player_1.score.out)
 		end
 
 	prepare

@@ -24,7 +24,7 @@ feature {NONE} --Initialization
 			set_score(a_inital_score)
 			name := a_name
 		ensure
-			setting_done: score = a_inital_score and name = a_name
+			setting_done: score = a_inital_score and equal(name, a_name)
 		end
 
 	make_with_name(a_name: STRING)
@@ -34,7 +34,7 @@ feature {NONE} --Initialization
 		do
 			make_with_initial_value(a_name, 0)
 		ensure
-			setting_done: score = 0 and name = a_name
+			setting_done: score = 0 and equal(name, a_name)
 		end
 
 	make_with_initial_score(a_inital_score: INTEGER)
@@ -44,7 +44,7 @@ feature {NONE} --Initialization
 		do
 			make_with_initial_value("Player", a_inital_score)
 		ensure
-			setting_done: score = a_inital_score and name = "Player"
+			setting_done: score = a_inital_score and equal(name, "Player")
 		end
 
 	make
@@ -52,7 +52,7 @@ feature {NONE} --Initialization
 		do
 			make_with_initial_value("Player", 0)
 		ensure
-			setting_done: score = 0 and name = "Player"
+			setting_done: score = 0 and equal(name, "Player")
 		end
 
 
@@ -75,6 +75,16 @@ feature -- Operations
 			set_score(score + 1)
 		ensure
 			setting_done: score = score + 1
+		end
+
+	sum_to_score(a_additional_score: INTEGER)
+			-- Sum an additional ammount to score.
+		require
+		    non_negative_additional_score: a_additional_score >= 0
+		do
+			set_score(score + a_additional_score)
+		ensure
+			setting_done: score = score + a_additional_score
 		end
 
 invariant
