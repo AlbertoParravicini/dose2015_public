@@ -203,13 +203,15 @@ feature -- Status report
 			-- the player loses and the game is over;
 		local
 			placed_in_empty_hole: BOOLEAN
-			no_store_increase: BOOLEAN
+			no_score_increase: BOOLEAN
 		do
-			if (parent /= void and then rule_applied = void) or else (selected_hole >= 1 and then map.get_hole_value (selected_hole) = 0) then
-				placed_in_empty_hole := (map.get_hole_value (selected_hole) = 1)
-				no_store_increase := (map.get_store_value (1) = parent.map.get_store_value (1)) and (map.get_store_value (2) = parent.map.get_store_value (2))
+			-- The real evaluation is done only after the first movementa has been done;
+			-- The initial state and the second state (where a hole is selected) are never final states;
+			if (parent /= void and then not map.is_equal (parent.map)) then
+				placed_in_empty_hole := (map.get_hole_value (selected_hole) <= 1)
+				no_score_increase := player.score = parent.player.score
 			end
-			Result := placed_in_empty_hole and no_store_increase
+			Result := (placed_in_empty_hole and no_score_increase)
 		end
 
 	selected_hole: INTEGER
