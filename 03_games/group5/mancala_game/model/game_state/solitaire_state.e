@@ -31,41 +31,36 @@ feature
 
 	make
 		local
-			current_tokens: INTEGER
+			current_stones: INTEGER
 			random_number_generator: RANDOM
-				-- Random numbers generator to have a random bucket to which a token will be added;
+				-- Random numbers generator to have a random hole to which a stone will be added;
 			time_seed_for_random_generator: TIME
-				-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
+			-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
 
 		do
-			game_over := false
 			create map.make
 
-
-			-- Every bucket has to contain at least one stone;				
+				-- Every hole has to contain at least one stone;
 			from
-				current_tokens := {GAME_CONSTANTS}.num_of_tokens
+				current_stones := {GAME_CONSTANTS}.num_of_stones
 			until
-				current_tokens = {GAME_CONSTANTS}.num_of_tokens - {GAME_CONSTANTS}.num_of_buckets
+				current_stones = {GAME_CONSTANTS}.num_of_stones - {GAME_CONSTANTS}.num_of_holes
 			loop
-				map.add_token_to_bucket ({GAME_CONSTANTS}.num_of_tokens - current_tokens + 1)
-				current_tokens := current_tokens - 1
+				map.add_stone_to_hole ({GAME_CONSTANTS}.num_of_stones - current_stones + 1)
+				current_stones := current_stones - 1
 			end
-
 			create time_seed_for_random_generator.make_now
 				-- Initializes random generator using current time seed.
 			create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
 			random_number_generator.start
-
 			from
 			until
-				current_tokens = 0
+				current_stones = 0
 			loop
-				map.add_token_to_bucket ((random_number_generator.item \\ ({GAME_CONSTANTS}.num_of_buckets) + 1))
+				map.add_stone_to_hole ((random_number_generator.item \\ ({GAME_CONSTANTS}.num_of_holes) + 1))
 				random_number_generator.forth
-				current_tokens := current_tokens - 1
+				current_stones := current_stones - 1
 			end
-
 			selected_hole := -1
 		ensure
 			no_rule_applied: rule_applied = void
@@ -78,7 +73,6 @@ feature
 			set_rule_applied (a_rule)
 			set_map (new_map)
 			set_selected_hole (new_hole)
-			game_over := is_game_over
 		end
 
 feature -- Status setting
@@ -89,18 +83,125 @@ feature -- Status setting
 			selected_hole := new_hole
 		end
 
+	move_clockwise
+			-- Empties the current_hole, distributes the stones clockwise, updates the score, updates the current_hole;
+		local
+			stones_to_distribute: INTEGER
+		do
+			from
+				stones_to_distribute := map.get_hole_value (selected_hole)
+				map.clear_hole (selected_hole)
+			until
+				stones_to_distribute = 0
+			loop
+					-- Example: 8 <= selected_hole <= 12
+				if ((selected_hole > (({GAME_CONSTANTS}.num_of_holes // 2) + 1)) and then (selected_hole <= {GAME_CONSTANTS}.num_of_holes)) then
+					selected_hole := selected_hole - 1
+					map.add_stone_to_hole (selected_hole)
+					stones_to_distribute := stones_to_distribute - 1
+
+						-- Example: selected_hole = 7
+				elseif (selected_hole = (({GAME_CONSTANTS}.num_of_holes / 2) + 1)) then
+					if (stones_to_distribute = 1) then
+							-- Only 1 stone left
+						map.add_stone_to_store (2)
+						stones_to_distribute := stones_to_distribute - 1
+					else
+							-- More than 1 stone left
+						selected_hole := {GAME_CONSTANTS}.num_of_holes // 2
+						map.add_stone_to_hole (selected_hole)
+						stones_to_distribute := stones_to_distribute - 1
+					end -- End inner if
+
+						-- Example: 2 <= selected_hole <= 6
+				elseif ((selected_hole > 1) and (selected_hole <= ({GAME_CONSTANTS}.num_of_holes // 2))) then
+					selected_hole := selected_hole - 1
+					map.add_stone_to_hole (selected_hole)
+					stones_to_distribute := stones_to_distribute - 1
+
+						-- Example: selected_hole = 1
+				elseif selected_hole = 1 then
+					if (stones_to_distribute = 1) then
+							-- Only 1 stone left
+						map.add_stone_to_store (1)
+						stones_to_distribute := stones_to_distribute - 1
+					else
+							-- More than 1 stone left
+						selected_hole := {GAME_CONSTANTS}.num_of_holes
+						map.add_stone_to_hole (selected_hole)
+						stones_to_distribute := stones_to_distribute - 1
+					end -- End inner if
+				end
+			end
+		end
+
+	move_counter_clockwise
+			-- Empties the current_hole, distributes the stones counter-clockwise, updates the score, updates the current_hole;
+		local
+			stones_to_distribute: INTEGER
+		do
+			from
+				stones_to_distribute := map.get_hole_value (selected_hole)
+				map.clear_hole (selected_hole)
+			until
+				stones_to_distribute = 0
+			loop
+					-- Example: 7 <= selected_hole <= 11
+				if ((selected_hole >= (({GAME_CONSTANTS}.num_of_holes // 2) + 1)) and then (selected_hole < {GAME_CONSTANTS}.num_of_holes)) then
+					selected_hole := selected_hole + 1
+					map.add_stone_to_hole (selected_hole)
+					stones_to_distribute := stones_to_distribute - 1
+
+						-- Example: selected_hole = 12
+				elseif selected_hole = ({GAME_CONSTANTS}.num_of_holes) then
+					if (stones_to_distribute = 1) then
+							-- Only 1 stone left
+						map.add_stone_to_store (1)
+						stones_to_distribute := stones_to_distribute - 1
+					else
+							-- More than 1 stone left
+						selected_hole := 1
+						map.add_stone_to_hole (selected_hole)
+						stones_to_distribute := stones_to_distribute - 1
+					end -- End inner if
+
+						-- Example: 1 <= selected_hole <= 5
+				elseif ((selected_hole >= 1) and (selected_hole <= ({GAME_CONSTANTS}.num_of_holes // 2) - 1)) then
+					selected_hole := selected_hole + 1
+					map.add_stone_to_hole (selected_hole)
+					stones_to_distribute := stones_to_distribute - 1
+
+						-- Example: selected_hole = 6
+				elseif selected_hole = {GAME_CONSTANTS}.num_of_holes // 2 then
+					if (stones_to_distribute = 1) then
+							-- Only 1 stone left
+						map.add_stone_to_store (2)
+						stones_to_distribute := stones_to_distribute - 1
+					else
+							-- More than 1 stone left
+						selected_hole := ({GAME_CONSTANTS}.num_of_holes // 2 ) + 1
+						map.add_stone_to_hole (selected_hole)
+						stones_to_distribute := stones_to_distribute - 1
+					end -- End inner if
+				end
+			end
+		end
 
 feature -- Status report
 
 	is_game_over: BOOLEAN
-			-- When the last stone distributed in a round is
-			-- placed in an empty hole, the player loses and the game is over;
+			-- When the last stone distributed in a round was
+			-- placed in an empty hole and there was no increase in the score,
+			-- the player loses and the game is over;
+		local
+			placed_in_empty_hole: BOOLEAN
+			no_store_increase: BOOLEAN
 		do
 			if parent /= void then
-				Result := (map.get_bucket_value (selected_hole) = 1 and parent.map.get_bucket_value (selected_hole) = 0)
-			else
-				Result := false
+				placed_in_empty_hole := (map.get_hole_value (selected_hole) = 1)
+				no_store_increase := (map.get_store_value (1) = parent.map.get_store_value (1)) and (map.get_store_value (2) = parent.map.get_store_value (2))
 			end
+			Result := placed_in_empty_hole and no_store_increase
 		end
 
 	selected_hole: INTEGER
@@ -143,14 +244,12 @@ feature -- Inherited
 			-- Compares current state with another state other.
 			-- Considered equal iff same map and same selected state.
 		do
-			Result := (selected_hole = other_state.selected_hole)
-			if Result = true then
-				Result := map.is_equal (other_state.map)
-			end
+			Result := (selected_hole = other_state.selected_hole) and then (map.is_equal (other_state.map))
 		end
 
 	out: STRING
 		do
 			Result := "Selected hole: " + selected_hole.out + "%N%N Map: " + map.out + "/n"
 		end
+
 end
