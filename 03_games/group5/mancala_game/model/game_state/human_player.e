@@ -10,12 +10,12 @@ inherit
 	PLAYER
 
 create
-	make, make_with_name, make_with_initial_score, make_with_initial_value
+	make, make_with_name, make_with_initial_score, make_with_initial_values
 
 
 feature {NONE} --Initialization
 
-	make_with_initial_value(a_name: STRING a_inital_score: INTEGER)
+	make_with_initial_values (a_name: STRING a_inital_score: INTEGER)
 			-- Create human player with specific name and initial score.
 		require
 		    minimum_inital_score: a_inital_score >= 0
@@ -32,7 +32,7 @@ feature {NONE} --Initialization
 		require
 		    valid_name: a_name /= void and not a_name.is_empty
 		do
-			make_with_initial_value(a_name, 0)
+			make_with_initial_values(a_name, 0)
 		ensure
 			setting_done: score = 0 and equal(name, a_name)
 		end
@@ -42,7 +42,7 @@ feature {NONE} --Initialization
 		require
 		    minimum_inital_score: a_inital_score >= 0
 		do
-			make_with_initial_value("Player", a_inital_score)
+			make_with_initial_values("Player", a_inital_score)
 		ensure
 			setting_done: score = a_inital_score and equal(name, "Player")
 		end
@@ -50,7 +50,7 @@ feature {NONE} --Initialization
 	make
 			-- Create human player with default score and default name.
 		do
-			make_with_initial_value("Player", 0)
+			make_with_initial_values("Player", 0)
 		ensure
 			setting_done: score = 0 and equal(name, "Player")
 		end
@@ -74,7 +74,7 @@ feature -- Operations
 		do
 			set_score(score + 1)
 		ensure
-			setting_done: score = score + 1
+			setting_done: score = old score + 1
 		end
 
 	sum_to_score(a_additional_score: INTEGER)

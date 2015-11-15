@@ -1,11 +1,18 @@
 note
 	description: "Abstract player in a Mancala game."
-	author: ""
+	author: "Luca"
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
 	PLAYER
+
+	inherit
+		ANY
+		redefine
+			is_equal,
+			out
+		end
 
 feature -- Status report;
 
@@ -14,4 +21,14 @@ feature -- Status report;
 
 	name: STRING
 		-- Player's name
+
+	is_equal (other: like Current): BOOLEAN
+		do
+			Result := (score = other.score) and then (name = other.name)
+		end
+
+	out: STRING
+		do
+			Result := "Name: " + name.out + ", Score: " + score.out
+		end
 end
