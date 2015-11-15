@@ -15,53 +15,52 @@ feature {NONE} -- Initialization
 	make_and_launch
 		local
 			l_app: EV_APPLICATION
-			map: GAME_MAP
-			map2: GAME_MAP
-			i: INTEGER
-			state: SOLITAIRE_STATE
-			state2: SOLITAIRE_STATE
+
+
 			problem: SOLITAIRE_PROBLEM
-			action: ACTION_SELECT
-			action2: ACTION_ROTATE
-			enum: ENUM_ROTATE
+			engine: A_STAR_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
+			curr_depth: INTEGER
+			found: BOOLEAN
+			i: INTEGER
+			path: LIST [SOLITAIRE_STATE]
 
 		do
-			create map.make
---			create action.make(12)
 
 
+			create problem.make
+			create engine.make (problem)
 
---			create action2.make ((create {ENUM_ROTATE}).clockwise)
+			engine.perform_search
 
---			if action2.rotation = (create {ENUM_ROTATE}).clockwise then
---				print("ok")
---			end
+			if (engine.is_search_successful) then
+					print ("solution found: " + engine.obtained_solution.out + " sat depth " + engine.path_to_obtained_solution.count.out + ".%N")
+					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
+					print ("path to solution: %N")
+					from
+						i := 1
+						path := engine.path_to_obtained_solution
+					until
+						i > path.count
+					loop
+						if path.i_th (i).rule_applied /= Void then
+								-- skips the first state that has void rule
+							print ("    " + path.i_th (i).rule_applied.out + "%N")
+						end
+						print (path.i_th (i).out + "%N")
+						i := i + 1
+					end
+					found := True
+				else
+					print ("no solution found with depth " + curr_depth.out + ".%N")
+					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
+					curr_depth := curr_depth + 1
+					engine.reset_engine
 
-			from
-				i := 1
-			until
-				i > 12
-			loop
-				map.add_stones_to_hole (i, i)
-				i := i + 1
-			end
 
-			create state.make
+					-- engine.set_max_depth (curr_depth)
+				end
 
-			state.set_map (map)
-		--	create map2.make_from_map (map)
-		--	create state.make
 
-		--	state.set_selected_hole (2)
-		--	create state2.make_from_parent_and_rule (state, void, map2, 2)
-			print (state.out + "%N%N")
-
-			state.set_selected_hole (12)
-			state.move_counter_clockwise
-
-			print (state.out + "%N%N")
-		--	print (map2.out)
-			--print (state.is_equal (state2).out)
 			create l_app
 			prepare
 			l_app.launch
