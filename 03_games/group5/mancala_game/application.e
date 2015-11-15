@@ -18,7 +18,7 @@ feature {NONE} -- Initialization
 
 
 			problem: SOLITAIRE_PROBLEM
-			engine: A_STAR_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
+			engine: BOUNDED_DEPTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
 			curr_depth: INTEGER
 			found: BOOLEAN
 			i: INTEGER
@@ -30,8 +30,7 @@ feature {NONE} -- Initialization
 			create problem.make
 			create engine.make (problem)
 			print (problem.initial_state.out + "%N%N%N")
-			engine.set_check_open_state (true)
-			engine.set_mark_closed_state (true)
+			engine.set_max_depth (15)
 			engine.perform_search
 
 			if (engine.is_search_successful) then

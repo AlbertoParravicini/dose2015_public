@@ -205,7 +205,7 @@ feature -- Status report
 			placed_in_empty_hole: BOOLEAN
 			no_store_increase: BOOLEAN
 		do
-			if parent /= void and then rule_applied = void then
+			if (parent /= void and then rule_applied = void) or else (selected_hole >= 1 and then map.get_hole_value (selected_hole) = 0) then
 				placed_in_empty_hole := (map.get_hole_value (selected_hole) = 1)
 				no_store_increase := (map.get_store_value (1) = parent.map.get_store_value (1)) and (map.get_store_value (2) = parent.map.get_store_value (2))
 			end
