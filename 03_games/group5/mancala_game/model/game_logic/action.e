@@ -6,5 +6,13 @@ note
 
 deferred class
 	ACTION
-
+inherit
+	ANY
+		undefine
+			out
+		end
+feature
+	out : STRING
+		deferred
+		end
 end

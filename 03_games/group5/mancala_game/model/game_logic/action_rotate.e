@@ -23,6 +23,16 @@ feature
 		end
 
 feature
+	out : STRING
+		do
+			if (rotation = (create {ENUM_ROTATE}).clockwise) then
+				Result:="Rotaion: Clockwise"
+			else
+				Result:="Rotation: CounterClockWise"
+			end
+		end
+
+feature
 	-- Variables
 
 	rotation: ENUM_ROTATE

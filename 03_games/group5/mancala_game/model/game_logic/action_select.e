@@ -36,6 +36,13 @@ feature
 			Result > 0 and Result < {GAME_CONSTANTS}.num_of_holes
 		end
 
+feature
+
+	out: STRING
+		do
+			Result := "Selected hole: " + selection.out
+		end
+
 feature {NONE}
 	-- variables
 
