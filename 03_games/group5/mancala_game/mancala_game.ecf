@@ -7,6 +7,7 @@
 		</option>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
 		<library name="eiffel-ai-search" location="..\..\..\02_AI_library\group5\eiffel-ai-search.ecf"/>
+		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<cluster name="root_cluster" location=".\">
@@ -19,6 +20,7 @@
 				<cluster name="game_state" location=".\model\game_state\"/>
 				<cluster name="game_logic" location=".\model\game_logic\"/>
 			</cluster>
+			<tests name="tests" location=".\tests\"/>
 		</cluster>
 	</target>
 </system>
