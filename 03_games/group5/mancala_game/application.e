@@ -46,13 +46,21 @@ feature {NONE} -- Initialization
 				i := i + 1
 			end
 
-			create map2.make_from_map (map)
+			create state.make
+
+			state.set_map (map)
+		--	create map2.make_from_map (map)
 		--	create state.make
 
 		--	state.set_selected_hole (2)
 		--	create state2.make_from_parent_and_rule (state, void, map2, 2)
-			print (map.out + "%N%N")
-			print (map2.out)
+			print (state.out + "%N%N")
+
+			state.set_selected_hole (12)
+			state.move_clockwise
+
+			print (state.out + "%N%N")
+		--	print (map2.out)
 			--print (state.is_equal (state2).out)
 			create l_app
 			prepare
