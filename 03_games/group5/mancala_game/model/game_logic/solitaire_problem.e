@@ -57,15 +57,11 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 				until
 					current_selection > {GAME_CONSTANTS}.num_of_holes
 				loop
-					create successor_1.make
-					successor_1.set_selected_hole (current_selection)
-
-					successor_1.set_map (create {GAME_MAP}.make_from_map(a_state.map))
-
-					successor_1.set_rule_applied (create {ACTION_SELECT}.make (current_selection))
-					successors.extend (successor_1)
+					successors.extend (create {SOLITAIRE_STATE}.make_from_parent_and_rule (a_state, create {ACTION_SELECT}.make (current_selection),
+						create {GAME_MAP}.make_from_map(a_state.map), current_selection))
 					current_selection := current_selection + 1
 				end -- End Loop
+				--print (successor_1.out + "%N")
 
 			else -- This is not the first state, i.e the first hole was already selected;
 
@@ -74,7 +70,7 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
                 -- Rotate clockwise;
                 -- Create a new state whose map is equal to the one of the current state;
                 create successor_1.make_from_parent_and_rule(a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise),
-                create {GAME_MAP}.make_from_map(a_state.map), a_state.selected_hole)
+                	create {GAME_MAP}.make_from_map(a_state.map), a_state.selected_hole)
 
                 -- Clockwise movement;
                 -- Empties the current_hole, distributes the stones clockwise, updates the score, updates the current_hole;
@@ -84,7 +80,7 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
                 -- Rotate counter-clockwise;
                 -- Create a new state whose map is equal to the one of the current state;
                 create successor_2.make_from_parent_and_rule(a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise),
-                create {GAME_MAP}.make_from_map(a_state.map), a_state.selected_hole)
+                	create {GAME_MAP}.make_from_map(a_state.map), a_state.selected_hole)
 
                 -- Counter-clockwise movement;
                 -- Empties the current_hole, distributes the stones counter-clockwise, updates the score, updates the current_hole;
@@ -92,7 +88,8 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 
 			    successors.extend (successor_1)
                 successors.extend (successor_2)
-
+				print (successor_1.out + "%N")
+				print (successor_2.out + "%N")
 
 			end -- End external if
 
@@ -103,6 +100,9 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 			-- Is the state successful, i.e. is the player score equal to the number of stones in the game?
 		do
 			Result := state.player.score = {GAME_CONSTANTS}.num_of_stones
+			if (result = true) then
+				print ("score " + state.player.score.out + " stones: " +  {GAME_CONSTANTS}.num_of_stones.out + "%N" )
+			end
 		end
 
 feature

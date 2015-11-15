@@ -23,36 +23,36 @@ feature {NONE} -- Initialization
 			found: BOOLEAN
 			i: INTEGER
 			path: LIST [SOLITAIRE_STATE]
-
+			state2: SOLITAIRE_STATE
 		do
 
 
 			create problem.make
 			create engine.make (problem)
-			engine.set_check_open_state (true)
-			engine.set_mark_closed_state (true)
-
 			print (problem.initial_state.out + "%N%N%N")
+		--	engine.set_check_open_state (true)
+		--	engine.set_mark_closed_state (true)
 			engine.perform_search
 
 			if (engine.is_search_successful) then
-					print ("solution found: " + engine.obtained_solution.out + " sat depth " + engine.path_to_obtained_solution.count.out + ".%N")
-					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
-					print ("path to solution: %N")
-					from
-						i := 1
-						path := engine.path_to_obtained_solution
-					until
-						i > path.count
-					loop
-						if path.i_th (i).rule_applied /= Void then
-								-- skips the first state that has void rule
-							print ("    " + path.i_th (i).rule_applied.out + "%N")
-						end
-						print (path.i_th (i).out + "%N")
-						i := i + 1
-					end
-					found := True
+				print (engine.obtained_solution.out)
+--					print ("solution found: " + engine.obtained_solution.out + " sat depth " + engine.path_to_obtained_solution.count.out + ".%N")
+--					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
+--					print ("path to solution: %N")
+--					from
+--						i := 1
+--						path := engine.path_to_obtained_solution
+--					until
+--						i > path.count
+--					loop
+--						if path.i_th (i).rule_applied /= Void then
+--								-- skips the first state that has void rule
+--							print ("    " + path.i_th (i).rule_applied.out + "%N")
+--						end
+--						print (path.i_th (i).out + "%N")
+--						i := i + 1
+--					end
+--					found := True
 				else
 					print ("no solution found with depth " + curr_depth.out + ".%N")
 					print ("visited states: " + engine.nr_of_visited_states.out + "%N")

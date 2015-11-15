@@ -71,7 +71,7 @@ feature
 	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION; new_map: GAME_MAP; new_hole: INTEGER)
 		do
 			set_parent (a_parent)
-			player := a_parent.player
+			player := create {HUMAN_PLAYER}.make_with_initial_values (a_parent.player.name, a_parent.player.score)
 			set_rule_applied (a_rule)
 			set_map (new_map)
 			set_selected_hole (new_hole)
@@ -126,8 +126,10 @@ feature -- Status setting
 				elseif selected_hole = 1 then
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
+							--print(player.score.out)
 						map.add_stone_to_store (1)
 						player.increment_score
+							--print(" " + player.score.out + "%N")
 						stones_to_distribute := stones_to_distribute - 1
 					else
 							-- More than 1 stone left
@@ -161,6 +163,7 @@ feature -- Status setting
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
 						map.add_stone_to_store (1)
+						player.increment_score
 						stones_to_distribute := stones_to_distribute - 1
 					else
 							-- More than 1 stone left
@@ -180,10 +183,11 @@ feature -- Status setting
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
 						map.add_stone_to_store (2)
+						player.increment_score
 						stones_to_distribute := stones_to_distribute - 1
 					else
 							-- More than 1 stone left
-						selected_hole := ({GAME_CONSTANTS}.num_of_holes // 2 ) + 1
+						selected_hole := ({GAME_CONSTANTS}.num_of_holes // 2) + 1
 						map.add_stone_to_hole (selected_hole)
 						stones_to_distribute := stones_to_distribute - 1
 					end -- End inner if
@@ -248,12 +252,34 @@ feature -- Inherited
 			-- Compares current state with another state other.
 			-- Considered equal iff same map and same selected state.
 		do
-			Result := (selected_hole = other_state.selected_hole) and then (map.is_equal (other_state.map)) and player.is_equal (other_state.player)
+			Result := (selected_hole = other_state.selected_hole) and then player.is_equal (other_state.player) and then (map.is_equal (other_state.map))
 		end
 
 	out: STRING
 		do
-			Result := "Selected hole: " + selected_hole.out + "%N%N Map: " + map.out + "/n"
+			Result := "Selected hole: " + selected_hole.out + "%N%N Map: " + map.out + "%N"
 		end
+
+feature {NONE}
+
+	sum_of_stores_token: INTEGER
+		local
+			i: INTEGER
+			sum: INTEGER
+		do
+			from
+				i := 1
+				sum := 0
+			until
+				i > {GAME_CONSTANTS}.num_of_stores
+			loop
+				sum := sum + map.get_store_value (i)
+				i := i + 1
+			end
+			Result := sum
+		end
+
+invariant
+	score_consistent: sum_of_stores_token = player.score
 
 end
