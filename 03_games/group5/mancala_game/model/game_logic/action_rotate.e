@@ -6,27 +6,25 @@ note
 
 class
 	ACTION_ROTATE
+
 inherit
+
 	ACTION
+
 create
 	make
-feature
-	-- Creator
-	make (enum: ENUM_ROTATE)
-	do
-		rotation:=enum
-	end
 
 feature
-	-- Getter
-	get_rotation : ENUM_ROTATE
+	-- Creator
+
+	make (enum: ENUM_ROTATE)
 		do
-			Result:=rotation
-		ensure
-			Result = rotation
+			rotation := enum
 		end
 
 feature
 	-- Variables
+
 	rotation: ENUM_ROTATE
+
 end

@@ -8,7 +8,26 @@ class
 	STORE
 inherit
 	BASKET
-feature
-	--add_stones(stones: INTEGER)
-		-- Adds more than one stone to the basket
+
+create
+	make
+
+feature -- Initialitazion
+	make
+			-- Initialization with the provided owner;
+		do
+			num_of_stones := 0
+		end
+
+feature	-- Status setting
+
+	set_stones (new_stones_amount: INTEGER)
+		-- Set the amount of stones in the basket
+		require
+			new_stones_amount_not_negative: new_stones_amount >= 0
+		do
+			num_of_stones := new_stones_amount
+		ensure
+			new_stones_amount_set: num_of_stones = new_stones_amount
+		end
 end

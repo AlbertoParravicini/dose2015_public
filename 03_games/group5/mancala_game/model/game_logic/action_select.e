@@ -6,30 +6,40 @@ note
 
 class
 	ACTION_SELECT
+
 inherit
+
 	ACTION
+
 create
 	make
+
 feature
 	-- Creation
-	make (hole : INTEGER)
+
+	make (bucket: INTEGER)
 		require
-			hole>0 and hole <13
+			bucket_not_valid: bucket > 0 and bucket <= {GAME_CONSTANTS}.num_of_buckets
 		do
-			selection := hole
+			selection := bucket
 		ensure
-			selection = hole
+			selection = bucket
 		end
+
 feature
 	-- Getter
+
 	get_selection: INTEGER
 		do
-			Result:=selection
+			Result := selection
 		ensure
-			Result > 0 and Result < 13
+			Result > 0 and Result < {GAME_CONSTANTS}.num_of_buckets
 		end
+
 feature {NONE}
 	-- variables
-	selection:INTEGER
-		-- selected hole
+
+	selection: INTEGER
+			-- selected hole
+
 end

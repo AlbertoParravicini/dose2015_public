@@ -1,13 +1,13 @@
 note
 	description: "Abstract player in a Mancala game."
-	author: ""
+	author: "Luca"
 	date: "$Date$"
 	revision: "$Revision$"
 
 deferred class
 	PLAYER
 
-feature
+feature -- Status report;
 
 	score: INTEGER
 		-- Player's score

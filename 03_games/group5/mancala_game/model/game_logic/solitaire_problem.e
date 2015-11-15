@@ -9,11 +9,11 @@ class
 
 inherit
 
-	HEURISTIC_SEARCH_PROBLEM [STRING, SOLITAIRE_STATE]
+	HEURISTIC_SEARCH_PROBLEM [ACTION, SOLITAIRE_STATE]
 
-	STATE_COST_SEARCH_PROBLEM [STRING, SOLITAIRE_STATE]
+	STATE_COST_SEARCH_PROBLEM [ACTION, SOLITAIRE_STATE]
 
-	HEURISTIC_STATE_COST_SEARCH_PROBLEM [STRING, SOLITAIRE_STATE]
+	HEURISTIC_STATE_COST_SEARCH_PROBLEM [ACTION, SOLITAIRE_STATE]
 
 create
 	make, make_with_initial_state
@@ -24,52 +24,54 @@ feature
 	make
 			-- Default, generates a random init state
 		do
-			create init_state.make
+			create initial_state.make
 		end
 
 	make_with_initial_state (new_state: SOLITAIRE_STATE)
 			-- Provided values, assigns to a variable
 		do
-			init_state := new_state
+			initial_state := new_state
 		end
 
 feature
 
 	initial_state: SOLITAIRE_STATE
-		do
-			Result := init_state
-		end
 
 	get_successors (state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 		local
-			successors: LINKED_LIST[SOLITAIRE_STATE]
+			successors: LINKED_LIST [SOLITAIRE_STATE]
 			successor: SOLITAIRE_STATE
-			rule: TUPLE[ACTION_ROTATE, INTEGER]
+			rule: TUPLE [ACTION_ROTATE, INTEGER]
 		do
-			-- To be implemented
+				-- To be implemented
 			create successors.make
 
-			-- Rotate ClockWise
-			rule:= [create ACTION_ROTATE.make(ENUM_ROTATE.clockwise), state.selected_hole]
+				-- Rotate clockwise
+
+				--FIXTHIS
+
+				rule := [create {ACTION_ROTATE}.make((create {ENUM_ROTATE}).clockwise), state.selected_hole]
 				-- TODO: get map from state and modify it
 				-- TODO: create new state setting parent and other things
 			create successor.make
 			successors.extend (successor)
 
-			-- Rotate Counter ClockWise
+				-- Rotate counter-clockwise
 			create successor.make
-			rule:= [create ACTION_ROTATE.make(ENUM_ROTATE.countter_clockwise), state.selected_hole]
-			-- TODO: get map from state and modify it
-			-- TODO: create new state setting parent and other things
-			successors.extend(successor)
 
-			-- Return
-			Result:=successors
+				rule:= [create {ACTION_ROTATE}.make((create {ENUM_ROTATE}).counter_clockwise), state.selected_hole]
+				-- TODO: get map from state and modify it
+				-- TODO: create new state setting parent and other things
+			successors.extend (successor)
+
+				-- Return
+			Result := successors
 		end
 
-	is_successful(state: SOLITAIRE_STATE) : BOOLEAN
+	is_successful (state: SOLITAIRE_STATE): BOOLEAN
+		-- Is the state successful, i.e. is the player score equal to the number of tokens in the game?
 		do
-			-- To be implemented
+			Result := state.player.score = {GAME_CONSTANTS}.num_of_tokens
 		end
 
 feature
@@ -77,7 +79,7 @@ feature
 
 	heuristic_value (state: SOLITAIRE_STATE): REAL
 		do
-			-- To be implemented
+				-- To be implemented
 
 		end
 
@@ -93,11 +95,4 @@ feature
 				Result := 1
 			end
 		end
-
-feature
-	-- Variables
-
-	init_state: SOLITAIRE_STATE
-			-- Initial state
-
 end
