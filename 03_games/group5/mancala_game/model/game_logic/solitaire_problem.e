@@ -52,6 +52,7 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 
 			elseif (a_state.selected_hole = -1 and a_state.parent = void) then
 					-- In the first state no first hole has been selected and the parent is void;
+
 				from
 					current_selection := 1
 				until
@@ -61,7 +62,6 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 						create {GAME_MAP}.make_from_map(a_state.map), current_selection))
 					current_selection := current_selection + 1
 				end -- End Loop
-				--print (successor_1.out + "%N")
 
 			else -- This is not the first state, i.e the first hole was already selected;
 
@@ -88,8 +88,6 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 
 			    successors.extend (successor_1)
                 successors.extend (successor_2)
-				print (successor_1.out + "%N")
-				print (successor_2.out + "%N")
 
 			end -- End external if
 

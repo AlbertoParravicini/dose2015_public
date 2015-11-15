@@ -21,6 +21,7 @@ feature {NONE} -- Initialization
 			create p2.make_with_initial_score (2)
 			create p3.make
 			print(p1.out + "%N" + p2.out + "%N" + p3.out)
+	
 		end
 
 	prepare
