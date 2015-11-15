@@ -57,7 +57,7 @@ feature {NONE} -- Initialization
 			print (state.out + "%N%N")
 
 			state.set_selected_hole (12)
-			state.move_clockwise
+			state.move_counter_clockwise
 
 			print (state.out + "%N%N")
 		--	print (map2.out)

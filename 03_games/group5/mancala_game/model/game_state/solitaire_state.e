@@ -94,18 +94,17 @@ feature -- Status setting
 			until
 				stones_to_distribute = 0
 			loop
-					-- Example: 12 <= selected_hole <= 8
+					-- Example: 8 <= selected_hole <= 12
 				if ((selected_hole > (({GAME_CONSTANTS}.num_of_holes // 2) + 1)) and then (selected_hole <= {GAME_CONSTANTS}.num_of_holes)) then
 					selected_hole := selected_hole - 1
 					map.add_stone_to_hole (selected_hole)
 					stones_to_distribute := stones_to_distribute - 1
 
-					-- Example: selected_hole = 7
+						-- Example: selected_hole = 7
 				elseif (selected_hole = (({GAME_CONSTANTS}.num_of_holes / 2) + 1)) then
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
 						map.add_stone_to_store (2)
-					
 						stones_to_distribute := stones_to_distribute - 1
 					else
 							-- More than 1 stone left
@@ -114,13 +113,13 @@ feature -- Status setting
 						stones_to_distribute := stones_to_distribute - 1
 					end -- End inner if
 
-					-- Example: 1 <= selected_hole <= 5
+						-- Example: 2 <= selected_hole <= 6
 				elseif ((selected_hole > 1) and (selected_hole <= ({GAME_CONSTANTS}.num_of_holes // 2))) then
 					selected_hole := selected_hole - 1
 					map.add_stone_to_hole (selected_hole)
 					stones_to_distribute := stones_to_distribute - 1
 
-					-- Example: selected_hole = 1
+						-- Example: selected_hole = 1
 				elseif selected_hole = 1 then
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
@@ -133,14 +132,59 @@ feature -- Status setting
 						stones_to_distribute := stones_to_distribute - 1
 					end -- End inner if
 				end
-
 			end
 		end
 
 	move_counter_clockwise
-	 		-- Empties the current_hole, distributes the stones counter-clockwise, updates the score, updates the current_hole;
+			-- Empties the current_hole, distributes the stones counter-clockwise, updates the score, updates the current_hole;
+		local
+			stones_to_distribute: INTEGER
 		do
+			from
+				stones_to_distribute := map.get_hole_value (selected_hole)
+				map.clear_hole (selected_hole)
+			until
+				stones_to_distribute = 0
+			loop
+					-- Example: 7 <= selected_hole <= 11
+				if ((selected_hole >= (({GAME_CONSTANTS}.num_of_holes // 2) + 1)) and then (selected_hole < {GAME_CONSTANTS}.num_of_holes)) then
+					selected_hole := selected_hole + 1
+					map.add_stone_to_hole (selected_hole)
+					stones_to_distribute := stones_to_distribute - 1
 
+						-- Example: selected_hole = 12
+				elseif selected_hole = ({GAME_CONSTANTS}.num_of_holes) then
+					if (stones_to_distribute = 1) then
+							-- Only 1 stone left
+						map.add_stone_to_store (1)
+						stones_to_distribute := stones_to_distribute - 1
+					else
+							-- More than 1 stone left
+						selected_hole := 1
+						map.add_stone_to_hole (selected_hole)
+						stones_to_distribute := stones_to_distribute - 1
+					end -- End inner if
+
+						-- Example: 1 <= selected_hole <= 5
+				elseif ((selected_hole >= 1) and (selected_hole <= ({GAME_CONSTANTS}.num_of_holes // 2) - 1)) then
+					selected_hole := selected_hole + 1
+					map.add_stone_to_hole (selected_hole)
+					stones_to_distribute := stones_to_distribute - 1
+
+						-- Example: selected_hole = 6
+				elseif selected_hole = {GAME_CONSTANTS}.num_of_holes // 2 then
+					if (stones_to_distribute = 1) then
+							-- Only 1 stone left
+						map.add_stone_to_store (2)
+						stones_to_distribute := stones_to_distribute - 1
+					else
+							-- More than 1 stone left
+						selected_hole := ({GAME_CONSTANTS}.num_of_holes // 2 ) + 1
+						map.add_stone_to_hole (selected_hole)
+						stones_to_distribute := stones_to_distribute - 1
+					end -- End inner if
+				end
+			end
 		end
 
 feature -- Status report
