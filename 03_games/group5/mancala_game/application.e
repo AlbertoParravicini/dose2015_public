@@ -17,6 +17,7 @@ feature {NONE} -- Initialization
 			p: ARRAYED_LIST [PLAYER]
 			state, state2: ADVERSARY_STATE
 			problem: ADVERSARY_PROBLEM
+			state3, state4: SOLITAIRE_STATE
 		do
 			create p.make (2)
 			p.extend (create {HUMAN_PLAYER}.make)
@@ -33,6 +34,11 @@ feature {NONE} -- Initialization
 
 			print(state.index_of_current_player.out + "%N")
 			print (problem.value (state).out)
+
+			--dummy things
+			create state3.make
+			create state4.make_from_parent_and_rule (state3, create {ACTION_SELECT}.make (5))
+			print("Should be true: 5 == "+state4.selected_hole.out)
 		end
 
 	prepare

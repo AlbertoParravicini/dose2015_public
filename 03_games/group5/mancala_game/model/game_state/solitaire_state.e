@@ -74,7 +74,13 @@ feature
 			player := create {HUMAN_PLAYER}.make_with_initial_values (a_parent.player.name, a_parent.player.score)
 			set_rule_applied (a_rule)
 			set_map (create {GAME_MAP}.make_from_map (a_parent.map))
-			set_selected_hole (a_parent.selected_hole)
+
+			-- Automatically update the selected_hole if the action is an ACTION_SELECT
+			if attached {ACTION_SELECT} a_rule as rule_select then
+				set_selected_hole(rule_select.get_selection)
+			else
+				set_selected_hole (a_parent.selected_hole)
+			end
 		end
 
 feature -- Status setting
