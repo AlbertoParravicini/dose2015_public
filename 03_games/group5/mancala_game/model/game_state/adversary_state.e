@@ -8,8 +8,11 @@ class
 	ADVERSARY_STATE
 inherit
 	GAME_STATE
+		undefine
+			out
+		end
 
-	ADVERSARY_SEARCH_STATE[STRING]
+	ADVERSARY_SEARCH_STATE[ACTION_SELECT]
 		undefine
 			out
 		end
@@ -66,37 +69,57 @@ feature -- Status Report
 
 	is_game_over: BOOLEAN
 		-- Is the game over?
-		deferred
+		do
 		end
 
-	map: GAME_MAP
-			-- Map of the game
-
-	current_player: PLAYER
-			-- The player who has to make a move in the current turn;
 
 	next_player: PLAYER
 			-- Return the player who will play in the next turn;
-		deferred
-		end
-
-feature -- Status Setting
-
-	set_map (new_map: GAME_MAP)
-			-- Set a new map for the state;
-		require
-			map_not_void: new_map /= void
 		do
-			map := new_map
-		ensure
-			map_set: map.is_equal (new_map)
 		end
 
-	set_current_player (new_current_player: PLAYER)
-			-- Set a new current player for the state;
+
+feature -- Status report
+
+	parent: detachable like Current
+			-- Parent of current state
 		do
-			current_player := new_current_player
 		end
 
+	rule_applied: detachable ACTION_SELECT
+			-- Rule applied to reach current state.
+			-- If the state is an initial state, rule_applied
+			-- is Void.
+		do
+		end
+
+	is_max: BOOLEAN
+			-- Indicates whether current state is a max state
+		do
+		end
+
+	is_min: BOOLEAN
+			-- Indicates whether current state is a min state
+		do
+		end
+
+feature -- Status setting
+
+	set_parent (new_parent: detachable like Current)
+			-- Sets the parent for current state
+		do
+		end
+
+	set_rule_applied (rule: detachable ACTION_SELECT)
+			-- Sets the rule_applied for current state
+		do
+		end
+
+feature -- Inherited
+
+	out: STRING
+		do
+			Result := "Selected hole: " + selected_hole.out + "%N%N Map: " + map.out + "%N"
+		end
 
 end
