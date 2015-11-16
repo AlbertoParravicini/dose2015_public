@@ -17,6 +17,7 @@ feature {NONE} -- Initialization
 			--engine: MINIMAX_AB_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
 			engine: CYCLE_CHECKING_DEPTH_FIRST_SEARCH_ENGINE[ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
 			problem: SOLITAIRE_PROBLEM
+			problem2: ADVERSARY_PROBLEM
 			initial_state: SOLITAIRE_STATE
 			current_state: ADVERSARY_STATE
 			players: ARRAYED_LIST[PLAYER]
@@ -33,6 +34,7 @@ feature {NONE} -- Initialization
 			print (problem.initial_state.out + "%N%N")
 
 			engine.perform_search
+
 
 
 				if (engine.is_search_successful) then

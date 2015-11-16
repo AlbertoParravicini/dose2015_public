@@ -17,9 +17,8 @@ create
 feature
 
 	make
-			-- Default constructor, it generates a initial state;
+			-- Default constructor, it generates an adversary problem;
 		do
-			--create initial_state.make
 		end
 
 feature
@@ -71,11 +70,15 @@ feature
 			end
 
 			Result := successors
+		ensure then
+			at_most_tot_successors: Result.count <= {GAME_CONSTANTS}.num_of_holes // 2
 		end
 
 	is_end (state: ADVERSARY_STATE): BOOLEAN
 		do
 			Result := state.is_game_over
+		ensure then
+			result_consistent: (Result = true implies state.is_game_over) and (state.is_game_over implies Result = true)
 		end
 
 feature
@@ -89,6 +92,8 @@ feature
 			else
 				Result := state.players.at (2).score - state.players.at (1).score
 			end
+		ensure then
+			result_is_consistent: value >= min_value and value <= max_value
 		end
 
 	min_value: INTEGER = -1000

@@ -42,6 +42,7 @@ feature -- Status Setting
 		do
 			current_player := new_current_player
 		end
+		
 invariant
 	num_of_stones_is_constant: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
 end
