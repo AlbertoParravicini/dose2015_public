@@ -28,7 +28,7 @@ feature {NONE} -- Implementation
 		end
 
 
-feature {NONE} --Initialization
+feature {NONE} -- Creation
 
 	make_with_initial_values (a_name: STRING a_inital_score: INTEGER)
 			-- Create human player with specific name and initial score.
