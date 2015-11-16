@@ -46,7 +46,8 @@ feature
 							-- If the current hole is empty no move can be performed from it;
 						if a_state.map.get_hole_value (i) > 0 then
 							create current_successor.make_from_parent_and_rule (a_state, create {ACTION_SELECT}.make (i))
-							current_successor.move (i)
+							--current_successor.move (i)
+							successors.extend (current_successor)
 						end
 						i := i + 1
 					end
@@ -61,7 +62,8 @@ feature
 							-- If the current hole is empty no move can be performed from it;
 						if a_state.map.get_hole_value (i) > 0 then
 							create current_successor.make_from_parent_and_rule (a_state, create {ACTION_SELECT}.make (i))
-							current_successor.move (i)
+							--	current_successor.move (i)
+							successors.extend (current_successor)
 						end
 						i := i + 1
 					end
