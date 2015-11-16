@@ -66,6 +66,8 @@ feature
 		ensure
 			no_rule_applied: rule_applied = void
 			no_parent: parent = void
+			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
+			score_is_zero: player.score = 0
 		end
 
 	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION; new_map: GAME_MAP; new_hole: INTEGER)
@@ -75,14 +77,24 @@ feature
 			set_rule_applied (a_rule)
 			set_map (new_map)
 			set_selected_hole (new_hole)
+		ensure
+			rule_applied: rule_applied /= void
+			parent_not_void: parent /= void
+			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
+			score_is_mantained: player.score = a_parent.player.score
+			name_is_mantained: player.name = a_parent.player.name
 		end
 
 feature -- Status setting
 
 	set_selected_hole (new_hole: INTEGER)
 			-- Set the hole selected by the player, on which the next move will be performed;
+		require
+			new_hole_exists: new_hole >= 1 and new_hole <= {GAME_CONSTANTS}.num_of_holes
 		do
 			selected_hole := new_hole
+		ensure
+			hole_selscted: selected_hole = new_hole
 		end
 
 	move_clockwise
@@ -279,9 +291,10 @@ feature {NONE}
 				i := i + 1
 			end
 			Result := sum
+		ensure
+			result_is_consistent: Result >= 0 and Result <= {GAME_CONSTANTS}.num_of_stones
 		end
 
 invariant
 	score_consistent: sum_of_stores_token = player.score
-
 end
