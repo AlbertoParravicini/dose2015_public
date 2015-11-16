@@ -229,6 +229,25 @@ feature -- Status Report
 			result_is_consistent: Result = {GAME_CONSTANTS}.num_of_stones
 		end
 
+	sum_of_stores_token: INTEGER
+		local
+			i: INTEGER
+			sum: INTEGER
+		do
+			from
+				i := 1
+				sum := 0
+			until
+				i > {GAME_CONSTANTS}.num_of_stores
+			loop
+				sum := sum + get_store_value (i)
+				i := i + 1
+			end
+			Result := sum
+		ensure
+			result_is_consistent: Result >= 0 and Result <= {GAME_CONSTANTS}.num_of_stones
+		end
+
 feature -- Status settings
 
 	add_stone_to_hole (position: INTEGER)

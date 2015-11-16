@@ -81,6 +81,7 @@ feature
 			rule_applied: rule_applied /= void
 			parent_not_void: parent /= void
 			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
+			map_is_copied: map.is_equal (a_parent.map)
 			score_is_mantained: player.score = a_parent.player.score
 			name_is_mantained: player.name = a_parent.player.name
 		end
@@ -274,27 +275,6 @@ feature -- Inherited
 			Result := "Selected hole: " + selected_hole.out + "%N%N Map: " + map.out + "%N"
 		end
 
-feature {NONE}
-
-	sum_of_stores_token: INTEGER
-		local
-			i: INTEGER
-			sum: INTEGER
-		do
-			from
-				i := 1
-				sum := 0
-			until
-				i > {GAME_CONSTANTS}.num_of_stores
-			loop
-				sum := sum + map.get_store_value (i)
-				i := i + 1
-			end
-			Result := sum
-		ensure
-			result_is_consistent: Result >= 0 and Result <= {GAME_CONSTANTS}.num_of_stones
-		end
-
 invariant
-	score_consistent: sum_of_stores_token = player.score
+	score_consistent: map.sum_of_stores_token = player.score
 end

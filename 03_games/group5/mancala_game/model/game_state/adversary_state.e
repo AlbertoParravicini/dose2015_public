@@ -59,12 +59,15 @@ feature {NONE} -- Creation
 			loop
 				map.add_stone_to_hole ((({GAME_CONSTANTS}.num_of_stones - current_stones) \\ {GAME_CONSTANTS}.num_of_holes) + 1)
 				current_stones := current_stones - 1
+
 			end
 
 		ensure
 			no_rule_applied: rule_applied = void
 			no_parent: parent = void
 			setting_done: players = a_players and current_player = players.i_th (1)
+			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
+			score_is_zero: players.i_th (1).score = 0 and players.i_th (2).score = 0
 		end
 
 	make_from_parent_and_rule (a_parent: ADVERSARY_STATE; a_rule: ACTION_SELECT)
@@ -80,6 +83,13 @@ feature {NONE} -- Creation
 
 				-- Evaluate and set who will play in this turn;
 			current_player := next_player
+		ensure
+			rule_applied: rule_applied /= void
+			parent_not_void: parent /= void
+			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
+			map_is_copied: map.is_equal (a_parent.map)
+			score_is_mantained: players.i_th (1).score = a_parent.players.i_th (1).score and players.i_th (2).score = a_parent.players.i_th (2).score
+			name_is_mantained: players.i_th (1).name = a_parent.players.i_th (1).name and players.i_th (2).name = a_parent.players.i_th (2).name
 		end
 
 feature -- Implementation
@@ -147,5 +157,6 @@ feature -- Inherited
 		do
 			Result := "Current Player : %N%T" + current_player.out + "%NMap: %N" + map.out + "%N%N"
 		end
-
+invariant
+	score_is_consistent: players.i_th (1).score + players.i_th (2).score = map.sum_of_stores_token
 end
