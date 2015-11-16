@@ -29,16 +29,27 @@ create
 
 feature {NONE} -- Creation
 
-	make
+	make (a_players: ARRAYED_LIST[PLAYER])
+		require
+			num_of_stones_multiple_of_num_of_holes: {GAME_CONSTANTS}.num_of_stones \\ {GAME_CONSTANTS}.num_of_holes = 0
 		local
 			current_stones: INTEGER
-			player_1: HUMAN_PLAYER
-			player_2: AI_PLAYER
 		do
-			create player_1.make
-			create player_2.make
 			create map.make
 
+			players := a_players
+			index_of_current_player := 1
+			current_player := players.i_th (index_of_current_player)
+
+				-- Set unique name for each player adding index of its position in array_list.
+			from
+				players.start
+			until
+				players.exhausted
+			loop
+				players.item.set_name (players.item.name + "_" + players.index.out)
+				players.forth
+			end
 
 				-- Every hole has to contain the same number of stones;
 			from
@@ -46,24 +57,37 @@ feature {NONE} -- Creation
 			until
 				current_stones = 0
 			loop
-				map.add_stone_to_hole ({GAME_CONSTANTS}.num_of_stones - current_stones + 1)
+				map.add_stone_to_hole ((({GAME_CONSTANTS}.num_of_stones - current_stones) \\ {GAME_CONSTANTS}.num_of_holes) + 1)
 				current_stones := current_stones - 1
 			end
 
-			selected_hole := -1
 		ensure
 			no_rule_applied: rule_applied = void
 			no_parent: parent = void
+			setting_done: players = a_players and current_player = players.i_th (1)
 		end
 
-	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION; new_map: GAME_MAP; new_hole: INTEGER)
+	make_from_parent_and_rule (a_parent: ADVERSARY_STATE; a_rule: ACTION_SELECT; new_map: GAME_MAP)
 		do
+
 			set_parent (a_parent)
-			player := create {HUMAN_PLAYER}.make_with_initial_values (a_parent.player.name, a_parent.player.score)
+
+			create players.make (a_parent.players.count)
+			players.deep_copy (a_parent.players)
+			index_of_current_player := a_parent.index_of_current_player
+			current_player := next_player
+
 			set_rule_applied (a_rule)
 			set_map (new_map)
-			set_selected_hole (new_hole)
 		end
+
+feature -- Implementation
+
+	players: ARRAYED_LIST[PLAYER]
+		-- List contains the players of the game.
+
+	index_of_current_player: INTEGER
+		-- Adjourned each round.
 
 feature -- Status Report
 
@@ -76,6 +100,8 @@ feature -- Status Report
 	next_player: PLAYER
 			-- Return the player who will play in the next turn;
 		do
+			index_of_current_player := (index_of_current_player \\ players.count) + 1
+			Result := players.i_th (index_of_current_player)
 		end
 
 
@@ -83,15 +109,12 @@ feature -- Status report
 
 	parent: detachable like Current
 			-- Parent of current state
-		do
-		end
 
 	rule_applied: detachable ACTION_SELECT
 			-- Rule applied to reach current state.
 			-- If the state is an initial state, rule_applied
 			-- is Void.
-		do
-		end
+
 
 	is_max: BOOLEAN
 			-- Indicates whether current state is a max state
@@ -108,18 +131,20 @@ feature -- Status setting
 	set_parent (new_parent: detachable like Current)
 			-- Sets the parent for current state
 		do
+			parent := new_parent
 		end
 
-	set_rule_applied (rule: detachable ACTION_SELECT)
+	set_rule_applied (new_rule: detachable ACTION_SELECT)
 			-- Sets the rule_applied for current state
 		do
+			rule_applied := new_rule
 		end
 
 feature -- Inherited
 
 	out: STRING
 		do
-			Result := "Selected hole: " + selected_hole.out + "%N%N Map: " + map.out + "%N"
+			Result := "Current Player : %N%T" + current_player.out + "%NMap: %N" + map.out + "%N%N"
 		end
 
 end

@@ -14,14 +14,21 @@ feature {NONE} -- Initialization
 
 	make_and_launch
 		local
-			p1,p2: HUMAN_PLAYER
-			p3: AI_PLAYER
+			p: ARRAYED_LIST [PLAYER]
+			state, state2: ADVERSARY_STATE
 		do
-			create p1.make_with_initial_score (1)
-			create p2.make_with_initial_score (2)
-			create p3.make
-			print(p1.out + "%N" + p2.out + "%N" + p3.out)
-	
+			create p.make (2)
+			p.extend (create {HUMAN_PLAYER}.make)
+			p.extend (create {AI_PLAYER}.make)
+
+			create state.make(p)
+
+			create state2.make_from_parent_and_rule (state, VOID, create {GAME_MAP}.make_from_map(state.map))
+
+
+			print(state.out)
+			print(state2.out)
+			print(state.out)
 		end
 
 	prepare

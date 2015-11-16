@@ -74,6 +74,16 @@ feature {NONE} -- Creation
 
 feature -- Operations
 
+	set_name(a_name: STRING)
+			-- Set a specific name.
+		require
+		    valid_name: a_name /= void and not a_name.is_empty
+		do
+			make_with_initial_values(a_name, 0)
+		ensure
+			setting_done: score = 0 and equal(name, a_name)
+		end
+
 	set_score(a_score: INTEGER)
 			-- Set a specific score.
 		require
