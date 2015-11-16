@@ -67,7 +67,7 @@ feature {NONE} -- Creation
 			setting_done: players = a_players and current_player = players.i_th (1)
 		end
 
-	make_from_parent_and_rule (a_parent: ADVERSARY_STATE; a_rule: ACTION_SELECT; new_map: GAME_MAP)
+	make_from_parent_and_rule (a_parent: ADVERSARY_STATE; a_rule: ACTION_SELECT)
 		do
 
 			set_parent (a_parent)
@@ -75,10 +75,11 @@ feature {NONE} -- Creation
 			create players.make (a_parent.players.count)
 			players.deep_copy (a_parent.players)
 			index_of_current_player := a_parent.index_of_current_player
-			current_player := next_player
-
 			set_rule_applied (a_rule)
-			set_map (new_map)
+			set_map (create {GAME_MAP}.make_from_map(a_parent.map))
+
+				-- Evaluate and set who will play in this turn;
+			current_player := next_player
 		end
 
 feature -- Implementation

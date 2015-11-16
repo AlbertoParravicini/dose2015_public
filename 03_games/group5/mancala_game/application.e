@@ -26,7 +26,7 @@ feature {NONE} -- Initialization
 
 			create state.make(p)
 
-			create state2.make_from_parent_and_rule (state, VOID, create {GAME_MAP}.make_from_map(state.map))
+			create state2.make_from_parent_and_rule (state, VOID)
 
 			state.players.at (1).set_score (0)
 			state.players.at (2).set_score (0)
