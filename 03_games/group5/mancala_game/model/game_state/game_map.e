@@ -21,6 +21,7 @@ create
 feature -- Creator
 
 	make
+			-- Default constructor, initialize an empty map with size specified in the GAME_CONSTANTS class;
 		local
 			i: INTEGER
 		do
@@ -48,6 +49,10 @@ feature -- Creator
 				i := i + 1
 			end
 				-- Create a list of empty stores;
+		ensure
+			map_is_empty: num_of_stones = 0
+			holes_initialized: holes /= void and then holes.count = {GAME_CONSTANTS}.num_of_holes
+			stores_initialized: stores /= void and then stores.count = {GAME_CONSTANTS}.num_of_stores
 		end
 
 	make_from_map (other_map: GAME_MAP)
@@ -79,6 +84,10 @@ feature -- Creator
 				i := i + 1
 			end
 				-- Create a list of empty stores whose value is the same of the other map;
+		ensure
+			num_of_stones_constant: num_of_stones = other_map.num_of_stones
+			holes_initialized: holes /= void and then holes.count = {GAME_CONSTANTS}.num_of_holes
+			stores_initialized: stores /= void and then stores.count = {GAME_CONSTANTS}.num_of_stores
 		end
 
 feature -- Status Report
