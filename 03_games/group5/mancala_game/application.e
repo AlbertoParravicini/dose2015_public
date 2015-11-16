@@ -16,19 +16,23 @@ feature {NONE} -- Initialization
 		local
 			p: ARRAYED_LIST [PLAYER]
 			state, state2: ADVERSARY_STATE
+			problem: ADVERSARY_PROBLEM
 		do
 			create p.make (2)
 			p.extend (create {HUMAN_PLAYER}.make)
 			p.extend (create {AI_PLAYER}.make)
 
+			create problem.make
+
 			create state.make(p)
 
 			create state2.make_from_parent_and_rule (state, VOID, create {GAME_MAP}.make_from_map(state.map))
 
+			state.players.at (1).set_score (0)
+			state.players.at (2).set_score (0)
 
-			print(state.out)
-			print(state2.out)
-			print(state.out)
+			print(state.index_of_current_player.out + "%N")
+			print (problem.value (state).out)
 		end
 
 	prepare

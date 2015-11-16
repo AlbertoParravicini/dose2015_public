@@ -7,42 +7,50 @@ note
 class
 	ADVERSARY_PROBLEM
 
+inherit
+
+	ADVERSARY_SEARCH_PROBLEM [ACTION_SELECT, ADVERSARY_STATE]
+
+create
+	make
+
+feature
 
 	make
 			-- Default constructor, it generates a initial state;
 		do
-			create initial_state.make
-		end
-
-	make_with_initial_state (new_state: SOLITAIRE_STATE)
-			-- Initializes the problem with the provided initial state;
-		do
-			initial_state := new_state
+			--create initial_state.make
 		end
 
 feature
 
-	initial_state: SOLITAIRE_STATE
+	initial_state: ADVERSARY_STATE
 			-- The initial state of the problem;
 
-get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
+	get_successors (a_state: ADVERSARY_STATE): LIST [ADVERSARY_STATE]
 		do
-
 		end
 
-	is_successful (state: SOLITAIRE_STATE): BOOLEAN
-
+	is_end (state: ADVERSARY_STATE): BOOLEAN
+		do
+			Result := state.is_game_over
+		end
 
 feature
 	-- Heuristic search related routines
 
-	value (state: SOLITAIRE_STATE): INTEGER
-			-- Return the remaining number of stones in the game;
+	value (state: ADVERSARY_STATE): INTEGER
+			-- Return the difference between the maximizing player' score and the minimizing player' score;
 		do
-			if state.current_player.is_equal (state.player_1) then
-				Result := state.player_1.score - state.player_2.score
+			if state.index_of_current_player = 1 then
+				Result := state.players.at (1).score - state.players.at (2).score
 			else
-				Result := state.player_2.score - state.player_1.score
+				Result := state.players.at (2).score - state.players.at (1).score
 			end
 		end
+
+	min_value: INTEGER = -1000
+
+	max_value: INTEGER = 1000
+
 end
