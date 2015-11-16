@@ -93,7 +93,7 @@ feature
 				Result := state.players.at (2).score - state.players.at (1).score
 			end
 		ensure then
-			result_is_consistent: value >= min_value and value <= max_value
+			result_is_consistent: Result >= min_value and Result <= max_value
 		end
 
 	min_value: INTEGER = -1000
