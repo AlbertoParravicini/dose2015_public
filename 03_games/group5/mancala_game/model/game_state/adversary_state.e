@@ -119,11 +119,29 @@ feature -- Status report
 	is_max: BOOLEAN
 			-- Indicates whether current state is a max state
 		do
+			if index_of_current_player \\ 2 = 0 then
+				Result := false
+			else
+				Result := true
+			end
+		ensure then
+			odd_player_max: Result = true implies index_of_current_player \\ 2 = 1
+			max_odd_player: index_of_current_player \\ 2 = 1 implies Result = true
+			mutual_exclusion: (is_max implies not is_min) and (not is_min implies is_max)
 		end
 
 	is_min: BOOLEAN
 			-- Indicates whether current state is a min state
 		do
+			if is_max then
+				Result := false
+			else
+				Result := true
+			end
+		ensure then
+			even_player_min: Result = true implies index_of_current_player \\ 2 = 0
+			min_even_player: index_of_current_player \\ 2 = 1 implies Result = true
+			mutual_exclusion: (is_max implies not is_min) and (not is_min implies is_max)
 		end
 
 feature -- Status setting
@@ -144,7 +162,10 @@ feature -- Inherited
 
 	out: STRING
 		do
-			Result := "Current Player : %N%T" + current_player.out + "%NMap: %N" + map.out + "%N%N"
+			Result := "Max: " + is_max.out + "%NCurrent Player: " + current_player.out + "%NMap: %N" + map.out + "%N%N"
 		end
+
+invariant
+	index_of_current_player_domain: index_of_current_player >= 1 and index_of_current_player <= players.count
 
 end
