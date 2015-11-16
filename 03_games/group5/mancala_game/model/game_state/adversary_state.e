@@ -8,8 +8,11 @@ class
 	ADVERSARY_STATE
 inherit
 	GAME_STATE
+		undefine
+			out
+		end
 
-	ADVERSARY_SEARCH_STATE[STRING]
+	ADVERSARY_SEARCH_STATE[ACTION_SELECT]
 		undefine
 			out
 		end
@@ -18,37 +21,130 @@ inherit
 		redefine
 			out
 		end
-feature
-	--is_min
 
-	--is_max
 
-feature
-	-- Getter
-	get_current_player: PLAYER
-			-- Returns the player that will do the next move
+create
+	make, make_from_parent_and_rule
+
+
+feature {NONE} -- Creation
+
+	make (a_players: ARRAYED_LIST[PLAYER])
+		require
+			num_of_stones_multiple_of_num_of_holes: {GAME_CONSTANTS}.num_of_stones \\ {GAME_CONSTANTS}.num_of_holes = 0
+		local
+			current_stones: INTEGER
 		do
-			Result := player_list.i_th (current_player)
-		end
+			create map.make
 
-	change_player
-			-- Change the player
-		do
-			if(current_player=1) then
-				current_player:=2
-			else
-				current_player:=1
+			players := a_players
+			index_of_current_player := 1
+			current_player := players.i_th (index_of_current_player)
+
+				-- Set unique name for each player adding index of its position in array_list.
+			from
+				players.start
+			until
+				players.exhausted
+			loop
+				players.item.set_name (players.item.name + "_" + players.index.out)
+				players.forth
 			end
+
+				-- Every hole has to contain the same number of stones;
+			from
+				current_stones := {GAME_CONSTANTS}.num_of_stones
+			until
+				current_stones = 0
+			loop
+				map.add_stone_to_hole ((({GAME_CONSTANTS}.num_of_stones - current_stones) \\ {GAME_CONSTANTS}.num_of_holes) + 1)
+				current_stones := current_stones - 1
+			end
+
 		ensure
-			current_player_changed: current_player /= old current_player
+			no_rule_applied: rule_applied = void
+			no_parent: parent = void
+			setting_done: players = a_players and current_player = players.i_th (1)
 		end
-feature {NONE}
-	player_list: ARRAYED_LIST [PLAYER]
-			-- List of players
 
-	current_player: INTEGER
-			-- Values is 1 or 2
+	make_from_parent_and_rule (a_parent: ADVERSARY_STATE; a_rule: ACTION_SELECT; new_map: GAME_MAP)
+		do
 
-invariant
-	valid_current_player: current_player = 1 or current_player = 2
+			set_parent (a_parent)
+
+			create players.make (a_parent.players.count)
+			players.deep_copy (a_parent.players)
+			index_of_current_player := a_parent.index_of_current_player
+			current_player := next_player
+
+			set_rule_applied (a_rule)
+			set_map (new_map)
+		end
+
+feature -- Implementation
+
+	players: ARRAYED_LIST[PLAYER]
+		-- List contains the players of the game.
+
+	index_of_current_player: INTEGER
+		-- Adjourned each round.
+
+feature -- Status Report
+
+	is_game_over: BOOLEAN
+		-- Is the game over?
+		do
+		end
+
+
+	next_player: PLAYER
+			-- Return the player who will play in the next turn;
+		do
+			index_of_current_player := (index_of_current_player \\ players.count) + 1
+			Result := players.i_th (index_of_current_player)
+		end
+
+
+feature -- Status report
+
+	parent: detachable like Current
+			-- Parent of current state
+
+	rule_applied: detachable ACTION_SELECT
+			-- Rule applied to reach current state.
+			-- If the state is an initial state, rule_applied
+			-- is Void.
+
+
+	is_max: BOOLEAN
+			-- Indicates whether current state is a max state
+		do
+		end
+
+	is_min: BOOLEAN
+			-- Indicates whether current state is a min state
+		do
+		end
+
+feature -- Status setting
+
+	set_parent (new_parent: detachable like Current)
+			-- Sets the parent for current state
+		do
+			parent := new_parent
+		end
+
+	set_rule_applied (new_rule: detachable ACTION_SELECT)
+			-- Sets the rule_applied for current state
+		do
+			rule_applied := new_rule
+		end
+
+feature -- Inherited
+
+	out: STRING
+		do
+			Result := "Current Player : %N%T" + current_player.out + "%NMap: %N" + map.out + "%N%N"
+		end
+
 end

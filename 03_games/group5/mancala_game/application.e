@@ -14,58 +14,21 @@ feature {NONE} -- Initialization
 
 	make_and_launch
 		local
-			l_app: EV_APPLICATION
-
-
-			problem: SOLITAIRE_PROBLEM
-			engine: CYCLE_CHECKING_DEPTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
-			curr_depth: INTEGER
-			found: BOOLEAN
-			i: INTEGER
-			path: LIST [SOLITAIRE_STATE]
-			state2: SOLITAIRE_STATE
+			p: ARRAYED_LIST [PLAYER]
+			state, state2: ADVERSARY_STATE
 		do
+			create p.make (2)
+			p.extend (create {HUMAN_PLAYER}.make)
+			p.extend (create {AI_PLAYER}.make)
+
+			create state.make(p)
+
+			create state2.make_from_parent_and_rule (state, VOID, create {GAME_MAP}.make_from_map(state.map))
 
 
-			create problem.make
-			create engine.make (problem)
-			print (problem.initial_state.out + "%N%N%N")
-
-			engine.perform_search
-
-			if (engine.is_search_successful) then
-				print (engine.obtained_solution.out)
-					print ("solution found: " + engine.obtained_solution.out + " sat depth " + engine.path_to_obtained_solution.count.out + ".%N")
-					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
-					print ("path to solution: %N")
-					from
-						i := 1
-						path := engine.path_to_obtained_solution
-					until
-						i > path.count
-					loop
-						if path.i_th (i).rule_applied /= Void then
-								-- skips the first state that has void rule
-							print ("    " + path.i_th (i).rule_applied.out + "%N")
-						end
-						print (path.i_th (i).out + "%N")
-						i := i + 1
-					end
-					found := True
-				else
-					print ("no solution found with depth " + curr_depth.out + ".%N")
-					print ("visited states: " + engine.nr_of_visited_states.out + "%N")
-					curr_depth := curr_depth + 1
-					engine.reset_engine
-
-
-					-- engine.set_max_depth (curr_depth)
-				end
-
-
-			create l_app
-			prepare
-			l_app.launch
+			print(state.out)
+			print(state2.out)
+			print(state.out)
 		end
 
 	prepare

@@ -124,18 +124,4 @@ feature
 				Result := 1
 			end
 		end
-
-feature {NONE}
-	-- Auxiliary functions
-
-	is_game_over (state: SOLITAIRE_STATE): BOOLEAN
-		local
-			placed_in_empty_hole: BOOLEAN
-			no_store_increase: BOOLEAN
-		do
-			placed_in_empty_hole := (state.map.get_hole_value (state.selected_hole) = 1)
-			no_store_increase := (state.map.get_store_value (1) = state.parent.map.get_store_value (1)) and (state.map.get_store_value (2) = state.parent.map.get_store_value (2))
-			Result := placed_in_empty_hole and no_store_increase
-		end
-
 end
