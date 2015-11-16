@@ -68,13 +68,13 @@ feature
 			no_parent: parent = void
 		end
 
-	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION; new_map: GAME_MAP; new_hole: INTEGER)
+	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION)
 		do
 			set_parent (a_parent)
 			player := create {HUMAN_PLAYER}.make_with_initial_values (a_parent.player.name, a_parent.player.score)
 			set_rule_applied (a_rule)
-			set_map (new_map)
-			set_selected_hole (new_hole)
+			set_map (create {GAME_MAP}.make_from_map (a_parent.map))
+			set_selected_hole (a_parent.selected_hole)
 		end
 
 feature -- Status setting

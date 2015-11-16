@@ -58,8 +58,7 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 				until
 					current_selection > {GAME_CONSTANTS}.num_of_holes
 				loop
-					successors.extend (create {SOLITAIRE_STATE}.make_from_parent_and_rule (a_state, create {ACTION_SELECT}.make (current_selection),
-						create {GAME_MAP}.make_from_map(a_state.map), current_selection))
+					successors.extend (create {SOLITAIRE_STATE}.make_from_parent_and_rule (a_state, create {ACTION_SELECT}.make (current_selection))
 					current_selection := current_selection + 1
 				end -- End Loop
 
@@ -69,8 +68,7 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 
                 -- Rotate clockwise;
                 -- Create a new state whose map is equal to the one of the current state;
-                create successor_1.make_from_parent_and_rule(a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise),
-                	create {GAME_MAP}.make_from_map(a_state.map), a_state.selected_hole)
+                create successor_1.make_from_parent_and_rule(a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
 
                 -- Clockwise movement;
                 -- Empties the current_hole, distributes the stones clockwise, updates the score, updates the current_hole;
@@ -79,8 +77,7 @@ get_successors (a_state: SOLITAIRE_STATE): LIST [SOLITAIRE_STATE]
 
                 -- Rotate counter-clockwise;
                 -- Create a new state whose map is equal to the one of the current state;
-                create successor_2.make_from_parent_and_rule(a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise),
-                	create {GAME_MAP}.make_from_map(a_state.map), a_state.selected_hole)
+                create successor_2.make_from_parent_and_rule(a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
 
                 -- Counter-clockwise movement;
                 -- Empties the current_hole, distributes the stones counter-clockwise, updates the score, updates the current_hole;
