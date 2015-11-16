@@ -41,6 +41,8 @@ feature {NONE} -- Creation
 			index_of_current_player := 1
 			current_player := players.i_th (index_of_current_player)
 
+			free_turn := false
+
 				-- Set unique name for each player adding index of its position in array_list.
 			from
 				players.start
@@ -64,30 +66,56 @@ feature {NONE} -- Creation
 		ensure
 			no_rule_applied: rule_applied = void
 			no_parent: parent = void
-			setting_done: players = a_players and current_player = players.i_th (1)
+			setting_done: players = a_players and current_player = players.i_th (1) and not free_turn
 		end
 
 	make_from_parent_and_rule (a_parent: ADVERSARY_STATE; a_rule: ACTION_SELECT; new_map: GAME_MAP)
 		do
 
 			set_parent (a_parent)
+			free_turn := false
 
 			create players.make (a_parent.players.count)
 			players.deep_copy (a_parent.players)
+
 			index_of_current_player := a_parent.index_of_current_player
-			current_player := next_player
+				-- Free turn check
+			if a_parent.free_turn then
+				current_player := players.i_th (index_of_current_player)
+			else
+				current_player := next_player
+			end
 
 			set_rule_applied (a_rule)
 			set_map (new_map)
 		end
 
-feature -- Implementation
+feature -- Implementation Variables
 
 	players: ARRAYED_LIST[PLAYER]
 		-- List contains the players of the game.
 
 	index_of_current_player: INTEGER
 		-- Adjourned each round.
+
+	free_turn: BOOLEAN
+		-- Free turn allow the player to move twice.
+
+feature -- Implementation Routines
+
+	move(a_selected_hole: INTEGER)
+		require
+			minimal_valid_selection: 1 + ((parent.index_of_current_player - 1) * ({GAME_CONSTANTS}.num_of_holes / players.count)) <= a_selected_hole
+			maximal_valid_selection: a_selected_hole <= ({GAME_CONSTANTS}.num_of_holes / players.count) * (1 + (parent.index_of_current_player - 1))
+			non_empty_hole: map.get_hole_value (a_selected_hole) >= 1
+		local
+			l_number_of_stones: INTEGER
+		do
+			l_number_of_stones := map.get_hole_value (a_selected_hole)
+			print (l_number_of_stones)
+		ensure
+		end
+
 
 feature -- Status Report
 
@@ -162,7 +190,7 @@ feature -- Inherited
 
 	out: STRING
 		do
-			Result := "Max: " + is_max.out + "%NCurrent Player: " + current_player.out + "%NMap: %N" + map.out + "%N%N"
+			Result := "- Max: " + is_max.out + "%N- Current Player: " + current_player.out + "%N- Map: %N" + map.out + "%N%N"
 		end
 
 invariant

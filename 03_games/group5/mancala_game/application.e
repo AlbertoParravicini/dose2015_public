@@ -15,7 +15,7 @@ feature {NONE} -- Initialization
 	make_and_launch
 		local
 			p: ARRAYED_LIST [PLAYER]
-			state, state2: ADVERSARY_STATE
+			state, state2, state3: ADVERSARY_STATE
 		do
 			create p.make (2)
 			p.extend (create {HUMAN_PLAYER}.make)
@@ -24,11 +24,11 @@ feature {NONE} -- Initialization
 			create state.make(p)
 
 			create state2.make_from_parent_and_rule (state, VOID, create {GAME_MAP}.make_from_map(state.map))
-
+			create state3.make_from_parent_and_rule (state2, VOID, create {GAME_MAP}.make_from_map(state2.map))
 
 			print(state.out)
 			print(state2.out)
-			print(state.out)
+			print(state3.out)
 		end
 
 	prepare
