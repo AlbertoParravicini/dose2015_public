@@ -242,8 +242,6 @@ feature {NONE} -- Implementation Routines
 					l_current_hole := l_current_hole + 1
 				end
 
-				print ("%N%N player " + players.index.out + " value: " + l_sum_of_player_stones.out + "%N%N")
-
 				if l_sum_of_player_stones = 0 then
 					end_condition := true
 				end
@@ -270,8 +268,8 @@ feature {NONE} -- Implementation Routines
 						l_current_hole := l_current_hole + 1
 					end
 
-					map.add_stones_to_store (l_sum_of_player_stones, (players.index \\ 2 ) + 1)
-					players.i_th ((players.index \\ 2 ) + 1).sum_to_score (l_sum_of_player_stones)
+					map.add_stones_to_store (l_sum_of_player_stones, (players.index \\ players.count) + 1)
+					players.i_th ((players.index \\ players.count) + 1).sum_to_score (l_sum_of_player_stones)
 
 					players.forth
 				end
