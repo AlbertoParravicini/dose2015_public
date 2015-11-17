@@ -109,7 +109,7 @@ feature -- Operations
 		do
 			set_score(score + a_additional_score)
 		ensure
-			setting_done: score = score + a_additional_score
+			setting_done: score = Old score + a_additional_score
 		end
 
 feature -- Status Report
@@ -127,7 +127,7 @@ feature -- Status Report
 
 	out: STRING
 		do
-			Result := "Name: " + name.out + ", Score: " + score.out
+			Result := "[Name: " + name.out + ", Score: " + score.out + "]"
 		end
 
 invariant

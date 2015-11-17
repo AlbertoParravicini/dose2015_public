@@ -15,20 +15,38 @@ feature {NONE} -- Initialization
 	make_and_launch
 		local
 			p: ARRAYED_LIST [PLAYER]
-			state, state2, state3: ADVERSARY_STATE
+			state, state2, state3, state4, state5, state6, state7: ADVERSARY_STATE
 		do
 			create p.make (2)
 			p.extend (create {HUMAN_PLAYER}.make)
 			p.extend (create {AI_PLAYER}.make)
 
 			create state.make(p)
-
-			create state2.make_from_parent_and_rule (state, VOID, create {GAME_MAP}.make_from_map(state.map))
-			create state3.make_from_parent_and_rule (state2, VOID, create {GAME_MAP}.make_from_map(state2.map))
-
 			print(state.out)
+
+			create state2.make_from_parent_and_rule (state, VOID)
+			state2.move(3)
 			print(state2.out)
+
+			create state3.make_from_parent_and_rule (state2, VOID)
+			state3.move(4)
 			print(state3.out)
+
+			create state4.make_from_parent_and_rule (state3, VOID)
+			state4.move(7)
+			print(state4.out)
+
+			create state5.make_from_parent_and_rule (state4, VOID)
+			state5.move(5)
+			print(state5.out)
+
+			create state6.make_from_parent_and_rule (state5, VOID)
+			state6.move(7)
+			print(state6.out)
+
+			create state7.make_from_parent_and_rule (state6, VOID)
+			state7.move(1)
+			print(state7.out)
 		end
 
 	prepare

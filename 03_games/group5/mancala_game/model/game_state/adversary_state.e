@@ -41,8 +41,6 @@ feature {NONE} -- Creation
 			index_of_current_player := 1
 			current_player := players.i_th (index_of_current_player)
 
-			free_turn := false
-
 				-- Set unique name for each player adding index of its position in array_list.
 			from
 				players.start
@@ -61,33 +59,39 @@ feature {NONE} -- Creation
 			loop
 				map.add_stone_to_hole ((({GAME_CONSTANTS}.num_of_stones - current_stones) \\ {GAME_CONSTANTS}.num_of_holes) + 1)
 				current_stones := current_stones - 1
+
 			end
 
 		ensure
 			no_rule_applied: rule_applied = void
 			no_parent: parent = void
-			setting_done: players = a_players and current_player = players.i_th (1) and not free_turn
+			setting_done: players = a_players and current_player = players.i_th (1)
+			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
+			score_is_zero: players.i_th (1).score = 0 and players.i_th (2).score = 0
 		end
 
-	make_from_parent_and_rule (a_parent: ADVERSARY_STATE; a_rule: ACTION_SELECT; new_map: GAME_MAP)
+	make_from_parent_and_rule (a_parent: ADVERSARY_STATE; a_rule: ACTION_SELECT)
 		do
 
 			set_parent (a_parent)
-			free_turn := false
 
 			create players.make (a_parent.players.count)
 			players.deep_copy (a_parent.players)
 
 			index_of_current_player := a_parent.index_of_current_player
-				-- Free turn check
-			if a_parent.free_turn then
-				current_player := players.i_th (index_of_current_player)
-			else
-				current_player := next_player
-			end
+
+			current_player := next_player
 
 			set_rule_applied (a_rule)
-			set_map (new_map)
+			set_map (create {GAME_MAP}.make_from_map(a_parent.map))
+
+		ensure
+			-- rule_applied: rule_applied /= void
+			parent_not_void: parent /= void
+			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
+			map_is_copied: map.is_equal (a_parent.map)
+			score_is_mantained: players.i_th (1).score = a_parent.players.i_th (1).score and players.i_th (2).score = a_parent.players.i_th (2).score
+			name_is_mantained: equal(players.i_th (1).name, a_parent.players.i_th (1).name) and equal(players.i_th (2).name, a_parent.players.i_th (2).name)
 		end
 
 feature -- Implementation Variables
@@ -98,21 +102,87 @@ feature -- Implementation Variables
 	index_of_current_player: INTEGER
 		-- Adjourned each round.
 
-	free_turn: BOOLEAN
-		-- Free turn allow the player to move twice.
-
 feature -- Implementation Routines
 
 	move(a_selected_hole: INTEGER)
+
 		require
+
 			minimal_valid_selection: 1 + ((parent.index_of_current_player - 1) * ({GAME_CONSTANTS}.num_of_holes / players.count)) <= a_selected_hole
 			maximal_valid_selection: a_selected_hole <= ({GAME_CONSTANTS}.num_of_holes / players.count) * (1 + (parent.index_of_current_player - 1))
 			non_empty_hole: map.get_hole_value (a_selected_hole) >= 1
+
 		local
+
 			l_number_of_stones: INTEGER
+			l_current_hole: INTEGER
+
 		do
-			l_number_of_stones := map.get_hole_value (a_selected_hole)
-			print (l_number_of_stones)
+
+			print("--------------------------%N" + parent.current_player.name + " moved: " + a_selected_hole.out + "%N--------------------------%N%N")
+
+			from
+
+				l_number_of_stones := map.get_hole_value (a_selected_hole)
+				l_current_hole := a_selected_hole
+				map.clear_hole (l_current_hole)
+
+			until
+
+				l_number_of_stones = 0
+
+			loop
+
+				-- STORE:
+					-- Add one stone to store if current hole is the last player's hole
+					-- and there is at least one other stone.
+					-- If you run into your opponent's store, skip it.
+				if l_current_hole = ({GAME_CONSTANTS}.num_of_holes / players.count) * (1 + (parent.index_of_current_player - 1)) and l_number_of_stones >= 1 then
+
+					map.add_stone_to_store (index_of_current_player)
+					players.i_th (parent.index_of_current_player).increment_score
+					l_number_of_stones := l_number_of_stones - 1
+
+				end
+
+
+				-- FREE TURN:
+					-- Allow the player to move twice.
+				if l_number_of_stones = 0 then
+
+					current_player := prev_player
+					print("!!! FREE TURN%N%N")
+
+				else
+
+					-- NORMAL BEHAVIOR:
+						-- The game now deposits one of the stones in each hole until the stones run out.
+					l_current_hole := l_current_hole + 1
+
+						-- If l_current_hole exceeds last hole then go to the first one.
+					if l_current_hole > {GAME_CONSTANTS}.num_of_holes then
+						l_current_hole := 1
+					end
+
+					map.add_stone_to_hole (l_current_hole)
+					l_number_of_stones := l_number_of_stones - 1
+
+					-- CAPTURE:
+						-- If the last piece you drop is in an empty hole on your side,
+						-- you capture that piece and any pieces in the hole directly opposite.
+					if l_number_of_stones = 0 and map.get_hole_value (l_current_hole) = 1 then
+
+						players.i_th (parent.index_of_current_player).sum_to_score (map.get_hole_value ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole) + 1)
+						map.add_stones_to_store (map.get_hole_value ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole) + 1, index_of_current_player)
+						map.clear_hole (map.get_hole_value ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole))
+						map.clear_hole (l_current_hole)
+						print("!!! CAPTURE%N%N")
+
+					end
+				end
+
+			end
+
 		ensure
 		end
 
@@ -129,6 +199,18 @@ feature -- Status Report
 			-- Return the player who will play in the next turn;
 		do
 			index_of_current_player := (index_of_current_player \\ players.count) + 1
+			Result := players.i_th (index_of_current_player)
+		end
+
+
+	prev_player: PLAYER
+			-- Return the player who played in the last turn;
+		do
+			index_of_current_player := index_of_current_player - 1
+			if index_of_current_player = 0 then
+				index_of_current_player := players.count
+			end
+
 			Result := players.i_th (index_of_current_player)
 		end
 
@@ -190,10 +272,10 @@ feature -- Inherited
 
 	out: STRING
 		do
-			Result := "- Max: " + is_max.out + "%N- Current Player: " + current_player.out + "%N- Map: %N" + map.out + "%N%N"
+			Result := "- Turn of: " + current_player.out + "%N- MAP: %N" + map.out + "%N%N"
 		end
 
 invariant
+	score_is_consistent: players.i_th (1).score + players.i_th (2).score = map.sum_of_stores_token
 	index_of_current_player_domain: index_of_current_player >= 1 and index_of_current_player <= players.count
-
 end

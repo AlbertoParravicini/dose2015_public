@@ -21,6 +21,7 @@ create
 feature -- Creator
 
 	make
+			-- Default constructor, initialize an empty map with size specified in the GAME_CONSTANTS class;
 		local
 			i: INTEGER
 		do
@@ -48,6 +49,10 @@ feature -- Creator
 				i := i + 1
 			end
 				-- Create a list of empty stores;
+		ensure
+			map_is_empty: num_of_stones = 0
+			holes_initialized: holes /= void and then holes.count = {GAME_CONSTANTS}.num_of_holes
+			stores_initialized: stores /= void and then stores.count = {GAME_CONSTANTS}.num_of_stores
 		end
 
 	make_from_map (other_map: GAME_MAP)
@@ -79,6 +84,10 @@ feature -- Creator
 				i := i + 1
 			end
 				-- Create a list of empty stores whose value is the same of the other map;
+		ensure
+			num_of_stones_constant: num_of_stones = other_map.num_of_stones
+			holes_initialized: holes /= void and then holes.count = {GAME_CONSTANTS}.num_of_holes
+			stores_initialized: stores /= void and then stores.count = {GAME_CONSTANTS}.num_of_stores
 		end
 
 feature -- Status Report
@@ -91,6 +100,7 @@ feature -- Status Report
 			Result := stores.at (position)
 		ensure
 			positive_result: Result >= 0
+			result_is_consistent: Result <= {GAME_CONSTANTS}.num_of_stones
 		end
 
 	get_hole_value (position: INTEGER): INTEGER
@@ -101,6 +111,7 @@ feature -- Status Report
 			Result := holes.at (position)
 		ensure
 			positive_result: Result >= 0
+			result_is_consistent: Result <= {GAME_CONSTANTS}.num_of_stones
 		end
 
 	is_store_empty (position: INTEGER): BOOLEAN
@@ -205,6 +216,38 @@ feature -- Status Report
 			Result := output
 		end
 
+	num_of_stones: INTEGER
+		-- Return the number of stones currently in the map;
+		local
+			sum: INTEGER
+		do
+			across holes as curr_hole from sum := 0 loop sum := sum + curr_hole.item end
+			across stores as curr_store loop sum := sum + curr_store.item end
+
+			Result := sum
+		ensure
+			result_is_consistent: Result = {GAME_CONSTANTS}.num_of_stones
+		end
+
+	sum_of_stores_token: INTEGER
+		local
+			i: INTEGER
+			sum: INTEGER
+		do
+			from
+				i := 1
+				sum := 0
+			until
+				i > {GAME_CONSTANTS}.num_of_stores
+			loop
+				sum := sum + get_store_value (i)
+				i := i + 1
+			end
+			Result := sum
+		ensure
+			result_is_consistent: Result >= 0 and Result <= {GAME_CONSTANTS}.num_of_stones
+		end
+
 feature -- Status settings
 
 	add_stone_to_hole (position: INTEGER)
@@ -215,6 +258,7 @@ feature -- Status settings
 			holes.at (position) := holes.at (position) + 1
 		ensure
 			stone_added: holes.at (position) = old (holes.at (position) + 1)
+			result_is_consistent: holes.at (position) <= {GAME_CONSTANTS}.num_of_stones
 		end
 
 	add_stones_to_hole (additional_stones: INTEGER; position: INTEGER)
@@ -226,6 +270,7 @@ feature -- Status settings
 			holes.at (position) := holes.at (position) + additional_stones
 		ensure
 			additional_stones_added: holes.at (position) = old (holes.at (position)) + additional_stones
+			result_is_consistent: holes.at (position)<= {GAME_CONSTANTS}.num_of_stones
 		end
 
 	clear_hole (position: INTEGER)
@@ -246,6 +291,7 @@ feature -- Status settings
 			holes.at (position) := holes.at (position) - 1
 		ensure
 			stone_removed: holes.at (position) = old (holes.at (position)) - 1
+			stones_non_negative: holes.at (position) >= 0
 		end
 
 	add_stone_to_store (position: INTEGER)
@@ -256,6 +302,7 @@ feature -- Status settings
 			stores.at (position) := stores.at (position) + 1
 		ensure
 			stone_added: stores.at (position) = old (stores.at (position) + 1)
+			result_is_consistent: stores.at (position) <= {GAME_CONSTANTS}.num_of_stones
 		end
 
 	add_stones_to_store (additional_stones: INTEGER; position: INTEGER)
@@ -267,6 +314,7 @@ feature -- Status settings
 			stores.at (position) := stores.at (position) + additional_stones
 		ensure
 			additional_stones_added: stores.at (position) = old (stores.at (position)) + additional_stones
+			result_is_consistent: stores.at (position) <= {GAME_CONSTANTS}.num_of_stones
 		end
 
 	clear_store (position: INTEGER)
@@ -287,7 +335,9 @@ feature -- Status settings
 			stores.at (position) := stores.at (position) - 1
 		ensure
 			stone_removed: stores.at (position) = old (stores.at (position)) - 1
+			stones_non_negative: stores.at (position) >= 0
 		end
+
 
 feature {NONE} -- Implementative routines
 
@@ -298,10 +348,8 @@ feature {NONE} -- Implementative routines
 			-- List of all stores;
 
 invariant
---	num_of_holes_is_constant: holes.count = {GAME_CONSTANTS}.num_of_holes
---	num_of_stores_is_constant: stores.count = {GAME_CONSTANTS}.num_of_stores
---	holes_value_is_non_negative: across holes as curr_buc all curr_buc.item >= 0 end
---	store_value_is_non_negative: across stores as curr_store all curr_store.item >= 0 end
-	--	num_of_stones_is_constant: across stores as curr_store from sum := 0 loop sum := sum + curr_store.item end end
-
+	num_of_holes_is_constant: holes.count = {GAME_CONSTANTS}.num_of_holes
+	num_of_stores_is_constant: stores.count = {GAME_CONSTANTS}.num_of_stores
+	holes_value_is_non_negative: across holes as curr_buc all curr_buc.item >= 0 end
+	store_value_is_non_negative: across stores as curr_store all curr_store.item >= 0 end
 end
