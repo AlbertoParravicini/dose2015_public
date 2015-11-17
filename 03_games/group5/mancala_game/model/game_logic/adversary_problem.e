@@ -86,11 +86,15 @@ feature
 	value (state: ADVERSARY_STATE): INTEGER
 			-- Return the difference between the maximizing player' score and the minimizing player' score;
 		do
-			if state.index_of_current_player = 1 then
+			if not state.is_game_over then
 				Result := state.players.at (1).score - state.players.at (2).score
-			else
-				Result := state.players.at (2).score - state.players.at (1).score
+			elseif state.players.at (1).score > state.players.at (2).score then
+				Result := max_value - 1
+			elseif state.players.at (1).score < state.players.at (2).score then
+				Result := min_value + 1
+			else Result := 0
 			end
+
 		ensure then
 			result_is_consistent: Result >= min_value and Result <= max_value
 		end

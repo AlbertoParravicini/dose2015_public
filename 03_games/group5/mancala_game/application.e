@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 			create problem.make
 			create engine.make (problem)
 
-			engine.set_start_from_best (true)
+			engine.set_max_depth (3)
 
 			print(initial_state.out + "%N")
 
