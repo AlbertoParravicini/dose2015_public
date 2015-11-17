@@ -211,7 +211,7 @@ feature {NONE} -- Implementation Routines
 
 						players.i_th (parent.index_of_current_player).sum_to_score (opposite_hole_value (l_current_hole) + 1)
 						map.add_stones_to_store (opposite_hole_value (l_current_hole) + 1, index_of_current_player)
-						map.clear_hole (map.get_hole_value ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole))
+						map.clear_hole ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole)
 						map.clear_hole (l_current_hole)
 						print("!!! CAPTURE%N%N")
 
@@ -241,12 +241,42 @@ feature {NONE} -- Implementation Routines
 					l_sum_of_player_stones := l_sum_of_player_stones + map.get_hole_value (l_current_hole)
 					l_current_hole := l_current_hole + 1
 				end
+
 				print ("%N%N player " + players.index.out + " value: " + l_sum_of_player_stones.out + "%N%N")
+
 				if l_sum_of_player_stones = 0 then
 					end_condition := true
-					print("!!! END%N%N")
 				end
+
 				players.forth
+			end
+
+			if end_condition then
+
+				from
+					players.start
+				until
+					players.exhausted
+				loop
+
+					from
+						l_sum_of_player_stones := 0
+						l_current_hole := first_valid_player_hole (players.index)
+					until
+						l_current_hole > last_valid_player_hole (players.index)
+					loop
+						l_sum_of_player_stones := l_sum_of_player_stones + map.get_hole_value (l_current_hole)
+						map.clear_hole (l_current_hole)
+						l_current_hole := l_current_hole + 1
+					end
+
+					map.add_stones_to_store (l_sum_of_player_stones, (players.index \\ 2 ) + 1)
+					players.i_th ((players.index \\ 2 ) + 1).sum_to_score (l_sum_of_player_stones)
+
+					players.forth
+				end
+
+					print("!!! END%N%N")
 			end
 
 		ensure
