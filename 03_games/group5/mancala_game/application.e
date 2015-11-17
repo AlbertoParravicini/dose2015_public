@@ -15,7 +15,8 @@ feature {NONE} -- Initialization
 	make_and_launch
 		local
 			p: ARRAYED_LIST [PLAYER]
-			state, state2, state3, state4, state5, state6, state7: ADVERSARY_STATE
+			state: ADVERSARY_STATE
+			moves_array: ARRAYED_LIST[INTEGER]
 		do
 			create p.make (2)
 			p.extend (create {HUMAN_PLAYER}.make)
@@ -24,29 +25,22 @@ feature {NONE} -- Initialization
 			create state.make(p)
 			print(state.out)
 
-			create state2.make_from_parent_and_rule (state, VOID)
-			state2.move(3)
-			print(state2.out)
+				-- Sequence of game moves:
+			--create moves_array.make_from_array (<<3,4,7,5,7,1>>)
+			--create moves_array.make_from_array (<<1,10>>)
+			--create moves_array.make_from_array (<<3,4,8,12,4,7,3,10,2,8,1,7,3,12>>)
+			create moves_array.make_from_array (<<3,4,8,12,4,7>>)
 
-			create state3.make_from_parent_and_rule (state2, VOID)
-			state3.move(4)
-			print(state3.out)
+			from
+				moves_array.start
+			until
+				moves_array.exhausted
+			loop
+				state := create {ADVERSARY_STATE}.make_from_parent_and_rule (state, create {ACTION_SELECT}.make(moves_array.item))
+				print(state.out)
+				moves_array.forth
+			end
 
-			create state4.make_from_parent_and_rule (state3, VOID)
-			state4.move(7)
-			print(state4.out)
-
-			create state5.make_from_parent_and_rule (state4, VOID)
-			state5.move(5)
-			print(state5.out)
-
-			create state6.make_from_parent_and_rule (state5, VOID)
-			state6.move(7)
-			print(state6.out)
-
-			create state7.make_from_parent_and_rule (state6, VOID)
-			state7.move(1)
-			print(state7.out)
 		end
 
 	prepare

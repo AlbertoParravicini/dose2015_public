@@ -19,7 +19,7 @@ feature
 
 	make (hole: INTEGER)
 		require
-			hole_not_valid: hole > 0 and hole <= {GAME_CONSTANTS}.num_of_holes
+			hole_not_valid: hole >= 1 and hole <= {GAME_CONSTANTS}.num_of_holes
 		do
 			selection := hole
 		ensure
@@ -33,7 +33,7 @@ feature
 		do
 			Result := selection
 		ensure
-			Result > 0 and Result < {GAME_CONSTANTS}.num_of_holes
+			Result >= 1 and Result <= {GAME_CONSTANTS}.num_of_holes
 		end
 
 feature

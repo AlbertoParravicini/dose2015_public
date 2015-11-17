@@ -70,6 +70,8 @@ feature {NONE} -- Creation
 			score_is_zero: players.i_th (1).score = 0 and players.i_th (2).score = 0
 		end
 
+
+
 	make_from_parent_and_rule (a_parent: ADVERSARY_STATE; a_rule: ACTION_SELECT)
 		do
 
@@ -85,14 +87,17 @@ feature {NONE} -- Creation
 			set_rule_applied (a_rule)
 			set_map (create {GAME_MAP}.make_from_map(a_parent.map))
 
+				-- Perform action:
+			move (a_rule.get_selection)
+
 		ensure
-			-- rule_applied: rule_applied /= void
-			parent_not_void: parent /= void
+			rule_applied: rule_applied /= VOID
+			parent_not_void: parent /= VOID
 			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
-			map_is_copied: map.is_equal (a_parent.map)
-			score_is_mantained: players.i_th (1).score = a_parent.players.i_th (1).score and players.i_th (2).score = a_parent.players.i_th (2).score
 			name_is_mantained: equal(players.i_th (1).name, a_parent.players.i_th (1).name) and equal(players.i_th (2).name, a_parent.players.i_th (2).name)
 		end
+
+
 
 feature -- Implementation Variables
 
@@ -102,25 +107,57 @@ feature -- Implementation Variables
 	index_of_current_player: INTEGER
 		-- Adjourned each round.
 
-feature -- Implementation Routines
+
+
+feature {NONE} -- Implementation Routines
+
+	first_valid_player_hole (l_player_index: INTEGER): INTEGER
+	do
+		Result := 1 + ((l_player_index - 1) * ({GAME_CONSTANTS}.num_of_holes / players.count)).truncated_to_integer
+	end
+
+	last_valid_player_hole (l_player_index: INTEGER): INTEGER
+	do
+		Result := ({GAME_CONSTANTS}.num_of_holes / players.count).truncated_to_integer * (1 + (l_player_index - 1))
+	end
+
+	valid_player_hole (l_hole: INTEGER): BOOLEAN
+		do
+			if first_valid_player_hole (parent.index_of_current_player) <= l_hole and l_hole <= last_valid_player_hole (parent.index_of_current_player) then
+				Result := true
+			else
+				Result := false
+			end
+		end
+
+	opposite_hole_value (l_hole: INTEGER): INTEGER
+		do
+			Result := map.get_hole_value ({GAME_CONSTANTS}.num_of_holes + 1 - l_hole)
+		end
+
 
 	move(a_selected_hole: INTEGER)
 
 		require
 
-			minimal_valid_selection: 1 + ((parent.index_of_current_player - 1) * ({GAME_CONSTANTS}.num_of_holes / players.count)) <= a_selected_hole
-			maximal_valid_selection: a_selected_hole <= ({GAME_CONSTANTS}.num_of_holes / players.count) * (1 + (parent.index_of_current_player - 1))
+			valid_selection: valid_player_hole (a_selected_hole)
 			non_empty_hole: map.get_hole_value (a_selected_hole) >= 1
+			non_void_parent: parent /= VOID
 
 		local
 
 			l_number_of_stones: INTEGER
 			l_current_hole: INTEGER
 
+			l_sum_of_player_stones: INTEGER
+			end_condition: BOOLEAN
+
 		do
 
 			print("--------------------------%N" + parent.current_player.name + " moved: " + a_selected_hole.out + "%N--------------------------%N%N")
 
+
+			-- Perform move.
 			from
 
 				l_number_of_stones := map.get_hole_value (a_selected_hole)
@@ -137,7 +174,7 @@ feature -- Implementation Routines
 					-- Add one stone to store if current hole is the last player's hole
 					-- and there is at least one other stone.
 					-- If you run into your opponent's store, skip it.
-				if l_current_hole = ({GAME_CONSTANTS}.num_of_holes / players.count) * (1 + (parent.index_of_current_player - 1)) and l_number_of_stones >= 1 then
+				if l_current_hole = last_valid_player_hole (parent.index_of_current_player) and l_number_of_stones >= 1 then
 
 					map.add_stone_to_store (index_of_current_player)
 					players.i_th (parent.index_of_current_player).increment_score
@@ -170,10 +207,10 @@ feature -- Implementation Routines
 					-- CAPTURE:
 						-- If the last piece you drop is in an empty hole on your side,
 						-- you capture that piece and any pieces in the hole directly opposite.
-					if l_number_of_stones = 0 and map.get_hole_value (l_current_hole) = 1 then
+					if l_number_of_stones = 0 and map.get_hole_value (l_current_hole) = 1 and valid_player_hole (l_current_hole) and opposite_hole_value (l_current_hole) /= 0 then
 
-						players.i_th (parent.index_of_current_player).sum_to_score (map.get_hole_value ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole) + 1)
-						map.add_stones_to_store (map.get_hole_value ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole) + 1, index_of_current_player)
+						players.i_th (parent.index_of_current_player).sum_to_score (opposite_hole_value (l_current_hole) + 1)
+						map.add_stones_to_store (opposite_hole_value (l_current_hole) + 1, index_of_current_player)
 						map.clear_hole (map.get_hole_value ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole))
 						map.clear_hole (l_current_hole)
 						print("!!! CAPTURE%N%N")
@@ -181,10 +218,40 @@ feature -- Implementation Routines
 					end
 				end
 
+			end -- End perform move.
+
+
+			-- END
+				-- The game ends when all six spaces on one side of the Mancala board are empty.
+				-- The player who still has pieces on his side of the board when the game ends
+				-- captures all of those pieces.
+			from
+				players.start
+				end_condition := false
+			until
+				players.exhausted or end_condition
+			loop
+
+				from
+					l_sum_of_player_stones := 0
+					l_current_hole := first_valid_player_hole (players.index)
+				until
+					l_current_hole > last_valid_player_hole (players.index)
+				loop
+					l_sum_of_player_stones := l_sum_of_player_stones + map.get_hole_value (l_current_hole)
+					l_current_hole := l_current_hole + 1
+				end
+				print ("%N%N player " + players.index.out + " value: " + l_sum_of_player_stones.out + "%N%N")
+				if l_sum_of_player_stones = 0 then
+					end_condition := true
+					print("!!! END%N%N")
+				end
+				players.forth
 			end
 
 		ensure
 		end
+
 
 
 feature -- Status Report
@@ -213,6 +280,7 @@ feature -- Status Report
 
 			Result := players.i_th (index_of_current_player)
 		end
+
 
 
 feature -- Status report
@@ -254,6 +322,8 @@ feature -- Status report
 			mutual_exclusion: (is_max implies not is_min) and (not is_min implies is_max)
 		end
 
+
+
 feature -- Status setting
 
 	set_parent (new_parent: detachable like Current)
@@ -267,6 +337,8 @@ feature -- Status setting
 		do
 			rule_applied := new_rule
 		end
+
+
 
 feature -- Inherited
 
