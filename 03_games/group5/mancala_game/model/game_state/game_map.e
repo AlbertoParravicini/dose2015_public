@@ -221,10 +221,8 @@ feature -- Status Report
 		local
 			sum: INTEGER
 		do
-			across holes as curr_hole from sum := 0 loop sum := sum + curr_hole.item end
-			across stores as curr_store loop sum := sum + curr_store.item end
-
-			Result := sum
+			across holes as curr_hole from Result := 0 loop Result := Result + curr_hole.item end
+			across stores as curr_store loop Result := Result + curr_store.item end
 		ensure
 			result_is_consistent: Result = {GAME_CONSTANTS}.num_of_stones
 		end

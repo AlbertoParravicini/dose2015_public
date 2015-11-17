@@ -33,7 +33,9 @@ feature {NONE} -- Initialization
 			create initial_state.make (players)
 			create problem.make
 			create engine.make (problem)
-			
+
+			engine.set_start_from_best (true)
+
 			print(initial_state.out + "%N")
 
 			engine.perform_search (initial_state)
