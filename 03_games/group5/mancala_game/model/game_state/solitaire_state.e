@@ -38,7 +38,7 @@ feature
 			-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
 
 		do
-			create player.make_with_initial_values ("pippo", 0)
+		create player.make_with_initial_values ("pippo", 0)
 			create map.make
 
 				-- Every hole has to contain at least one stone;
@@ -70,13 +70,19 @@ feature
 			score_is_zero: player.score = 0
 		end
 
-	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION; new_map: GAME_MAP; new_hole: INTEGER)
+	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION)
 		do
 			set_parent (a_parent)
-			player := create {HUMAN_PLAYER}.make_with_initial_values (a_parent.player.name, a_parent.player.score)
-			set_rule_applied (a_rule)
-			set_map (new_map)
-			set_selected_hole (new_hole)
+					player := create {HUMAN_PLAYER}.make_with_initial_values (a_parent.player.name, a_parent.player.score)
+					set_rule_applied (a_rule)
+					set_map (create {GAME_MAP}.make_from_map (a_parent.map))
+
+					-- Automatically update the selected_hole if the action is an ACTION_SELECT
+					if attached {ACTION_SELECT} a_rule as rule_select then
+						set_selected_hole(rule_select.get_selection)
+					else
+						set_selected_hole (a_parent.selected_hole)
+					end
 		ensure
 			rule_applied: rule_applied /= void
 			parent_not_void: parent /= void
@@ -84,6 +90,7 @@ feature
 			map_is_copied: map.is_equal (a_parent.map)
 			score_is_mantained: player.score = a_parent.player.score
 			name_is_mantained: player.name = a_parent.player.name
+
 		end
 
 feature -- Status setting
@@ -218,8 +225,8 @@ feature -- Status report
 			placed_in_empty_hole: BOOLEAN
 			no_score_increase: BOOLEAN
 		do
-			-- The real evaluation is done only after the first movementa has been done;
-			-- The initial state and the second state (where a hole is selected) are never final states;
+				-- The real evaluation is done only after the first movementa has been done;
+				-- The initial state and the second state (where a hole is selected) are never final states;
 			if (parent /= void and then not map.is_equal (parent.map)) then
 				placed_in_empty_hole := (map.get_hole_value (selected_hole) <= 1)
 				no_score_increase := player.score = parent.player.score
@@ -277,4 +284,5 @@ feature -- Inherited
 
 invariant
 	score_consistent: map.sum_of_stores_token = player.score
+
 end

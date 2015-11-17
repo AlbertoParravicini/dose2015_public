@@ -60,7 +60,7 @@ feature
 				until
 					current_selection > {GAME_CONSTANTS}.num_of_holes
 				loop
-					successors.extend (create {SOLITAIRE_STATE}.make_from_parent_and_rule (a_state, create {ACTION_SELECT}.make (current_selection), create {GAME_MAP}.make_from_map (a_state.map), current_selection))
+					successors.extend (create {SOLITAIRE_STATE}.make_from_parent_and_rule (a_state, create {ACTION_SELECT}.make (current_selection)))
 					current_selection := current_selection + 1
 				end -- End Loop
 
@@ -70,7 +70,7 @@ feature
 
 					-- Rotate clockwise;
 					-- Create a new state whose map is equal to the one of the current state;
-				create successor_1.make_from_parent_and_rule (a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise), create {GAME_MAP}.make_from_map (a_state.map), a_state.selected_hole)
+				create successor_1.make_from_parent_and_rule (a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
 
 					-- Clockwise movement;
 					-- Empties the current_hole, distributes the stones clockwise, updates the score, updates the current_hole;
@@ -78,17 +78,18 @@ feature
 
 					-- Rotate counter-clockwise;
 					-- Create a new state whose map is equal to the one of the current state;
-				create successor_2.make_from_parent_and_rule (a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise), create {GAME_MAP}.make_from_map (a_state.map), a_state.selected_hole)
+				create successor_2.make_from_parent_and_rule (a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
 
 					-- Counter-clockwise movement;
 					-- Empties the current_hole, distributes the stones counter-clockwise, updates the score, updates the current_hole;
 				successor_2.move_counter_clockwise
+
+				
 				successors.extend (successor_1)
 				successors.extend (successor_2)
 			end -- End external if
 
 			Result := successors
-
 		ensure then
 			at_most_tot_successors: Result.count <= {GAME_CONSTANTS}.num_of_holes
 		end
@@ -110,7 +111,6 @@ feature
 			-- it doesn't really provide a fast convergence to the solution :(
 		do
 			Result := {GAME_CONSTANTS}.num_of_stones - state.player.score
-
 		ensure then
 			result_is_non_negative: Result >= 0
 			result_is_zero_in_successful_state: (Result = 0 implies is_successful (state)) and then (is_successful (state) implies Result = 0)
@@ -130,4 +130,5 @@ feature
 		ensure then
 			result_is_consistent: (Result = 0 implies state.parent = void) and (state.parent = void implies Result = 0)
 		end
+
 end

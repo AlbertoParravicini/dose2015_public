@@ -127,7 +127,7 @@ feature -- Status Report
 
 	out: STRING
 		do
-			Result := "[Name: " + name.out + ", Score: " + score.out + "]"
+			Result := name.out + ", Score: " + score.out
 		end
 
 invariant
