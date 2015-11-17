@@ -154,7 +154,7 @@ feature {NONE} -- Implementation Routines
 
 		do
 
-			print("--------------------------%N" + parent.current_player.name + " moved: " + a_selected_hole.out + "%N--------------------------%N%N")
+		--	print("--------------------------%N" + parent.current_player.name + " moved: " + a_selected_hole.out + "%N--------------------------%N%N")
 
 
 			-- Perform move.
@@ -188,7 +188,7 @@ feature {NONE} -- Implementation Routines
 				if l_number_of_stones = 0 then
 
 					current_player := prev_player
-					print("!!! FREE TURN%N%N")
+	--				print("!!! FREE TURN%N%N")
 
 				else
 
@@ -213,7 +213,7 @@ feature {NONE} -- Implementation Routines
 						map.add_stones_to_store (opposite_hole_value (l_current_hole) + 1, index_of_current_player)
 						map.clear_hole ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole)
 						map.clear_hole (l_current_hole)
-						print("!!! CAPTURE%N%N")
+	--					print("!!! CAPTURE%N%N")
 
 					end
 				end
@@ -274,7 +274,7 @@ feature {NONE} -- Implementation Routines
 					players.forth
 				end
 
-					print("!!! END%N%N")
+	--				print("!!! END%N%N")
 			end
 
 		ensure
@@ -287,6 +287,11 @@ feature -- Status Report
 	is_game_over: BOOLEAN
 		-- Is the game over?
 		do
+			if (map.sum_of_stores_token = {GAME_CONSTANTS}.num_of_stones) or (players.at (1).score > {GAME_CONSTANTS}.num_of_stones // 2)
+				or (players.at (2).score > {GAME_CONSTANTS}.num_of_stones // 2)  then
+					Result := true
+			else Result := false
+			end
 		end
 
 
