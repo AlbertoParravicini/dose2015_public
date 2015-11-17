@@ -33,7 +33,7 @@ feature
 		do
 			Result := selection
 		ensure
-			Result > 0 and Result < {GAME_CONSTANTS}.num_of_holes
+			Result > 0 and Result <= {GAME_CONSTANTS}.num_of_holes
 		end
 
 feature

@@ -21,13 +21,18 @@ feature {NONE} -- Initialization
 			initial_state: SOLITAIRE_STATE
 			current_state: ADVERSARY_STATE
 			players: ARRAYED_LIST[PLAYER]
-
 			p: ARRAYED_LIST [PLAYER]
 			state, state2: ADVERSARY_STATE
 			path: LIST [SOLITAIRE_STATE]
 			i: INTEGER
-
+			state3, state4: SOLITAIRE_STATE
 		do
+			create p.make (2)
+			p.extend (create {HUMAN_PLAYER}.make)
+			p.extend (create {AI_PLAYER}.make)
+
+
+
 			create problem.make
 			create engine.make (problem)
 
@@ -62,6 +67,7 @@ feature {NONE} -- Initialization
 					engine.reset_engine
 
 
+
 					-- engine.set_max_depth (curr_depth)
 				end
 
@@ -88,6 +94,10 @@ feature {NONE} -- Initialization
 --				print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
 --				current_state := engine.obtained_successor
 --			end
+
+--			print(state.index_of_current_player.out + "%N")
+--			print (problem2.value (state).out)
+
 		end
 
 
