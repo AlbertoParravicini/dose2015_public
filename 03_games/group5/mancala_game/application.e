@@ -14,93 +14,88 @@ feature {NONE} -- Initialization
 
 	make_and_launch
 		local
-			players: ARRAYED_LIST [PLAYER]
-			state: ADVERSARY_STATE
-			moves_array: ARRAYED_LIST[INTEGER]
-			engine: NEGASCOUT_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
-			problem: ADVERSARY_PROBLEM
-			current_state: ADVERSARY_STATE
-			initial_state: ADVERSARY_STATE
-
-			engine_s: CYCLE_CHECKING_DEPTH_FIRST_SEARCH_ENGINE[ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
+			mode_selected: BOOLEAN
+			algorithm_selected: BOOLEAN
 			problem_s: SOLITAIRE_PROBLEM
-			initial_state_s: SOLITAIRE_STATE
-			path: LIST [SOLITAIRE_STATE]
-			i: INTEGER
+			problem_a: ADVERSARY_PROBLEM
+			engine_s: SEARCH_ENGINE[ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
+			engine_a: ADVERSARY_SEARCH_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
+			initial_state_a: ADVERSARY_STATE
+			players: ARRAYED_LIST [PLAYER]
 		do
-			create players.make (2)
-			players.extend (create {HUMAN_PLAYER}.make)
-			players.extend (create {AI_PLAYER}.make)
-
--- 					AI VS AI GAME:
----------------------------------------------------------------
-			create players.make (2)
-			players.extend (create {HUMAN_PLAYER}.make_with_initial_values("pippo", 0))
-			players.extend (create {HUMAN_PLAYER}.make_with_initial_values("pluto", 0))
-			create initial_state.make (players)
-			create problem.make
-			create engine.make (problem)
-
-			engine.set_max_depth (3)
-
-			print(initial_state.out + "%N")
-
-			engine.perform_search (initial_state)
-			print ("Obtained value: " + engine.obtained_value.out + "%N")
-			print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
+--------------------------------------------------------------------------------------------------------
+			print ("WELCOME TO MANCALA%N%N")
 			from
-				current_state := engine.obtained_successor
+				mode_selected := false
+				print ("Select a game mode:%N 1: Solitaire%N 2: Adversary%N")
 			until
-				problem.is_end (current_state)
+				mode_selected = true
 			loop
-				engine.reset_engine
-				engine.perform_search (current_state)
-				print ("Obtained value: " + engine.obtained_value.out + "%N")
-				print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
-				current_state := engine.obtained_successor
+				io.read_line
+				io.last_string.to_lower
+				if io.last_string.is_equal ("1") or io.last_string.is_equal ("solitaire") then
+					create problem_s.make
+					mode_selected := true
+				elseif io.last_string.is_equal ("2") or io.last_string.is_equal ("adversary") then
+					create problem_a.make
+					create players.make (2)
+					players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("pippo", 0))
+					players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("pluto", 0))
+					create initial_state_a.make (players)
+					mode_selected := true
+				else
+					print ("ERROR: " + io.last_string + " is not a valid game mode!%N")
+				end
 			end
 
+--------------------------------------------------------------------------------------------------------
+			if problem_s /= void then
+				from
+					algorithm_selected := false
+					print ("%NSelect a single state search algorithm:%N 1.Cycle checking depth fist search%N 2. A*%N Other algorithms coming soon...%N")
+				until
+					algorithm_selected = true
+				loop
+					io.read_line
+					io.last_string.to_lower
+					if io.last_string.is_equal ("1") then
+						engine_s := create {CYCLE_CHECKING_DEPTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]}.make (problem_s)
+						algorithm_selected := true
+					elseif io.last_string.is_equal ("2") then
+						engine_s := create {A_STAR_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]}.make (problem_s)
+						algorithm_selected := true
+					else
+						print ("ERROR: " + io.last_string + " is not a valid algorithm!%N")
+					end
+				end
+			elseif problem_a /= void then
+				from
+					algorithm_selected := false
+					print ("%NSelect an adversary search algorithm:%N 1. Minimax%N 2. Minimax with Alfa-Beta pruning%N 3. Negascout%N")
+				until
+					algorithm_selected = true
+				loop
+					io.read_line
+					io.last_string.to_lower
+					if io.last_string.is_equal ("1") then
+						engine_a := create {MINIMAX_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem_a)
+						algorithm_selected := true
+					elseif io.last_string.is_equal ("2") then
+						engine_a := create {MINIMAX_AB_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem_a)
+						algorithm_selected := true
+					elseif io.last_string.is_equal ("3") then
+						engine_a := create {NEGASCOUT_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem_a)
+						algorithm_selected := true
+					else
+						print ("ERROR: " + io.last_string + " is not a valid algorithm!%N")
+					end
+				end
+			else
+				print ("ERROR: WHAT THE FUCK IS GOING ON?%N")
+			end
+--------------------------------------------------------------------------------------------------------
 
---					SOLITAIRE:
----------------------------------------------------------------
 
---		create problem_s.make
---			create engine_s.make (problem_s)
-
---			print (problem_s.initial_state.out + "%N%N")
-
---			engine_s.perform_search
-
-
-
---				if (engine_s.is_search_successful) then
---					print ("solution found: " + engine_s.obtained_solution.out + " sat depth " + engine_s.path_to_obtained_solution.count.out + ".%N")
---					print ("visited states: " + engine_s.nr_of_visited_states.out + "%N")
---					print ("path to solution: %N")
---					from
---						i := 1
---						path := engine_s.path_to_obtained_solution
---					until
---						i > path.count
---					loop
---						if path.i_th (i).rule_applied /= Void then
---								-- skips the first state that has void rule
---							print ("    " + path.i_th (i).rule_applied.out + "%N")
---						end
---						print (path.i_th (i).out + "%N")
---						i := i + 1
---					end
-
---				else
---					print ("no solution found%N")
---					print ("visited states: " + engine_s.nr_of_visited_states.out + "%N")
---				--	curr_depth := curr_depth + 1
---					engine_s.reset_engine
-
-
-
---					-- engine.set_max_depth (curr_depth)
---				end
 		end
 
 	prepare
@@ -109,17 +104,17 @@ feature {NONE} -- Initialization
 			-- avoid to violate the invariant of class EV_APPLICATION.
 		do
 				-- create and initialize the first window.
-			--create first_window
+				--create first_window
 
 				-- Show the first window.
 				--| TODO: Remove this line if you don't want the first
 				--|       window to be shown at the start of the program.
-			--first_window.show
+				--first_window.show
 		end
 
 feature {NONE} -- Implementation
 
-	--first_window: MAIN_WINDOW
-			-- Main window.
+		--first_window: MAIN_WINDOW
+		-- Main window.
 
 end -- class APPLICATION
