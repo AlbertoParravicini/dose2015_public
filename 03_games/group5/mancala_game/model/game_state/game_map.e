@@ -177,7 +177,7 @@ feature -- Status Report
 
 	out: STRING
 			--    12 11 10 09 08 07
-			-- S1				    S2
+			-- S2				    S1
 			--    01 02 03 04 05 06
 		local
 			output: STRING
@@ -186,7 +186,7 @@ feature -- Status Report
 				-- Print the top row of holes;
 			from
 				holes.finish
-				output.append ("   ")
+				output.append ("  ")
 			until
 				holes.index <= {GAME_CONSTANTS}.num_of_holes // 2
 			loop
@@ -195,13 +195,13 @@ feature -- Status Report
 			end
 				-- Print the stores;
 			from
-				stores.start
+				stores.finish
 				output.append ("%N ")
 			until
-				stores.index > {GAME_CONSTANTS}.num_of_stores
+				stores.exhausted
 			loop
 				output.append (stores.item.out + "             ")
-				stores.forth
+				stores.back
 			end
 				-- Print the bottom row of holes;
 			from
