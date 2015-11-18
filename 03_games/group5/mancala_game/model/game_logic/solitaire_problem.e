@@ -147,32 +147,32 @@ feature
 			l_starting_hole := state.selected_hole
 			l_value := state.map.get_hole_value (l_starting_hole)
 			l_target_hole := ((l_starting_hole + l_value) // {GAME_CONSTANTS}.num_of_holes) + 1
-			print(state.map.out)
-			print("%N start="+l_starting_hole.out+" value="+l_value.out)
+--			print(state.map.out)
+--			print("%N start="+l_starting_hole.out+" value="+l_value.out)
 			if (rotation = (create {ENUM_ROTATE}).clockwise) then
-				print(" rotation=clock%N")
+--				print(" rotation=clock%N")
 				if ((l_value = {GAME_CONSTANTS}.num_of_holes) and then (not (l_target_hole = (({GAME_CONSTANTS}.num_of_holes / 2)+1)) and not (l_target_hole = 1))) then
 						-- Moved back to starting position, not after a store, the hole is empty
-						print("DEBUG: Clockwise && 12 | start="+l_starting_hole.out+" target="+l_target_hole.out+"%N")
+--						print("DEBUG: Clockwise && 12 | start="+l_starting_hole.out+" target="+l_target_hole.out+"%N")
 					l_game_over := true
 				elseif ((l_value < {GAME_CONSTANTS}.num_of_holes) and then ((l_target_hole = (({GAME_CONSTANTS}.num_of_holes / 2)+1) and state.map.is_hole_empty (({GAME_CONSTANTS}.num_of_holes / 2).floor)) or ((l_target_hole = 1 and state.map.is_hole_empty ({GAME_CONSTANTS}.num_of_holes))))) then
 						-- Moved to a hole after the store, i need to check if the hole before the store is empty
-						print("DEBUG: Clockwise && OTHER | start="+l_starting_hole.out+" target="+l_target_hole.out+"%N")
+--						print("DEBUG: Clockwise && OTHER | start="+l_starting_hole.out+" target="+l_target_hole.out+"%N")
 					l_game_over := true
 				end
 			else
-				print(" rotation=counter_clock%N")
+--				print(" rotation=counter_clock%N")
 				if ((l_value = {GAME_CONSTANTS}.num_of_holes) and then (not (l_target_hole = ({GAME_CONSTANTS}.num_of_holes / 2) ) and not (l_target_hole = {GAME_CONSTANTS}.num_of_holes))) then
 						-- Moved back to starting position, not after a store, the hole is empty
-						print("DEBUG: Counter && 12 | start="+l_starting_hole.out+" target="+l_target_hole.out+"%N")
+--						print("DEBUG: Counter && 12 | start="+l_starting_hole.out+" target="+l_target_hole.out+"%N")
 					l_game_over := true
 				elseif ((l_value < {GAME_CONSTANTS}.num_of_holes) and then ((l_target_hole = ({GAME_CONSTANTS}.num_of_holes / 2)  and state.map.is_hole_empty (({GAME_CONSTANTS}.num_of_holes / 2).floor +1)) or ((l_target_hole = {GAME_CONSTANTS}.num_of_holes) and state.map.is_hole_empty (1)))) then
 						-- Moved to a hole after a store, i need to check if the hole before the store is empty
-						print("DEBUG: Counter && OTHER | start="+l_starting_hole.out+" target="+l_target_hole.out+"%N")
+--						print("DEBUG: Counter && OTHER | start="+l_starting_hole.out+" target="+l_target_hole.out+"%N")
 					l_game_over := true
 				end
 			end
-			print("DEBUG: "+l_game_over.out+"%N")
+--			print("DEBUG: "+l_game_over.out+"%N")
 			Result := l_game_over
 		end
 
