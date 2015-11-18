@@ -18,12 +18,14 @@ feature {NONE} -- Initialization
 			algorithm_selected: BOOLEAN
 			problem_s: SOLITAIRE_PROBLEM
 			problem_a: ADVERSARY_PROBLEM
-			engine_s: SEARCH_ENGINE[ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
+			engine_s: SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
 			engine_a: ADVERSARY_SEARCH_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
 			initial_state_a: ADVERSARY_STATE
 			players: ARRAYED_LIST [PLAYER]
+			current_state_s: SOLITAIRE_STATE
+			first_move_done: BOOLEAN
 		do
---------------------------------------------------------------------------------------------------------
+				--------------------------------------------------------------------------------------------------------
 			print ("WELCOME TO MANCALA%N%N")
 			from
 				mode_selected := false
@@ -48,7 +50,7 @@ feature {NONE} -- Initialization
 				end
 			end
 
---------------------------------------------------------------------------------------------------------
+				--------------------------------------------------------------------------------------------------------
 			if problem_s /= void then
 				from
 					algorithm_selected := false
@@ -93,9 +95,60 @@ feature {NONE} -- Initialization
 			else
 				print ("ERROR: WHAT THE FUCK IS GOING ON?%N")
 			end
---------------------------------------------------------------------------------------------------------
+				--------------------------------------------------------------------------------------------------------
 
+				---------------SOLITAIRE--------------------------------------------------------------------------------
+			if problem_s /= void then
+				print ("SOLITAIRE MANCALA%N")
+				print (problem_s.initial_state.out)
 
+					-- First move
+				from
+					current_state_s := problem_s.initial_state
+					first_move_done := false
+				until
+					first_move_done = true
+				loop
+					print ("Enter a move between 1 and " + {GAME_CONSTANTS}.num_of_holes.out + "%N")
+					io.read_line
+					if io.last_string.is_integer and then (io.last_string.to_integer >= 1 and io.last_string.to_integer <= {GAME_CONSTANTS}.num_of_holes) then
+						current_state_s := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state_s, create {ACTION_SELECT}.make (io.last_string.to_integer))
+						first_move_done := true
+					else
+						print ("ERROR: " + io.last_string + " isn't a valid move!%N")
+					end
+				end
+
+				print (current_state_s.out + "%N%N")
+
+					-- Other moves
+				from
+
+				until
+					problem_s.is_successful (current_state_s)
+				loop
+					print ("Do you want to move clockwise (A) or counter-clockwise (D)?%N")
+					io.read_line
+					io.last_string.to_lower
+					if io.last_string.is_equal ("a") then
+						current_state_s := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state_s, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
+						current_state_s.move_clockwise
+						print ("%NMove chosen: clockwise%N" + current_state_s.out + "%N%N")
+					elseif io.last_string.is_equal ("d") then
+						current_state_s := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state_s, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
+						current_state_s.move_counter_clockwise
+						print ("%NMove chosen: counter-clockwise%N" + current_state_s.out + "%N%N")
+					else
+						print ("ERROR: " + io.last_string + " isn't a valid move!%N")
+					end
+				end
+
+				if current_state_s.is_game_over then
+					print ("GAME OVER!%N")
+				else
+					print ("YOU WON!%N")
+				end
+			end
 		end
 
 	prepare
