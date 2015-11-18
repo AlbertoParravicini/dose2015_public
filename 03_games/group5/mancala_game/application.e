@@ -25,6 +25,8 @@ feature {NONE} -- Initialization
 			current_state_s: SOLITAIRE_STATE
 			first_move_done: BOOLEAN
 			i: INTEGER
+
+			current_state_a: ADVERSARY_STATE
 		do
 				--------------------------------------------------------------------------------------------------------
 			print ("WELCOME TO MANCALA%N%N")
@@ -173,14 +175,12 @@ feature {NONE} -- Initialization
 						print ("%NRotation: Counter-Clockwise%N" + current_state_s.out + "%N%N")
 					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
 						print ("Searching for the best move...%N")
-
 						current_state_s.set_parent (void)
 						current_state_s.set_rule_applied (void)
 						problem_s.make_with_initial_state (current_state_s)
 						engine_s.set_problem (problem_s)
 						engine_s.reset_engine
 						engine_s.perform_search
-
 						if engine_s.is_search_successful then
 							print ("The search was successful!%N%N")
 							current_state_s := engine_s.path_to_obtained_solution.at (2)
@@ -196,7 +196,6 @@ feature {NONE} -- Initialization
 						engine_s.set_problem (problem_s)
 						engine_s.reset_engine
 						engine_s.perform_search
-
 						if engine_s.is_search_successful then
 							print ("The search was successful!%N%N")
 							from
@@ -208,7 +207,6 @@ feature {NONE} -- Initialization
 								if engine_s.path_to_obtained_solution.i_th (i).rule_applied /= void then
 									print (engine_s.path_to_obtained_solution.i_th (i).rule_applied.out + "%N")
 								end
-
 								print (engine_s.path_to_obtained_solution.i_th (i).out + "%N%N")
 								engine_s.path_to_obtained_solution.forth
 								i := i + 1
@@ -226,6 +224,57 @@ feature {NONE} -- Initialization
 				else
 					print ("YOU WON!%N")
 				end
+
+
+				--------------------------------------------------------------------------------------------------------
+
+				---------------ADVERSARY GAME---------------------------------------------------------------------------
+
+
+			elseif problem_a /= void then
+				print ("ADVERSARY MANCALA%N")
+				print (initial_state_a.out)
+
+				from
+					current_state_a := initial_state_a
+				until
+					problem_a.is_end (current_state_a)
+				loop
+					if current_state_a.index_of_current_player = 1 then
+						print ("It's your turn: insert which hole you want to empty, from 1 to " + ({GAME_CONSTANTS}.num_of_holes // 2).out + "%N%N")
+
+						io.read_line
+						io.last_string.to_lower
+
+						if io.last_string.is_integer and then (io.last_string.to_integer > 0 and io.last_string.to_integer <= {GAME_CONSTANTS}.num_of_holes // 2) then
+							current_state_a := create {ADVERSARY_STATE}.make_from_parent_and_rule (current_state_a, create {ACTION_SELECT}.make (io.last_string.to_integer))
+							print (current_state_a.out + "%N")
+						else
+							print ("ERROR: " + io.last_string + " isn't a valid move!%N")
+						end
+					else
+						engine_a.reset_engine
+						engine_a.perform_search (current_state_a)
+						print (engine_a.obtained_successor.out + "%N")
+						current_state_a := engine_a.obtained_successor
+					end
+				end
+
+				print ("%N%NGG%N")
+				if current_state_a.players.at (1).score > current_state_a.players.at (2).score then
+					print (current_state_a.players.at (1).name + " WON!%N")
+				elseif current_state_a.players.at (1).score < current_state_a.players.at (2).score then
+					print (current_state_a.players.at (2).name + " WON!%N")
+				else
+					print ("IT'S A DRAW!%N")
+				end
+
+
+
+
+
+			else
+				print ("ERROR: WHAT THE FUCK IS GOING ON?%N")
 			end
 		end
 
