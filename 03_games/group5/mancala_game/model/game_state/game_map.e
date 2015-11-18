@@ -187,7 +187,7 @@ feature -- Status Report
 				-- Print the top row of holes;
 			from
 				holes.finish
-				output.append ("  ")
+				output.append ("   ")
 			until
 				holes.index <= {GAME_CONSTANTS}.num_of_holes // 2
 			loop

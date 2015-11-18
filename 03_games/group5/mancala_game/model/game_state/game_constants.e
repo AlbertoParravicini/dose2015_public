@@ -14,13 +14,13 @@ create
 
 feature -- Access
 
-	num_of_holes: INTEGER = 6
+	num_of_holes: INTEGER = 12
 		-- The number of holes in the map;
 
 	num_of_stores: INTEGER = 2
 		-- The number of stores in the map;
 
-	num_of_stones: INTEGER = 48
+	num_of_stones: INTEGER = 24
 		-- The number of stones used in the game;
 
 invariant

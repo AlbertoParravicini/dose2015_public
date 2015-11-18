@@ -152,8 +152,6 @@ feature {NONE} -- Implementation Routines
 			l_sum_of_player_stones: INTEGER
 			end_condition: BOOLEAN
 
-			last_player_index: INTEGER
-
 		do
 
 		--	print("--------------------------%N" + parent.current_player.name + " moved: " + a_selected_hole.out + "%N--------------------------%N%N")
@@ -230,7 +228,6 @@ feature {NONE} -- Implementation Routines
 			from
 				players.start
 				end_condition := false
-				last_player_index := 0
 			until
 				players.exhausted or end_condition
 			loop
@@ -248,7 +245,7 @@ feature {NONE} -- Implementation Routines
 				if l_sum_of_player_stones = 0 then
 					end_condition := true
 				end
-				last_player_index := last_player_index + 1
+
 				players.forth
 			end
 
@@ -271,8 +268,8 @@ feature {NONE} -- Implementation Routines
 						l_current_hole := l_current_hole + 1
 					end
 
-					map.add_stones_to_store (l_sum_of_player_stones, (last_player_index )\\2 + 1)
-					players.i_th ((last_player_index )\\2 + 1).sum_to_score (l_sum_of_player_stones)
+					map.add_stones_to_store (l_sum_of_player_stones, players.index)
+					players.i_th (players.index).sum_to_score (l_sum_of_player_stones)
 
 					players.forth
 				end
@@ -380,7 +377,7 @@ feature -- Inherited
 
 	out: STRING
 		do
-			Result := "- Turn of: " + current_player.out + "%N- MAP: %N " + map.out + "%N%N"
+			Result := "- Turn of: " + current_player.out + "%N- MAP: %N" + map.out + "%N%N"
 		end
 
 invariant
