@@ -123,10 +123,10 @@ feature -- Status setting
 					stones_to_distribute := stones_to_distribute - 1
 
 						-- Example: selected_hole = 7
-				elseif (selected_hole = (({GAME_CONSTANTS}.num_of_holes / 2) + 1)) then
+				elseif (selected_hole = (({GAME_CONSTANTS}.num_of_holes // 2) + 1)) then
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
-						map.add_stone_to_store (2)
+						map.add_stone_to_store (1)
 						player.increment_score
 						stones_to_distribute := stones_to_distribute - 1
 					else
@@ -147,7 +147,7 @@ feature -- Status setting
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
 							--print(player.score.out)
-						map.add_stone_to_store (1)
+						map.add_stone_to_store (2)
 						player.increment_score
 							--print(" " + player.score.out + "%N")
 						stones_to_distribute := stones_to_distribute - 1
@@ -182,7 +182,7 @@ feature -- Status setting
 				elseif selected_hole = ({GAME_CONSTANTS}.num_of_holes) then
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
-						map.add_stone_to_store (1)
+						map.add_stone_to_store (2)
 						player.increment_score
 						stones_to_distribute := stones_to_distribute - 1
 					else
@@ -202,7 +202,7 @@ feature -- Status setting
 				elseif selected_hole = {GAME_CONSTANTS}.num_of_holes // 2 then
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
-						map.add_stone_to_store (2)
+						map.add_stone_to_store (1)
 						player.increment_score
 						stones_to_distribute := stones_to_distribute - 1
 					else
@@ -279,7 +279,7 @@ feature -- Inherited
 
 	out: STRING
 		do
-			Result := "Selected hole: " + selected_hole.out + "%N%N Map: " + map.out + "%N"
+			Result := "%N---------------------------------------%NSelected hole: " + selected_hole.out + "%N%NMap: %N " + map.out + "%N"
 		end
 
 invariant

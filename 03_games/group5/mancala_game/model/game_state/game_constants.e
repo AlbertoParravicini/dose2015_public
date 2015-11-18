@@ -14,7 +14,7 @@ create
 
 feature -- Access
 
-	num_of_holes: INTEGER = 12
+	num_of_holes: INTEGER = 6
 		-- The number of holes in the map;
 
 	num_of_stores: INTEGER = 2

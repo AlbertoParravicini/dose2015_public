@@ -28,46 +28,29 @@ feature
 
 	get_successors (a_state: ADVERSARY_STATE): LIST [ADVERSARY_STATE]
 		local
-			successors: LINKED_LIST[ADVERSARY_STATE]
+			successors: LINKED_LIST [ADVERSARY_STATE]
 			current_successor: ADVERSARY_STATE
 			i: INTEGER
+			selected_move: INTEGER
 		do
 			create successors.make
-
 			if not a_state.is_game_over then
-					-- The maximizing player is identified with player_1;
-				if a_state.is_max then
-					from
-						i := 1
-					until
-						i > {GAME_CONSTANTS}.num_of_holes // 2
-					loop
-							-- If the current hole is empty no move can be performed from it;
-						if a_state.map.get_hole_value (i) > 0 then
-							create current_successor.make_from_parent_and_rule (a_state, create {ACTION_SELECT}.make (i))
-							successors.extend (current_successor)
-						end
-						i := i + 1
-					end
+				from
+					i := 1
+				until
+					i > {GAME_CONSTANTS}.num_of_holes // 2
+				loop
+						-- If the player is 1, then selected_move = i, else if player is 2, selected_move = i + offset
+					selected_move := i + ({GAME_CONSTANTS}.num_of_holes // 2) * (a_state.index_of_current_player - 1)
 
-					-- The minimizing player is identified with player_2;
-				else
-					from
-						i := ({GAME_CONSTANTS}.num_of_holes // 2) + 1
-					until
-						i > {GAME_CONSTANTS}.num_of_holes
-					loop
-							-- If the current hole is empty no move can be performed from it;
-						if a_state.map.get_hole_value (i) > 0 then
-							create current_successor.make_from_parent_and_rule (a_state, create {ACTION_SELECT}.make (i))
-							--	current_successor.move (i)
-							successors.extend (current_successor)
-						end
-						i := i + 1
+						-- If the current hole is empty no move can be performed from it;
+					if a_state.map.get_hole_value (selected_move) > 0 then
+						create current_successor.make_from_parent_and_rule (a_state, create {ACTION_SELECT}.make (selected_move))
+						successors.extend (current_successor)
 					end
+					i := i + 1
 				end
 			end
-
 			Result := successors
 		ensure then
 			at_most_tot_successors: Result.count <= {GAME_CONSTANTS}.num_of_holes // 2
@@ -86,10 +69,14 @@ feature
 	value (state: ADVERSARY_STATE): INTEGER
 			-- Return the difference between the maximizing player' score and the minimizing player' score;
 		do
-			if state.index_of_current_player = 1 then
+			if not state.is_game_over then
 				Result := state.players.at (1).score - state.players.at (2).score
+			elseif state.players.at (1).score > state.players.at (2).score then
+				Result := max_value - 1
+			elseif state.players.at (1).score < state.players.at (2).score then
+				Result := min_value + 1
 			else
-				Result := state.players.at (2).score - state.players.at (1).score
+				Result := 0
 			end
 		ensure then
 			result_is_consistent: Result >= min_value and Result <= max_value

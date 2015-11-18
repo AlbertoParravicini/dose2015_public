@@ -404,7 +404,7 @@ feature -- Status setting
 		do
 			start_from_best := choice
 		ensure
-			order_moves_set: order_moves = choice
+			order_moves_set: start_from_best = choice
 			routine_invariant: equal (problem, old problem) and old max_depth = max_depth and old order_moves = order_moves
 		end
 
