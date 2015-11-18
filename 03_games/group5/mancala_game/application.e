@@ -34,73 +34,73 @@ feature {NONE} -- Initialization
 
 -- 					AI VS AI GAME:
 ---------------------------------------------------------------
-			create players.make (2)
-			players.extend (create {HUMAN_PLAYER}.make_with_initial_values("pippo", 0))
-			players.extend (create {HUMAN_PLAYER}.make_with_initial_values("pluto", 0))
-			create initial_state.make (players)
-			create problem.make
-			create engine.make (problem)
+--			create players.make (2)
+--			players.extend (create {HUMAN_PLAYER}.make_with_initial_values("pippo", 0))
+--			players.extend (create {HUMAN_PLAYER}.make_with_initial_values("pluto", 0))
+--			create initial_state.make (players)
+--			create problem.make
+--			create engine.make (problem)
 
-			engine.set_max_depth (3)
+--			engine.set_max_depth (3)
 
-			print(initial_state.out + "%N")
+--			print(initial_state.out + "%N")
 
-			engine.perform_search (initial_state)
-			print ("Obtained value: " + engine.obtained_value.out + "%N")
-			print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
-			from
-				current_state := engine.obtained_successor
-			until
-				problem.is_end (current_state)
-			loop
-				engine.reset_engine
-				engine.perform_search (current_state)
-				print ("Obtained value: " + engine.obtained_value.out + "%N")
-				print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
-				current_state := engine.obtained_successor
-			end
+--			engine.perform_search (initial_state)
+--			print ("Obtained value: " + engine.obtained_value.out + "%N")
+--			print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
+--			from
+--				current_state := engine.obtained_successor
+--			until
+--				problem.is_end (current_state)
+--			loop
+--				engine.reset_engine
+--				engine.perform_search (current_state)
+--				print ("Obtained value: " + engine.obtained_value.out + "%N")
+--				print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
+--				current_state := engine.obtained_successor
+--			end
 
 
 --					SOLITAIRE:
 ---------------------------------------------------------------
 
---		create problem_s.make
---			create engine_s.make (problem_s)
+		create problem_s.make
+			create engine_s.make (problem_s)
 
---			print (problem_s.initial_state.out + "%N%N")
+			print (problem_s.initial_state.out + "%N%N")
 
---			engine_s.perform_search
-
-
-
---				if (engine_s.is_search_successful) then
---					print ("solution found: " + engine_s.obtained_solution.out + " sat depth " + engine_s.path_to_obtained_solution.count.out + ".%N")
---					print ("visited states: " + engine_s.nr_of_visited_states.out + "%N")
---					print ("path to solution: %N")
---					from
---						i := 1
---						path := engine_s.path_to_obtained_solution
---					until
---						i > path.count
---					loop
---						if path.i_th (i).rule_applied /= Void then
---								-- skips the first state that has void rule
---							print ("    " + path.i_th (i).rule_applied.out + "%N")
---						end
---						print (path.i_th (i).out + "%N")
---						i := i + 1
---					end
-
---				else
---					print ("no solution found%N")
---					print ("visited states: " + engine_s.nr_of_visited_states.out + "%N")
---				--	curr_depth := curr_depth + 1
---					engine_s.reset_engine
+			engine_s.perform_search
 
 
 
---					-- engine.set_max_depth (curr_depth)
---				end
+				if (engine_s.is_search_successful) then
+					print ("solution found: " + engine_s.obtained_solution.out + " sat depth " + engine_s.path_to_obtained_solution.count.out + ".%N")
+					print ("visited states: " + engine_s.nr_of_visited_states.out + "%N")
+					print ("path to solution: %N")
+					from
+						i := 1
+						path := engine_s.path_to_obtained_solution
+					until
+						i > path.count
+					loop
+						if path.i_th (i).rule_applied /= Void then
+								-- skips the first state that has void rule
+							print ("    " + path.i_th (i).rule_applied.out + "%N")
+						end
+						print (path.i_th (i).out + "%N")
+						i := i + 1
+					end
+
+				else
+					print ("no solution found%N")
+					print ("visited states: " + engine_s.nr_of_visited_states.out + "%N")
+				--	curr_depth := curr_depth + 1
+					engine_s.reset_engine
+
+
+
+					-- engine.set_max_depth (curr_depth)
+				end
 		end
 
 	prepare
