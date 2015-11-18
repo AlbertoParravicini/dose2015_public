@@ -20,7 +20,7 @@ feature -- Access
 	num_of_stores: INTEGER = 2
 		-- The number of stores in the map;
 
-	num_of_stones: INTEGER = 48
+	num_of_stones: INTEGER = 12
 		-- The number of stones used in the game;
 
 invariant
