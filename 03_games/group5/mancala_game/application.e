@@ -17,9 +17,9 @@ feature {NONE} -- Initialization
 			p: ARRAYED_LIST [PLAYER]
 			state: ADVERSARY_STATE
 			moves_array: ARRAYED_LIST[INTEGER]
-			--set_of_rule: ADVERSARY_RULE_SET
+			set_of_rule: ADVERSARY_RULE_SET
 		do
-			--create set_of_rule.default_create
+			create set_of_rule.default_create
 			create p.make (2)
 			p.extend (create {HUMAN_PLAYER}.make)
 			p.extend (create {AI_PLAYER}.make)
@@ -36,10 +36,10 @@ feature {NONE} -- Initialization
 			until
 				moves_array.exhausted
 			loop
-				--if set_of_rule.is_valid_action(state, create {ACTION_SELECT}.make(moves_array.item)) then
+				if set_of_rule.is_valid_action(state, create {ACTION_SELECT}.make(moves_array.item)) then
 					state := create {ADVERSARY_STATE}.make_from_parent_and_rule (state, create {ACTION_SELECT}.make(moves_array.item))
 					print(state.out)
-				--end
+				end
 				moves_array.forth
 			end
 
