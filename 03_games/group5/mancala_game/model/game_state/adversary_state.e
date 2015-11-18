@@ -109,6 +109,15 @@ feature -- Implementation Variables
 		-- Adjourned each round.
 
 
+	valid_player_hole (l_player_index: INTEGER; l_hole: INTEGER): BOOLEAN
+		do
+			if first_valid_player_hole (l_player_index) <= l_hole and l_hole <= last_valid_player_hole (l_player_index) then
+				Result := true
+			else
+				Result := false
+			end
+		end
+
 
 feature {NONE} -- Implementation Routines
 
@@ -122,15 +131,6 @@ feature {NONE} -- Implementation Routines
 		Result := ({GAME_CONSTANTS}.num_of_holes // players.count) * (1 + (l_player_index - 1))
 	end
 
-	valid_player_hole (l_hole: INTEGER): BOOLEAN
-		do
-			if first_valid_player_hole (parent.index_of_current_player) <= l_hole and l_hole <= last_valid_player_hole (parent.index_of_current_player) then
-				Result := true
-			else
-				Result := false
-			end
-		end
-
 	opposite_hole_value (l_hole: INTEGER): INTEGER
 		do
 			Result := map.get_hole_value ({GAME_CONSTANTS}.num_of_holes + 1 - l_hole)
@@ -141,7 +141,7 @@ feature {NONE} -- Implementation Routines
 
 		require
 
-			valid_selection: valid_player_hole (a_selected_hole)
+			valid_selection: valid_player_hole (parent.index_of_current_player, a_selected_hole)
 			non_empty_hole: map.get_hole_value (a_selected_hole) >= 1
 			non_void_parent: parent /= VOID
 
@@ -208,7 +208,7 @@ feature {NONE} -- Implementation Routines
 					-- CAPTURE:
 						-- If the last piece you drop is in an empty hole on your side,
 						-- you capture that piece and any pieces in the hole directly opposite.
-					if l_number_of_stones = 0 and map.get_hole_value (l_current_hole) = 1 and valid_player_hole (l_current_hole) and opposite_hole_value (l_current_hole) /= 0 then
+					if l_number_of_stones = 0 and map.get_hole_value (l_current_hole) = 1 and valid_player_hole (parent.index_of_current_player, l_current_hole) and opposite_hole_value (l_current_hole) /= 0 then
 
 						players.i_th (parent.index_of_current_player).sum_to_score (opposite_hole_value (l_current_hole) + 1)
 						map.add_stones_to_store (opposite_hole_value (l_current_hole) + 1, parent.index_of_current_player)

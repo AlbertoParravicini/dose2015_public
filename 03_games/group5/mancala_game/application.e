@@ -21,6 +21,7 @@ feature {NONE} -- Initialization
 			engine_s: SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
 			engine_a: ADVERSARY_SEARCH_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
 			initial_state_a: ADVERSARY_STATE
+			adversary_rule_set: ADVERSARY_RULE_SET
 			players: ARRAYED_LIST [PLAYER]
 			current_state_s: SOLITAIRE_STATE
 			first_move_done: BOOLEAN
@@ -231,6 +232,7 @@ feature {NONE} -- Initialization
 			elseif problem_a /= void then
 				print ("ADVERSARY MANCALA%N")
 				print (initial_state_a.out)
+				create adversary_rule_set.make_by_state (initial_state_a)
 				from
 					current_state_a := initial_state_a
 				until
@@ -240,9 +242,11 @@ feature {NONE} -- Initialization
 						print ("It's your turn: insert which hole you want to empty, from 1 to " + ({GAME_CONSTANTS}.num_of_holes // 2).out + "%N%N")
 						io.read_line
 						io.last_string.to_lower
-						if io.last_string.is_integer and then (io.last_string.to_integer > 0 and io.last_string.to_integer <= {GAME_CONSTANTS}.num_of_holes // 2) then
-							current_state_a := create {ADVERSARY_STATE}.make_from_parent_and_rule (current_state_a, create {ACTION_SELECT}.make (io.last_string.to_integer))
+
+						if valid_range_input(io.last_string) and adversary_rule_set.is_valid_action (current_state_a.current_player.name, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
+							current_state_a := adversary_rule_set.get_current_state
 							print (current_state_a.out + "%N")
+
 						elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
 
 							print ("Searching for the best move...%N")
@@ -304,6 +308,19 @@ feature {NONE} -- Initialization
 		end
 
 feature {NONE} -- Implementation
+
+		valid_range_input (a_hole_selected: STRING): BOOLEAN
+			do
+				if not a_hole_selected.is_integer then
+					Result := false
+				else
+					if 0 < a_hole_selected.to_integer and a_hole_selected.to_integer <= {GAME_CONSTANTS}.num_of_holes then
+						Result := true
+					else
+						Result := false
+					end
+				end
+			end
 
 		--first_window: MAIN_WINDOW
 		-- Main window.
