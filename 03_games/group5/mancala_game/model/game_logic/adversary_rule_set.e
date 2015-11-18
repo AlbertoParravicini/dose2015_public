@@ -9,10 +9,17 @@ class
 inherit
 	RULE_SET
 
+create
+	default_create
+
 feature -- Implementation
 
 	is_valid_action (a_state: ADVERSARY_STATE; a_action: ACTION_SELECT): BOOLEAN
 		require
 			non_void_parameters: a_state /= VOID and a_action /= VOID
+		do
+			Result := true
+		ensure
+		end
 
 end
