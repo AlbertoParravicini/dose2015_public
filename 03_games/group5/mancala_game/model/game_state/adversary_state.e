@@ -63,16 +63,18 @@ feature {NONE} -- Creation
 			end
 
 		ensure
-			no_rule_applied: rule_applied = void
-			no_parent: parent = void
-			setting_done: players = a_players and current_player = players.i_th (1)
+			no_rule_applied: rule_applied = VOID
+			no_parent: parent = VOID
+			setting_done: players = a_players and current_player = players.i_th (1) and index_of_current_player = 1
 			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
-			score_is_zero: players.i_th (1).score = 0 and players.i_th (2).score = 0
+			score_is_zero: across players as player all player.item.score = 0 end
 		end
 
 
 
 	make_from_parent_and_rule (a_parent: ADVERSARY_STATE; a_rule: ACTION_SELECT)
+		require
+			non_void_parameters: a_parent /= VOID and a_rule /= VOID
 		do
 
 			set_parent (a_parent)
@@ -91,8 +93,7 @@ feature {NONE} -- Creation
 			move (a_rule.get_selection)
 
 		ensure
-			rule_applied: rule_applied /= VOID
-			parent_not_void: parent /= VOID
+			setting_done: rule_applied = a_rule and parent = a_parent
 			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
 			name_is_mantained: equal(players.i_th (1).name, a_parent.players.i_th (1).name) and equal(players.i_th (2).name, a_parent.players.i_th (2).name)
 		end
@@ -113,12 +114,12 @@ feature {NONE} -- Implementation Routines
 
 	first_valid_player_hole (l_player_index: INTEGER): INTEGER
 	do
-		Result := 1 + ((l_player_index - 1) * ({GAME_CONSTANTS}.num_of_holes / players.count)).truncated_to_integer
+		Result := 1 + ((l_player_index - 1) * ({GAME_CONSTANTS}.num_of_holes // players.count))
 	end
 
 	last_valid_player_hole (l_player_index: INTEGER): INTEGER
 	do
-		Result := ({GAME_CONSTANTS}.num_of_holes / players.count).truncated_to_integer * (1 + (l_player_index - 1))
+		Result := ({GAME_CONSTANTS}.num_of_holes // players.count) * (1 + (l_player_index - 1))
 	end
 
 	valid_player_hole (l_hole: INTEGER): BOOLEAN
@@ -154,7 +155,7 @@ feature {NONE} -- Implementation Routines
 
 		do
 
-		--	print("--------------------------%N" + parent.current_player.name + " moved: " + a_selected_hole.out + "%N--------------------------%N%N")
+			-- print("--------------------------%N" + parent.current_player.name + " moved: " + a_selected_hole.out + "%N--------------------------%N%N")
 
 
 			-- Perform move.
@@ -188,7 +189,7 @@ feature {NONE} -- Implementation Routines
 				if l_number_of_stones = 0 then
 
 					current_player := prev_player
-	--				print("!!! FREE TURN%N%N")
+					-- print("!!! FREE TURN%N%N")
 
 				else
 
@@ -213,7 +214,7 @@ feature {NONE} -- Implementation Routines
 						map.add_stones_to_store (opposite_hole_value (l_current_hole) + 1, parent.index_of_current_player)
 						map.clear_hole ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole)
 						map.clear_hole (l_current_hole)
-	--					print("!!! CAPTURE%N%N")
+						-- print("!!! CAPTURE%N%N")
 
 					end
 				end
@@ -274,10 +275,11 @@ feature {NONE} -- Implementation Routines
 					players.forth
 				end
 
-	--				print("!!! END%N%N")
+				-- print("!!! END%N%N")
 			end
 
 		ensure
+			stones_invariant: map.num_of_stones = Old map.num_of_stones
 		end
 
 
@@ -297,14 +299,23 @@ feature -- Status Report
 
 	next_player: PLAYER
 			-- Return the player who will play in the next turn;
+		require else
+			non_void_players: players /= VOID
 		do
 			index_of_current_player := (index_of_current_player \\ players.count) + 1
 			Result := players.i_th (index_of_current_player)
+		ensure then
+			function_invariant: parent = Old parent and rule_applied = Old rule_applied and deep_equal(players, players)
+			loop_of_players: Old index_of_current_player = players.count implies index_of_current_player = 1
+			index_setted: Old index_of_current_player /= players.count implies index_of_current_player = Old index_of_current_player + 1
+			result_done: Result = players.i_th (index_of_current_player)
 		end
 
 
 	prev_player: PLAYER
 			-- Return the player who played in the last turn;
+		require else
+			non_void_players: players /= VOID
 		do
 			index_of_current_player := index_of_current_player - 1
 			if index_of_current_player = 0 then
@@ -312,6 +323,11 @@ feature -- Status Report
 			end
 
 			Result := players.i_th (index_of_current_player)
+		ensure then
+			function_invariant: parent = Old parent and rule_applied = Old rule_applied and deep_equal(players, players)
+			loop_of_players: Old index_of_current_player = 1 implies index_of_current_player = players.count
+			index_setted: Old index_of_current_player /= 1 implies index_of_current_player = Old index_of_current_player - 1
+			result_done: Result = players.i_th (index_of_current_player)
 		end
 
 
@@ -329,6 +345,8 @@ feature -- Status report
 
 	is_max: BOOLEAN
 			-- Indicates whether current state is a max state
+		require else
+			index_of_current_player /= VOID
 		do
 			if index_of_current_player \\ 2 = 0 then
 				Result := false
@@ -343,6 +361,8 @@ feature -- Status report
 
 	is_min: BOOLEAN
 			-- Indicates whether current state is a min state
+		require else
+			index_of_current_player /= VOID
 		do
 			if is_max then
 				Result := false
@@ -361,14 +381,22 @@ feature -- Status setting
 
 	set_parent (new_parent: detachable like Current)
 			-- Sets the parent for current state
+		require else
+			non_void_parent: new_parent /= VOID
 		do
 			parent := new_parent
+		ensure then
+			setting_done: parent = new_parent
 		end
 
 	set_rule_applied (new_rule: detachable ACTION_SELECT)
 			-- Sets the rule_applied for current state
+		require else
+			non_void_rule: rule_applied /= VOID
 		do
 			rule_applied := new_rule
+		ensure then
+			setting_done: rule_applied = new_rule
 		end
 
 
@@ -382,5 +410,6 @@ feature -- Inherited
 
 invariant
 	score_is_consistent: players.i_th (1).score + players.i_th (2).score = map.sum_of_stores_token
+	stones_invariant: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
 	index_of_current_player_domain: index_of_current_player >= 1 and index_of_current_player <= players.count
 end
