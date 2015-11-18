@@ -111,6 +111,7 @@ feature {NONE} -- Initialization
 					first_move_done = true
 				loop
 					print ("Enter a move between 1 and " + {GAME_CONSTANTS}.num_of_holes.out + "%N")
+					print ("If you are stuck, ask for a hint (H),%N%Tor let the computer solve the game for you (S)!%N")
 					io.read_line
 					io.last_string.to_lower
 					if io.last_string.is_integer and then (io.last_string.to_integer >= 1 and io.last_string.to_integer <= {GAME_CONSTANTS}.num_of_holes) then
@@ -118,20 +119,21 @@ feature {NONE} -- Initialization
 						first_move_done := true
 					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
 						print ("Searching for the best move...%N")
+						engine_s.reset_engine
 						engine_s.perform_search
 						if engine_s.is_search_successful then
 							print ("The search was successful!%N")
-							current_state_s := engine_s.path_to_obtained_solution.at(2)
+							current_state_s := engine_s.path_to_obtained_solution.at (2)
 							first_move_done := true
 						else
 							print ("The search wasn't successful!%N")
 						end
 					elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") then
 						print ("Trying to solve the game...%N")
+						engine_s.reset_engine
 						engine_s.perform_search
 						if engine_s.is_search_successful then
 							print ("The search was successful!%N")
-
 							from
 								i := 1
 							until
@@ -150,31 +152,75 @@ feature {NONE} -- Initialization
 						print ("ERROR: " + io.last_string + " isn't a valid move!%N")
 					end
 				end
-
 				print (current_state_s.out + "%N%N")
 
 					-- Other moves
 				from
-
 				until
 					problem_s.is_successful (current_state_s) or current_state_s.is_game_over
 				loop
 					print ("Do you want to move clockwise (A) or counter-clockwise (D)?%N")
+					print ("If you are stuck, ask for a hint (H),%N%Tor let the computer solve the game for you (S)!%N")
 					io.read_line
 					io.last_string.to_lower
 					if io.last_string.is_equal ("a") then
 						current_state_s := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state_s, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
 						current_state_s.move_clockwise
-						print ("%NMove chosen: clockwise%N" + current_state_s.out + "%N%N")
+						print ("%NRotation: Clockwise%N" + current_state_s.out + "%N%N")
 					elseif io.last_string.is_equal ("d") then
 						current_state_s := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state_s, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
 						current_state_s.move_counter_clockwise
-						print ("%NMove chosen: counter-clockwise%N" + current_state_s.out + "%N%N")
+						print ("%NRotation: Counter-Clockwise%N" + current_state_s.out + "%N%N")
+					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
+						print ("Searching for the best move...%N")
+
+						current_state_s.set_parent (void)
+						current_state_s.set_rule_applied (void)
+						problem_s.make_with_initial_state (current_state_s)
+						engine_s.set_problem (problem_s)
+						engine_s.reset_engine
+						engine_s.perform_search
+
+						if engine_s.is_search_successful then
+							print ("The search was successful!%N%N")
+							current_state_s := engine_s.path_to_obtained_solution.at (2)
+							print (current_state_s.rule_applied.out + "%N" + current_state_s.out + "%N%N")
+						else
+							print ("The search wasn't successful!%N")
+						end
+					elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") then
+						print ("Trying to solve the game...%N")
+						current_state_s.set_parent (void)
+						current_state_s.set_rule_applied (void)
+						problem_s.make_with_initial_state (current_state_s)
+						engine_s.set_problem (problem_s)
+						engine_s.reset_engine
+						engine_s.perform_search
+
+						if engine_s.is_search_successful then
+							print ("The search was successful!%N%N")
+							from
+								i := 2
+								print ("solition depth:" + engine_s.path_to_obtained_solution.count.out + "%N")
+							until
+								i > engine_s.path_to_obtained_solution.count
+							loop
+								if engine_s.path_to_obtained_solution.i_th (i).rule_applied /= void then
+									print (engine_s.path_to_obtained_solution.i_th (i).rule_applied.out + "%N")
+								end
+
+								print (engine_s.path_to_obtained_solution.i_th (i).out + "%N%N")
+								engine_s.path_to_obtained_solution.forth
+								i := i + 1
+							end
+							current_state_s := engine_s.path_to_obtained_solution.last
+						else
+							print ("The search wasn't successful!%N")
+						end
 					else
 						print ("ERROR: " + io.last_string + " isn't a valid move!%N")
 					end
 				end
-
 				if current_state_s.is_game_over then
 					print ("GAME OVER!%N")
 				else
