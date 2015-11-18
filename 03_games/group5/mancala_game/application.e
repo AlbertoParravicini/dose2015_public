@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 			players: ARRAYED_LIST [PLAYER]
 			current_state_s: SOLITAIRE_STATE
 			first_move_done: BOOLEAN
+			i: INTEGER
 		do
 				--------------------------------------------------------------------------------------------------------
 			print ("WELCOME TO MANCALA%N%N")
@@ -111,9 +112,40 @@ feature {NONE} -- Initialization
 				loop
 					print ("Enter a move between 1 and " + {GAME_CONSTANTS}.num_of_holes.out + "%N")
 					io.read_line
+					io.last_string.to_lower
 					if io.last_string.is_integer and then (io.last_string.to_integer >= 1 and io.last_string.to_integer <= {GAME_CONSTANTS}.num_of_holes) then
 						current_state_s := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state_s, create {ACTION_SELECT}.make (io.last_string.to_integer))
 						first_move_done := true
+					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
+						print ("Searching for the best move...%N")
+						engine_s.perform_search
+						if engine_s.is_search_successful then
+							print ("The search was successful!%N")
+							current_state_s := engine_s.path_to_obtained_solution.at(2)
+							first_move_done := true
+						else
+							print ("The search wasn't successful!%N")
+						end
+					elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") then
+						print ("Trying to solve the game...%N")
+						engine_s.perform_search
+						if engine_s.is_search_successful then
+							print ("The search was successful!%N")
+
+							from
+								i := 1
+							until
+								i > engine_s.path_to_obtained_solution.count - 1
+							loop
+								print (engine_s.path_to_obtained_solution.i_th (i).out + "%N%N")
+								engine_s.path_to_obtained_solution.forth
+								i := i + 1
+							end
+							first_move_done := true
+							current_state_s := engine_s.path_to_obtained_solution.last
+						else
+							print ("The search wasn't successful!%N")
+						end
 					else
 						print ("ERROR: " + io.last_string + " isn't a valid move!%N")
 					end
@@ -125,7 +157,7 @@ feature {NONE} -- Initialization
 				from
 
 				until
-					problem_s.is_successful (current_state_s)
+					problem_s.is_successful (current_state_s) or current_state_s.is_game_over
 				loop
 					print ("Do you want to move clockwise (A) or counter-clockwise (D)?%N")
 					io.read_line
