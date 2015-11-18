@@ -152,6 +152,8 @@ feature {NONE} -- Implementation Routines
 			l_sum_of_player_stones: INTEGER
 			end_condition: BOOLEAN
 
+			last_player_index: INTEGER
+
 		do
 
 		--	print("--------------------------%N" + parent.current_player.name + " moved: " + a_selected_hole.out + "%N--------------------------%N%N")
@@ -176,7 +178,7 @@ feature {NONE} -- Implementation Routines
 					-- If you run into your opponent's store, skip it.
 				if l_current_hole = last_valid_player_hole (parent.index_of_current_player) and l_number_of_stones >= 1 then
 
-					map.add_stone_to_store (index_of_current_player)
+					map.add_stone_to_store (parent.index_of_current_player)
 					players.i_th (parent.index_of_current_player).increment_score
 					l_number_of_stones := l_number_of_stones - 1
 
@@ -210,7 +212,7 @@ feature {NONE} -- Implementation Routines
 					if l_number_of_stones = 0 and map.get_hole_value (l_current_hole) = 1 and valid_player_hole (l_current_hole) and opposite_hole_value (l_current_hole) /= 0 then
 
 						players.i_th (parent.index_of_current_player).sum_to_score (opposite_hole_value (l_current_hole) + 1)
-						map.add_stones_to_store (opposite_hole_value (l_current_hole) + 1, index_of_current_player)
+						map.add_stones_to_store (opposite_hole_value (l_current_hole) + 1, parent.index_of_current_player)
 						map.clear_hole ({GAME_CONSTANTS}.num_of_holes + 1 - l_current_hole)
 						map.clear_hole (l_current_hole)
 	--					print("!!! CAPTURE%N%N")
@@ -228,6 +230,7 @@ feature {NONE} -- Implementation Routines
 			from
 				players.start
 				end_condition := false
+				last_player_index := 0
 			until
 				players.exhausted or end_condition
 			loop
@@ -245,7 +248,7 @@ feature {NONE} -- Implementation Routines
 				if l_sum_of_player_stones = 0 then
 					end_condition := true
 				end
-
+				last_player_index := last_player_index + 1
 				players.forth
 			end
 
@@ -268,8 +271,8 @@ feature {NONE} -- Implementation Routines
 						l_current_hole := l_current_hole + 1
 					end
 
-					map.add_stones_to_store (l_sum_of_player_stones, (players.index \\ players.count) + 1)
-					players.i_th ((players.index \\ players.count) + 1).sum_to_score (l_sum_of_player_stones)
+					map.add_stones_to_store (l_sum_of_player_stones, (last_player_index )\\2 + 1)
+					players.i_th ((last_player_index )\\2 + 1).sum_to_score (l_sum_of_player_stones)
 
 					players.forth
 				end
@@ -377,7 +380,7 @@ feature -- Inherited
 
 	out: STRING
 		do
-			Result := "- Turn of: " + current_player.out + "%N- MAP: %N" + map.out + "%N%N"
+			Result := "- Turn of: " + current_player.out + "%N- MAP: %N " + map.out + "%N%N"
 		end
 
 invariant

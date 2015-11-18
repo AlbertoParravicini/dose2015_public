@@ -181,6 +181,7 @@ feature -- Status Report
 			--    01 02 03 04 05 06
 		local
 			output: STRING
+			i: INTEGER
 		do
 			output := ""
 				-- Print the top row of holes;
@@ -200,6 +201,7 @@ feature -- Status Report
 			until
 				stores.exhausted
 			loop
+				i := i + 1
 				output.append (stores.item.out + "             ")
 				stores.back
 			end
