@@ -14,31 +14,42 @@ feature {NONE} -- Initialization
 
 	make_and_launch
 		local
-			p: ARRAYED_LIST [PLAYER]
+			players: ARRAYED_LIST [PLAYER]
 			state: ADVERSARY_STATE
 			moves_array: ARRAYED_LIST[INTEGER]
+			engine: NEGASCOUT_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
+			problem: ADVERSARY_PROBLEM
+			current_state: ADVERSARY_STATE
+			initial_state: ADVERSARY_STATE
 		do
-			create p.make (2)
-			p.extend (create {HUMAN_PLAYER}.make)
-			p.extend (create {AI_PLAYER}.make)
+			create players.make (2)
+			players.extend (create {HUMAN_PLAYER}.make)
+			players.extend (create {AI_PLAYER}.make)
 
-			create state.make(p)
-			print(state.out)
+		-- 			AI VS AI GAME:
+			create players.make (2)
+			players.extend (create {HUMAN_PLAYER}.make_with_initial_values("pippo", 0))
+			players.extend (create {HUMAN_PLAYER}.make_with_initial_values("pluto", 0))
+			create initial_state.make (players)
+			create problem.make
+			create engine.make (problem)
 
-				-- Sequence of game moves:
-			create moves_array.make_from_array (<<3,5,9,6,10,2,1,5,6,7,4,11,5,4,10,2,11,3,7,6,7,1,9,5,8,6>>)
-			
-				-- Play game:
+			print(initial_state.out + "%N")
+
+			engine.perform_search (initial_state)
+			print ("Obtained value: " + engine.obtained_value.out + "%N")
+			print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
 			from
-				moves_array.start
+				current_state := engine.obtained_successor
 			until
-				moves_array.exhausted
+				problem.is_end (current_state)
 			loop
-				state := create {ADVERSARY_STATE}.make_from_parent_and_rule (state, create {ACTION_SELECT}.make(moves_array.item))
-				print(state.out)
-				moves_array.forth
+				engine.reset_engine
+				engine.perform_search (current_state)
+				print ("Obtained value: " + engine.obtained_value.out + "%N")
+				print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
+				current_state := engine.obtained_successor
 			end
-
 		end
 
 	prepare
