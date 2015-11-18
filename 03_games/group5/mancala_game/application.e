@@ -26,8 +26,8 @@ feature {NONE} -- Initialization
 			print(state.out)
 
 				-- Sequence of game moves:
-			create moves_array.make_from_array (<<3,4,8,12,4,7,3,10,2,8,1,7,3,12>>)
-
+			create moves_array.make_from_array (<<3,5,9,6,10,2,1,5,6,7,4,11,5,4,10,2,11,3,7,6,7,1,9,5,8,6>>)
+			
 				-- Play game:
 			from
 				moves_array.start
