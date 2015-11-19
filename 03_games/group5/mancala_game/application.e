@@ -256,6 +256,7 @@ feature {NONE} -- Initialization
 							engine_a.perform_search (current_state_a)
 							print ("Solution found!%N")
 							current_state_a := engine_a.obtained_successor
+							adversary_rule_set.set_current_state (engine_a.obtained_successor)
 							print (current_state_a.out + "%N")
 
 						elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") then
@@ -268,6 +269,7 @@ feature {NONE} -- Initialization
 								engine_a.perform_search (current_state_a)
 								print ("Solution found!%N")
 								current_state_a := engine_a.obtained_successor
+								adversary_rule_set.set_current_state (engine_a.obtained_successor)
 								print (current_state_a.out + "%N")
 							end
 						else
@@ -278,6 +280,7 @@ feature {NONE} -- Initialization
 						engine_a.perform_search (current_state_a)
 						print (engine_a.obtained_successor.out + "%N")
 						current_state_a := engine_a.obtained_successor
+						adversary_rule_set.set_current_state (engine_a.obtained_successor)
 					end
 				end
 				print ("%N%NGG%N")

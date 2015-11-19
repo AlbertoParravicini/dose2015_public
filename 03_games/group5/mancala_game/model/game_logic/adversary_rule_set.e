@@ -66,5 +66,9 @@ feature -- Implementation
 			hole_of_another_player: not Old get_current_state.valid_player_hole (get_current_state.index_of_current_player, a_action.get_selection) implies Result = false
 			hole_with_zero_value: Old get_current_state.map.get_hole_value (a_action.get_selection) = 0 implies Result = false
 		end
-
+feature
+	set_current_state(state: ADVERSARY_STATE)
+		do
+			get_current_state:=state
+		end
 end
