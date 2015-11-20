@@ -243,7 +243,8 @@ feature {NONE} -- Initialization
 						io.read_line
 						io.last_string.to_lower
 
-						if valid_range_input(io.last_string) and adversary_rule_set.is_valid_action (current_state_a.current_player.name, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
+							-- TODO: 1 => player_id
+						if valid_range_input(io.last_string) and adversary_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
 							current_state_a := adversary_rule_set.current_state
 							print (current_state_a.out + "%N")
 
@@ -265,6 +266,7 @@ feature {NONE} -- Initialization
 							until
 								problem_a.is_end (current_state_a)
 							loop
+								print ("Thinking...%N")
 								engine_a.reset_engine
 								engine_a.perform_search (current_state_a)
 								print ("Solution found!%N")
@@ -276,6 +278,7 @@ feature {NONE} -- Initialization
 							print ("ERROR: " + io.last_string + " isn't a valid move!%N")
 						end
 					else
+						print ("Thinking...%N")
 						engine_a.reset_engine
 						engine_a.perform_search (current_state_a)
 						print (engine_a.obtained_successor.out + "%N")

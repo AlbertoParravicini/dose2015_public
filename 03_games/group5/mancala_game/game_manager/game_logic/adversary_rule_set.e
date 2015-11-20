@@ -28,9 +28,9 @@ feature -- Implementation
 
 	current_state: ADVERSARY_STATE
 
-	is_valid_action (a_player_name: STRING; a_action: ACTION_SELECT): BOOLEAN
+	is_valid_action (a_player_id: INTEGER; a_action: ACTION_SELECT): BOOLEAN
 		require
-			non_void_parameters: a_player_name /= VOID and not a_player_name.is_empty and a_action /= VOID
+			non_void_parameters: a_player_id /= VOID and a_action /= VOID
 		local
 			l_is_valid: BOOLEAN
 			l_hole_selected: INTEGER
@@ -39,7 +39,7 @@ feature -- Implementation
 			l_hole_selected := a_action.get_selection
 
 				-- INVALID PLAYER:
-			if a_player_name /= current_state.current_player.name then
+			if a_player_id /= current_state.index_of_current_player then
 				l_is_valid := false
 			end
 
@@ -62,7 +62,7 @@ feature -- Implementation
 		ensure
 			non_performed_action: Result = false implies current_state = Old current_state
 			performed_action: Result = true implies current_state /= Old current_state
-			invalid_player: a_player_name /= Old current_state.current_player.name implies Result = false
+			invalid_player: a_player_id /= Old current_state.index_of_current_player implies Result = false
 			hole_of_another_player: not Old current_state.valid_player_hole (current_state.index_of_current_player, a_action.get_selection) implies Result = false
 			hole_with_zero_value: Old current_state.map.get_hole_value (a_action.get_selection) = 0 implies Result = false
 		end

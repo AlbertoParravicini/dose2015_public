@@ -16,11 +16,12 @@
 				<exclude>/CVS$</exclude>
 				<exclude>/.svn$</exclude>
 			</file_rule>
-			<cluster name="model" location=".\model\">
-				<cluster name="game_state" location=".\model\game_state\"/>
-				<cluster name="game_logic" location=".\model\game_logic\"/>
+			<cluster name="game_manager" location=".\game_manager\">
+				<cluster name="game_state" location=".\game_manager\game_state\"/>
+				<cluster name="game_logic" location=".\game_manager\game_logic\"/>
 			</cluster>
 			<tests name="tests" location=".\tests\"/>
+			<cluster name="client" location=".\client\"/>
 		</cluster>
 	</target>
 </system>
