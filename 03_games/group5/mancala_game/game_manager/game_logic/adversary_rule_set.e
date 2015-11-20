@@ -65,22 +65,22 @@ feature -- Implementation
 				l_hole_selected := action_select.get_selection
 
 					-- INVALID PLAYER:
-				if a_player_id /= current_state.index_of_current_player then
+				if l_is_valid and then a_player_id /= current_state.index_of_current_player then
 					l_is_valid := false
 				end
 
 					-- THE HOLE SELECTED EXISTS:
-				if action_select.get_selection <= 0 or {GAME_CONSTANTS}.num_of_holes < action_select.get_selection then
+				if l_is_valid and then action_select.get_selection <= 0 or {GAME_CONSTANTS}.num_of_holes < action_select.get_selection then
 					l_is_valid := false
 				end
 
 					-- HOLE OF ANOTHER PLAYER:
-				if not current_state.valid_player_hole (current_state.index_of_current_player, l_hole_selected) then
+				if l_is_valid and then not current_state.valid_player_hole (current_state.index_of_current_player, l_hole_selected) then
 					l_is_valid := false
 				end
 
 					-- HOLE WITH ZERO VALUE:
-				if current_state.map.get_hole_value (l_hole_selected) = 0 then
+				if l_is_valid and then current_state.map.get_hole_value (l_hole_selected) = 0 then
 					l_is_valid := false
 				end
 			else

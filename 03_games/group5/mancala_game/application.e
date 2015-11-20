@@ -105,7 +105,7 @@ feature {NONE} -- Initialization
 			if problem_s /= void then
 				print ("SOLITAIRE MANCALA%N")
 				print (problem_s.initial_state.out)
-				create solitaire_rule_set.make_by_state (problem_s.initial_state)
+				create solitaire_rule_set.make_by_state (problem_s.initial_state, "a_star", -1)
 
 					-- First move
 				from
@@ -234,7 +234,7 @@ feature {NONE} -- Initialization
 			elseif problem_a /= void then
 				print ("ADVERSARY MANCALA%N")
 				print (initial_state_a.out)
-				create adversary_rule_set.make_by_state (initial_state_a)
+				create adversary_rule_set.make_by_state (initial_state_a, "negascout", 5)
 				from
 					current_state_a := initial_state_a
 				until
@@ -246,7 +246,7 @@ feature {NONE} -- Initialization
 						io.last_string.to_lower
 
 							-- TODO: 1 => player_id
-						if adversary_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
+						if io.last_string.is_integer and then adversary_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
 							current_state_a := adversary_rule_set.current_state
 							print (current_state_a.out + "%N")
 
