@@ -13,6 +13,10 @@ create
 feature {NONE} -- Creation
 
 	make (a_algorithm: STRING)
+			-- Creates a game manager based on the options chosen by the user;
+			-- the game mode is implied by the choice of the algorithm;
+			-- The game manager contains the main game loop, and a reference to the rules set and the current state;
+			-- Th rules set contains the "problem" and the "ai_engine", which are instantiated based on the chosen algorithm;
 		require
 			valid_algorthm: a_algorithm /= VOID and not a_algorithm.is_empty
 			supported_algorithms:
