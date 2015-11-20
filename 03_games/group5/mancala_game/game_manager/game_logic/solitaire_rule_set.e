@@ -8,4 +8,9 @@ class
 	SOLITAIRE_RULE_SET
 inherit
 	RULE_SET
+
+create
+	make_by_state
+
+
 end
