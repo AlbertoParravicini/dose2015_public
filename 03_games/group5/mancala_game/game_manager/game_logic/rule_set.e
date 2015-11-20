@@ -24,7 +24,7 @@ feature -- Status report
 	current_state: STATE
 			-- Current state of the game;
 
-	is_valid_action (a_player_id: INTEGER; a_action: ACTION_SELECT): BOOLEAN
+	is_valid_action (a_player_id: INTEGER; a_action: ACTION): BOOLEAN
 			-- Validate the action passed as parameter,
 			-- by comparing the player who performed the action with the current state of the game.
 			-- Return true iff the action is validated;

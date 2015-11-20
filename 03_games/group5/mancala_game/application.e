@@ -27,6 +27,7 @@ feature {NONE} -- Initialization
 			first_move_done: BOOLEAN
 			i: INTEGER
 			current_state_a: ADVERSARY_STATE
+			solitaire_rule_set: SOLITAIRE_RULE_SET
 		do
 				--------------------------------------------------------------------------------------------------------
 			print ("WELCOME TO MANCALA%N%N")
@@ -104,6 +105,7 @@ feature {NONE} -- Initialization
 			if problem_s /= void then
 				print ("SOLITAIRE MANCALA%N")
 				print (problem_s.initial_state.out)
+				create solitaire_rule_set.make_by_state (problem_s.initial_state)
 
 					-- First move
 				from
@@ -116,8 +118,8 @@ feature {NONE} -- Initialization
 					print ("If you are stuck, ask for a hint (H),%N%Tor let the computer solve the game for you (S)!%N")
 					io.read_line
 					io.last_string.to_lower
-					if io.last_string.is_integer and then (io.last_string.to_integer >= 1 and io.last_string.to_integer <= {GAME_CONSTANTS}.num_of_holes) then
-						current_state_s := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state_s, create {ACTION_SELECT}.make (io.last_string.to_integer))
+					if io.last_string.is_integer and then solitaire_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
+						current_state_s := solitaire_rule_set.current_state
 						first_move_done := true
 					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
 						print ("Searching for the best move...%N")
@@ -165,12 +167,12 @@ feature {NONE} -- Initialization
 					print ("If you are stuck, ask for a hint (H),%N%Tor let the computer solve the game for you (S)!%N")
 					io.read_line
 					io.last_string.to_lower
-					if io.last_string.is_equal ("a") then
-						current_state_s := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state_s, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
+					if io.last_string.is_equal ("a") and solitaire_rule_set.is_valid_action (1, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise)) then
+						current_state_s := solitaire_rule_set.current_state
 						current_state_s.move_clockwise
 						print ("%NRotation: Clockwise%N" + current_state_s.out + "%N%N")
-					elseif io.last_string.is_equal ("d") then
-						current_state_s := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state_s, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
+					elseif io.last_string.is_equal ("d")  and solitaire_rule_set.is_valid_action (1, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise)) then
+						current_state_s := solitaire_rule_set.current_state
 						current_state_s.move_counter_clockwise
 						print ("%NRotation: Counter-Clockwise%N" + current_state_s.out + "%N%N")
 					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
@@ -244,7 +246,7 @@ feature {NONE} -- Initialization
 						io.last_string.to_lower
 
 							-- TODO: 1 => player_id
-						if valid_range_input(io.last_string) and adversary_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
+						if adversary_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
 							current_state_a := adversary_rule_set.current_state
 							print (current_state_a.out + "%N")
 
@@ -315,18 +317,6 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
-		valid_range_input (a_hole_selected: STRING): BOOLEAN
-			do
-				if not a_hole_selected.is_integer then
-					Result := false
-				else
-					if 0 < a_hole_selected.to_integer and a_hole_selected.to_integer <= {GAME_CONSTANTS}.num_of_holes then
-						Result := true
-					else
-						Result := false
-					end
-				end
-			end
 
 		--first_window: MAIN_WINDOW
 		-- Main window.
