@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 deferred class
-	CLIENT
+	VIEW
 
 feature
 	make (a_game_manager: GAME_MANAGER)

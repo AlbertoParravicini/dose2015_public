@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 class
-	ADVERSARY_CLIENT_CLI
+	ADVERSARY_VIEW_CLI
 
 inherit
-	CLIENT
+	VIEW
 
 create
 	make
