@@ -171,7 +171,7 @@ feature {NONE} -- Initialization
 						current_state_s := solitaire_rule_set.current_state
 						current_state_s.move_clockwise
 						print ("%NRotation: Clockwise%N" + current_state_s.out + "%N%N")
-					elseif io.last_string.is_equal ("d")  and solitaire_rule_set.is_valid_action (1, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise)) then
+					elseif io.last_string.is_equal ("d") and solitaire_rule_set.is_valid_action (1, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise)) then
 						current_state_s := solitaire_rule_set.current_state
 						current_state_s.move_counter_clockwise
 						print ("%NRotation: Counter-Clockwise%N" + current_state_s.out + "%N%N")

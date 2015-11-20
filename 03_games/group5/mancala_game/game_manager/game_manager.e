@@ -24,10 +24,16 @@ feature {NONE} -- Creation
 				equal(a_algorithm, "minimax_ab") or
 				equal(a_algorithm, "negascout") or
 				equal(a_algorithm, "two_players") or
-				equal(a_algorithm, "df") or
-				equal(a_algorithm, "bf") or
-				equal(a_algorithm, "df_cycle_checking") or
-				equal(a_algorithm, "a_star")
+				equal(a_algorithm, "bounded_depth_first_search") or
+				equal(a_algorithm, "bounded_breadth_first_search") or
+				equal(a_algorithm, "depth_first_with_cycle_checking") or
+				equal(a_algorithm, "a_star") or
+				equal(a_algorithm, "hill_climbing") or
+				equal(a_algorithm, "steepest_ascent_hill_climbing") or
+				equal(a_algorithm, "heuristic_depth_first_search") or
+				equal(a_algorithm, "lowest_cost_first_search") or
+				equal(a_algorithm, "best_first_search") or
+				equal(a_algorithm, "iterative_deeepening") 
 		do
 
 			if false then

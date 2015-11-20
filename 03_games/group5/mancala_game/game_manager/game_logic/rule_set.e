@@ -9,12 +9,11 @@ deferred class
 
 feature {NONE}
 
-	make_by_state (a_initial_state: STATE)
+	make_by_state (a_initial_state: STATE; selected_algorithm: STRING; selected_depth: INTEGER)
 			-- Create a ruleset with a given initial state;
 		require
 			non_void_parameter: a_initial_state /= Void
-		do
-			current_state := a_initial_state
+		deferred
 		ensure
 			setting_done: current_state = a_initial_state
 		end

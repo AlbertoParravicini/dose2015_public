@@ -14,6 +14,44 @@ inherit
 create
 	make_by_state
 
+feature -- Initialization
+	make_by_state (a_initial_state: ADVERSARY_STATE; selected_algorithm: STRING; selected_depth: INTEGER)
+		do
+			current_state := a_initial_state
+
+			create problem.make
+
+			if selected_algorithm.is_equal ("minimax") then
+				if selected_depth > 0 then
+					engine := create {MINIMAX_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem)
+				else
+					engine := create {MINIMAX_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make_with_depth (problem, selected_depth)
+				end
+			elseif selected_algorithm.is_equal ("minimax_ab") then
+				if selected_depth > 0 then
+					engine := create {MINIMAX_AB_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem)
+				else
+					engine := create {MINIMAX_AB_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make_with_depth (problem, selected_depth)
+				end
+			elseif selected_algorithm.is_equal ("negascout") then
+				if selected_depth > 0 then
+					engine := create {NEGASCOUT_ENGINE[ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem)
+				else
+					engine := create {NEGASCOUT_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make_with_depth (problem, selected_depth)
+				end
+			end
+		end
+
+
+feature -- Status report
+
+	problem: ADVERSARY_PROBLEM
+		-- The problem which ought to be solved through the use of AI search;
+
+	engine: ADVERSARY_SEARCH_ENGINE [ACTION, ADVERSARY_STATE, ADVERSARY_PROBLEM]
+		-- The engine used to solve the problem;
+
+
 feature -- Implementation
 
 	is_valid_action (a_player_id: INTEGER; a_action: ACTION): BOOLEAN
@@ -48,7 +86,7 @@ feature -- Implementation
 			else
 				l_is_valid := false
 			end
-			
+
 			if attached {ACTION_SELECT} a_action as action_select and then l_is_valid then
 				current_state := create {ADVERSARY_STATE}.make_from_parent_and_rule (current_state, action_select)
 			end
