@@ -8,7 +8,7 @@ deferred class
 	CLIENT
 
 feature
-	make
+	make (a_game_manager: GAME_MANAGER)
 		do
 			id_player := 0
 		end
@@ -16,6 +16,8 @@ feature
 feature {NONE} -- Implementation
 
 	id_player: INTEGER
+
+	current_game_manager: GAME_MANAGER
 
 feature -- Status Setting
 
@@ -43,7 +45,8 @@ feature -- Status Setting
 	send_action_to_game_manager (a_new_action: ACTION)
 		require
 			not_void_parameter: a_new_action /= VOID
-		do -- deferred
+		do
+
 		end
 
 end
