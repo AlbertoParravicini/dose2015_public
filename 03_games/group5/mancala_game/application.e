@@ -244,7 +244,7 @@ feature {NONE} -- Initialization
 						io.last_string.to_lower
 
 						if valid_range_input(io.last_string) and adversary_rule_set.is_valid_action (current_state_a.current_player.name, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
-							current_state_a := adversary_rule_set.get_current_state
+							current_state_a := adversary_rule_set.current_state
 							print (current_state_a.out + "%N")
 
 						elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
