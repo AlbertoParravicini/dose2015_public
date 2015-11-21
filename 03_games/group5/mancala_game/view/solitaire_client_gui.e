@@ -5,9 +5,9 @@ note
 	revision: "$Revision$"
 
 class
-	SOLITAIRE_CLIENT_GUI
+	SOLITAIRE_VIEW_GUI
 
 inherit
-	CLIENT
+	VIEW
 
 end

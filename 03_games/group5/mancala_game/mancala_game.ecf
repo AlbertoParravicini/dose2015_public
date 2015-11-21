@@ -21,7 +21,7 @@
 				<cluster name="game_logic" location=".\game_manager\game_logic\"/>
 			</cluster>
 			<tests name="tests" location=".\tests\"/>
-			<cluster name="client" location=".\client\"/>
+			<cluster name="view" location=".\view\"/>
 		</cluster>
 	</target>
 </system>

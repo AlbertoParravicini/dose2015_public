@@ -84,7 +84,7 @@ feature
 					-- Empties the current_hole, distributes the stones counter-clockwise, updates the score, updates the current_hole;
 				successor_2.move_counter_clockwise
 
-				
+
 				successors.extend (successor_1)
 				successors.extend (successor_2)
 			end -- End external if
@@ -110,7 +110,7 @@ feature
 			-- even though the heuristic is both admissible and consistent,
 			-- it doesn't really provide a fast convergence to the solution :(
 		do
-			Result := {GAME_CONSTANTS}.num_of_stones - state.player.score
+			Result := 4*({GAME_CONSTANTS}.num_of_stones - state.player.score)
 		ensure then
 			result_is_non_negative: Result >= 0
 			result_is_zero_in_successful_state: (Result = 0 implies is_successful (state)) and then (is_successful (state) implies Result = 0)

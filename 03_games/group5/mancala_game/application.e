@@ -249,71 +249,20 @@ feature {NONE} -- Initialization
 						if io.last_string.is_integer and then adversary_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
 							current_state_a := adversary_rule_set.current_state
 							print (current_state_a.out + "%N")
-
-						elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
-
-							print ("Searching for the best move...%N")
-							current_state_a.set_parent (void)
-							current_state_a.set_rule_applied (void)
-							engine_a.reset_engine
-							engine_a.perform_search (current_state_a)
-							print ("Solution found!%N")
-							current_state_a := engine_a.obtained_successor
-							adversary_rule_set.set_current_state (engine_a.obtained_successor)
-							print (current_state_a.out + "%N")
-
-						elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") then
-
-							from
-							until
-								problem_a.is_end (current_state_a)
-							loop
-								print ("Thinking...%N")
-								engine_a.reset_engine
-								engine_a.perform_search (current_state_a)
-								print ("Solution found!%N")
-								current_state_a := engine_a.obtained_successor
-								adversary_rule_set.set_current_state (engine_a.obtained_successor)
-								print (current_state_a.out + "%N")
 							end
-						else
-							print ("ERROR: " + io.last_string + " isn't a valid move!%N")
-						end
-					else
-						print ("Thinking...%N")
-						engine_a.reset_engine
-						engine_a.perform_search (current_state_a)
-						print (engine_a.obtained_successor.out + "%N")
-						current_state_a := engine_a.obtained_successor
-						adversary_rule_set.set_current_state (engine_a.obtained_successor)
 					end
 				end
-				print ("%N%NGG%N")
-				if current_state_a.players.at (1).score > current_state_a.players.at (2).score then
-					print (current_state_a.players.at (1).name + " WON!%N")
-				elseif current_state_a.players.at (1).score < current_state_a.players.at (2).score then
-					print (current_state_a.players.at (2).name + " WON!%N")
-				else
-					print ("IT'S A DRAW!%N")
-				end
-			else
-				print ("ERROR: WHAT THE FUCK IS GOING ON?%N")
 			end
 		end
 
-	prepare
-			-- Prepare the first window to be displayed.
-			-- Perform one call to first window in order to
-			-- avoid to violate the invariant of class EV_APPLICATION.
-		do
-				-- create and initialize the first window.
-				--create first_window
+--	view_mode: MAIN_WINDOW_CLI
 
-				-- Show the first window.
-				--| TODO: Remove this line if you don't want the first
-				--|       window to be shown at the start of the program.
-				--first_window.show
-		end
+
+--	make
+--		do
+--			create view_mode.make_and_launch
+--		end
+
 
 feature {NONE} -- Implementation
 

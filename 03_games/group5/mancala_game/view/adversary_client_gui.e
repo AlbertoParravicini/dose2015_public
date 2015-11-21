@@ -5,9 +5,9 @@ note
 	revision: "$Revision$"
 
 class
-	ADVERSARY_CLIENT_GUI
+	ADVERSARY_VIEW_GUI
 
 inherit
-	CLIENT
+	VIEW
 
 end
