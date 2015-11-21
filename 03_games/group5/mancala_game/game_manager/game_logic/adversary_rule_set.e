@@ -54,6 +54,13 @@ feature -- Status report
 
 feature -- Implementation
 
+	ai_move (a_state: ADVERSARY_STATE)
+		do
+			engine.reset_engine
+			engine.perform_search (a_state)
+			current_state := engine.obtained_successor
+		end
+
 	is_valid_action (a_player_id: INTEGER; a_action: ACTION): BOOLEAN
 		local
 			l_is_valid: BOOLEAN
@@ -61,13 +68,13 @@ feature -- Implementation
 		do
 			l_is_valid := true
 
-			if attached {ACTION_SELECT} a_action as action_select then
-				l_hole_selected := action_select.get_selection
+				-- INVALID PLAYER:
+			if l_is_valid and then a_player_id /= current_state.index_of_current_player then
+				l_is_valid := false
+			end
 
-					-- INVALID PLAYER:
-				if l_is_valid and then a_player_id /= current_state.index_of_current_player then
-					l_is_valid := false
-				end
+			if l_is_valid and then attached {ACTION_SELECT} a_action as action_select then
+				l_hole_selected := action_select.get_selection
 
 					-- THE HOLE SELECTED EXISTS:
 				if l_is_valid and then action_select.get_selection <= 0 or {GAME_CONSTANTS}.num_of_holes < action_select.get_selection then
@@ -83,8 +90,18 @@ feature -- Implementation
 				if l_is_valid and then current_state.map.get_hole_value (l_hole_selected) = 0 then
 					l_is_valid := false
 				end
-			else
-				l_is_valid := false
+			elseif l_is_valid and then attached {ACTION_OTHER} a_action as action_other then
+				if action_other.action = (create {ENUM_OTHER}).hint then
+					current_state.set_parent (Void)
+					current_state.set_rule_applied (Void)
+					engine.reset_engine
+					engine.perform_search (current_state)
+					current_state := engine.obtained_successor
+				elseif action_other.action = (create {ENUM_OTHER}).solve then
+					l_is_valid := true
+				else
+					l_is_valid := false
+				end
 			end
 
 			if attached {ACTION_SELECT} a_action as action_select and then l_is_valid then

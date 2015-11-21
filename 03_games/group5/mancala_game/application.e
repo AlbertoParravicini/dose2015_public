@@ -16,8 +16,8 @@ feature {NONE} -- Initialization
 		local
 			mode_selected: BOOLEAN
 			algorithm_selected: BOOLEAN
-			problem_a: ADVERSARY_PROBLEM
-			engine_a: ADVERSARY_SEARCH_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
+		--	problem_a: ADVERSARY_PROBLEM
+		--	engine_a: ADVERSARY_SEARCH_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
 			initial_state_a: ADVERSARY_STATE
 			adversary_rule_set: ADVERSARY_RULE_SET
 			players: ARRAYED_LIST [PLAYER]
@@ -29,6 +29,7 @@ feature {NONE} -- Initialization
 			selected_algorithm_string: STRING
 			mode_selected_string: STRING
 			initial_state_s: SOLITAIRE_STATE
+			move_done : BOOLEAN
 		do
 				--------------------------------------------------------------------------------------------------------
 			print ("WELCOME TO MANCALA%N%N")
@@ -45,11 +46,6 @@ feature {NONE} -- Initialization
 					mode_selected := true
 				elseif io.last_string.is_equal ("2") or io.last_string.is_equal ("adversary") then
 					mode_selected_string := "adversary"
-					create problem_a.make
-					create players.make (2)
-					players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("pippo", 0))
-					players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("pluto", 0))
-					create initial_state_a.make (players)
 					mode_selected := true
 				else
 					print ("ERROR: " + io.last_string + " is not a valid game mode!%N")
@@ -86,13 +82,13 @@ feature {NONE} -- Initialization
 					io.read_line
 					io.last_string.to_lower
 					if io.last_string.is_equal ("1") then
-						engine_a := create {MINIMAX_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem_a)
+						selected_algorithm_string := "minimax"
 						algorithm_selected := true
 					elseif io.last_string.is_equal ("2") then
-						engine_a := create {MINIMAX_AB_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem_a)
+						selected_algorithm_string := "minimax_ab"
 						algorithm_selected := true
 					elseif io.last_string.is_equal ("3") then
-						engine_a := create {NEGASCOUT_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem_a)
+						selected_algorithm_string := "negascout"
 						algorithm_selected := true
 					else
 						print ("ERROR: " + io.last_string + " is not a valid algorithm!%N")
@@ -218,13 +214,21 @@ feature {NONE} -- Initialization
 					---------------ADVERSARY GAME---------------------------------------------------------------------------
 
 			elseif mode_selected_string.is_equal ("adversary") then
+
+
+
+				create players.make (2)
+				players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("pippo", 0))
+				players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("pluto", 0))
+				create initial_state_a.make (players)
+
 				print ("ADVERSARY MANCALA%N")
 				print (initial_state_a.out)
-				create adversary_rule_set.make_by_state (initial_state_a, "negascout", 5)
+				create adversary_rule_set.make_by_state (initial_state_a, selected_algorithm_string, 5)
 				from
 					current_state_a := initial_state_a
 				until
-					problem_a.is_end (current_state_a)
+					adversary_rule_set.problem.is_end (current_state_a)
 				loop
 					if current_state_a.index_of_current_player = 1 then
 						print ("It's your turn: insert which hole you want to empty, from 1 to " + ({GAME_CONSTANTS}.num_of_holes // 2).out + "%N%N")
@@ -235,27 +239,22 @@ feature {NONE} -- Initialization
 						if io.last_string.is_integer and then adversary_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
 							current_state_a := adversary_rule_set.current_state
 							print (current_state_a.out + "%N")
-						elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
-							print ("Searching for the best move...%N")
-							current_state_a.set_parent (void)
-							current_state_a.set_rule_applied (void)
-							engine_a.reset_engine
-							engine_a.perform_search (current_state_a)
+						elseif (io.last_string.is_equal ("h") or io.last_string.is_equal ("hint")) and then adversary_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint)) then
 							print ("Solution found!%N")
-							current_state_a := engine_a.obtained_successor
-							adversary_rule_set.set_current_state (engine_a.obtained_successor)
+
+
+							current_state_a := adversary_rule_set.engine.obtained_successor
 							print (current_state_a.out + "%N")
-						elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") then
+						elseif (io.last_string.is_equal ("s") or io.last_string.is_equal ("solve")) and then adversary_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve)) then
 							from
 							until
-								problem_a.is_end (current_state_a)
+								adversary_rule_set.problem.is_end (current_state_a)
 							loop
-								print ("Thinking...%N")
-								engine_a.reset_engine
-								engine_a.perform_search (current_state_a)
-								print ("Solution found!%N")
-								current_state_a := engine_a.obtained_successor
-								adversary_rule_set.set_current_state (engine_a.obtained_successor)
+
+								-- THIS IS UGLY
+								move_done := adversary_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve))
+								adversary_rule_set.ai_move (current_state_a)
+								current_state_a := adversary_rule_set.engine.obtained_successor
 								print (current_state_a.out + "%N")
 							end
 						else
@@ -263,11 +262,9 @@ feature {NONE} -- Initialization
 						end
 					else
 						print ("Thinking...%N")
-						engine_a.reset_engine
-						engine_a.perform_search (current_state_a)
-						print (engine_a.obtained_successor.out + "%N")
-						current_state_a := engine_a.obtained_successor
-						adversary_rule_set.set_current_state (engine_a.obtained_successor)
+						adversary_rule_set.ai_move (current_state_a)
+						current_state_a := adversary_rule_set.engine.obtained_successor
+						print (current_state_a.out + "%N")
 					end
 				end
 				print ("%N%NGG%N")
