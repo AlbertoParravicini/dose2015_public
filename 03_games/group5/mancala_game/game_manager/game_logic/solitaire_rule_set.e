@@ -146,8 +146,6 @@ feature -- Implementation
 
 				if engine.is_search_successful then
 					current_state := engine.path_to_obtained_solution.at (2)
-				else
-					print("asdasdasdasdasd")
 				end
 				l_is_valid := true
 			end
