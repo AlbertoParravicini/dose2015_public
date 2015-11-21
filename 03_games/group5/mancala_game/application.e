@@ -121,34 +121,30 @@ feature {NONE} -- Initialization
 					if io.last_string.is_integer and then solitaire_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
 						current_state_s := solitaire_rule_set.current_state
 						first_move_done := true
-					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
+					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint)) then
 						print ("Searching for the best move...%N")
-						engine_s.reset_engine
-						engine_s.perform_search
-						if engine_s.is_search_successful then
+						if solitaire_rule_set.engine.is_search_successful then
 							print ("The search was successful!%N")
-							current_state_s := engine_s.path_to_obtained_solution.at (2)
+							current_state_s := solitaire_rule_set.current_state
 							first_move_done := true
 						else
 							print ("The search wasn't successful!%N")
 						end
-					elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") then
+					elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve)) then
 						print ("Trying to solve the game...%N")
-						engine_s.reset_engine
-						engine_s.perform_search
-						if engine_s.is_search_successful then
+						if solitaire_rule_set.engine.is_search_successful then
 							print ("The search was successful!%N")
 							from
 								i := 1
 							until
-								i > engine_s.path_to_obtained_solution.count - 1
+								i > solitaire_rule_set.engine.path_to_obtained_solution.count - 1
 							loop
-								print (engine_s.path_to_obtained_solution.i_th (i).out + "%N%N")
-								engine_s.path_to_obtained_solution.forth
+								print (solitaire_rule_set.engine.path_to_obtained_solution.i_th (i).out + "%N%N")
+								solitaire_rule_set.engine.path_to_obtained_solution.forth
 								i := i + 1
 							end
 							first_move_done := true
-							current_state_s := engine_s.path_to_obtained_solution.last
+							current_state_s := solitaire_rule_set.engine.path_to_obtained_solution.last
 						else
 							print ("The search wasn't successful!%N")
 						end
@@ -175,45 +171,35 @@ feature {NONE} -- Initialization
 						current_state_s := solitaire_rule_set.current_state
 						current_state_s.move_counter_clockwise
 						print ("%NRotation: Counter-Clockwise%N" + current_state_s.out + "%N%N")
-					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
+					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint)) then
 						print ("Searching for the best move...%N")
-						current_state_s.set_parent (void)
-						current_state_s.set_rule_applied (void)
-						problem_s.make_with_initial_state (current_state_s)
-						engine_s.set_problem (problem_s)
-						engine_s.reset_engine
-						engine_s.perform_search
-						if engine_s.is_search_successful then
+
+						if solitaire_rule_set.engine.is_search_successful  then
 							print ("The search was successful!%N%N")
-							current_state_s := engine_s.path_to_obtained_solution.at (2)
+							current_state_s := solitaire_rule_set.engine.path_to_obtained_solution.at (2)
 							print (current_state_s.rule_applied.out + "%N" + current_state_s.out + "%N%N")
 						else
 							print ("The search wasn't successful!%N")
 						end
-					elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") then
+					elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve)) then
 						print ("Trying to solve the game...%N")
-						current_state_s.set_parent (void)
-						current_state_s.set_rule_applied (void)
-						problem_s.make_with_initial_state (current_state_s)
-						engine_s.set_problem (problem_s)
-						engine_s.reset_engine
-						engine_s.perform_search
-						if engine_s.is_search_successful then
+
+						if solitaire_rule_set.engine.is_search_successful then
 							print ("The search was successful!%N%N")
 							from
 								i := 2
-								print ("solition depth:" + engine_s.path_to_obtained_solution.count.out + "%N")
+								print ("solition depth:" + solitaire_rule_set.engine.path_to_obtained_solution.count.out + "%N")
 							until
-								i > engine_s.path_to_obtained_solution.count
+								i > solitaire_rule_set.engine.path_to_obtained_solution.count
 							loop
-								if engine_s.path_to_obtained_solution.i_th (i).rule_applied /= void then
+								if solitaire_rule_set.engine.path_to_obtained_solution.i_th (i).rule_applied /= void then
 									print (engine_s.path_to_obtained_solution.i_th (i).rule_applied.out + "%N")
 								end
-								print (engine_s.path_to_obtained_solution.i_th (i).out + "%N%N")
-								engine_s.path_to_obtained_solution.forth
+								print (solitaire_rule_set.engine.path_to_obtained_solution.i_th (i).out + "%N%N")
+								solitaire_rule_set.engine.path_to_obtained_solution.forth
 								i := i + 1
 							end
-							current_state_s := engine_s.path_to_obtained_solution.last
+							current_state_s := solitaire_rule_set.engine.path_to_obtained_solution.last
 						else
 							print ("The search wasn't successful!%N")
 						end

@@ -25,6 +25,11 @@ feature -- Status Report
 		deferred
 		end
 
+	index_of_current_player: INTEGER
+			-- Return the player index who plays in the this turn;
+		deferred
+		end
+
 feature -- Status Setting
 
 	set_map (new_map: GAME_MAP)
@@ -42,7 +47,7 @@ feature -- Status Setting
 		do
 			current_player := new_current_player
 		end
-		
+
 invariant
 	num_of_stones_is_constant: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
 end

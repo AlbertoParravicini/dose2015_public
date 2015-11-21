@@ -20,8 +20,6 @@ feature -- Initialization
 		do
 			current_state := a_initial_state
 			create problem.make_with_initial_state (a_initial_state)
-
-
 			if selected_algorithm.is_equal ("bounded_breadth_first_search") then
 				engine := create {BOUNDED_BREADTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]}.make (problem)
 				if attached {BOUNDED_BREADTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]} engine as engine_bfs then
@@ -96,16 +94,30 @@ feature -- Implementation
 	is_valid_action (a_player_id: INTEGER; a_action: ACTION): BOOLEAN
 		local
 			l_is_valid: BOOLEAN
+			l_is_first_turn: BOOLEAN
 		do
 			l_is_valid := true
 
-				-- THE ACTION MUST BE AN ACTION_SELECT OR AN ACTION_ROTATE OR...
-			if l_is_valid and then not attached {ACTION_SELECT} a_action or not attached {ACTION_ROTATE} a_action then
-				l_is_valid := true
+				-- Check if it is the first turn of the game;
+			if (current_state.parent = Void and current_state.rule_applied = Void) then
+				l_is_first_turn := true
+			end
+
+				-- INVALID PLAYER:
+			if l_is_valid and then a_player_id /= current_state.index_of_current_player then
+				print("INVALID PLAYER%N")
+				l_is_valid := false
+			end
+
+				-- THE ACTION MUST BE AN ACTION_SELECT OR AN ACTION_ROTATE OR ANOTHER COMPATIBLE ACTION:
+			if l_is_valid and then (not attached {ACTION_SELECT} a_action and not attached {ACTION_ROTATE} a_action and not attached {ACTION_OTHER} a_action) then
+				print("THE ACTION MUST BE AN ACTION_SELECT OR AN ACTION_ROTATE OR ANOTHER COMPATIBLE ACTION%N")
+				l_is_valid := false
 			end
 
 				-- CHOSING THE HOLE IS ALLOWED ONLY IN THE FIRST TURN:
-			if l_is_valid and then attached {ACTION_SELECT} a_action as select_action and then (current_state.parent /= Void or current_state.rule_applied /= Void) then
+			if l_is_valid and then attached {ACTION_SELECT} a_action as select_action and then l_is_first_turn = false then
+				print("CHOSING THE HOLE IS ALLOWED ONLY IN THE FIRST TURN%N")
 				l_is_valid := false
 			end
 
@@ -114,15 +126,32 @@ feature -- Implementation
 				l_is_valid := false
 			end
 
-				-- MOVE CLOCKWISE OR COUNTER-CLOCKWISE ONLY IF THE HOLE IS SELECTED
-			if  l_is_valid and then attached {ACTION_ROTATE} a_action as action_rotate and (current_state.selected_hole <= 0 or current_state.selected_hole > {GAME_CONSTANTS}.num_of_holes) then
+				-- MOVE CLOCKWISE OR COUNTER-CLOCKWISE ONLY IF THE HOLE IS SELECTED:
+			if l_is_valid and then attached {ACTION_ROTATE} a_action as action_rotate and (current_state.selected_hole <= 0 or current_state.selected_hole > {GAME_CONSTANTS}.num_of_holes) then
 				l_is_valid := false
 			end
 
-				-- ACCEPT ONLY IF THE HOLE ISN'T EMPTY
+				-- ACCEPT ONLY IF THE HOLE ISN'T EMPTY:
 			if l_is_valid and then attached {ACTION_ROTATE} a_action as action_rotate and (current_state.map.get_hole_value (current_state.selected_hole) <= 0) then
 				l_is_valid := false
 			end
+
+				-- THE ACTION IS A HINT OR A SOLVE REQUEST:
+			if l_is_valid and then attached {ACTION_OTHER} a_action as action_other and then (action_other = (create {ENUM_OTHER}).hint or action_other = (create {ENUM_OTHER}).solve) then
+				print(" THE ACTION IS A HINT OR A SOLVE REQUEST")
+				current_state.set_parent (Void)
+				current_state.set_rule_applied (Void)
+				problem.make_with_initial_state (current_state)
+				engine.set_problem (problem)
+				engine.reset_engine
+				engine.perform_search
+
+				if engine.is_search_successful then
+					current_state := engine.path_to_obtained_solution.at (2)
+				end
+				l_is_valid := true
+			end
+
 			if l_is_valid and then attached {ACTION_SELECT} a_action as action_select then
 				current_state := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state, action_select)
 			elseif l_is_valid and then attached {ACTION_ROTATE} a_action as action_rotate then
@@ -130,4 +159,5 @@ feature -- Implementation
 			end
 			Result := l_is_valid
 		end
+
 end

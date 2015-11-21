@@ -106,7 +106,7 @@ feature -- Implementation Variables
 		-- List contains the players of the game.
 
 	index_of_current_player: INTEGER
-		-- Adjourned each round.
+		-- Updated each round.
 
 
 	valid_player_hole (l_player_index: INTEGER; l_hole: INTEGER): BOOLEAN
@@ -345,8 +345,6 @@ feature -- Status report
 
 	is_max: BOOLEAN
 			-- Indicates whether current state is a max state
-		require else
-			index_of_current_player /= VOID
 		do
 			if index_of_current_player \\ 2 = 0 then
 				Result := false
@@ -361,8 +359,6 @@ feature -- Status report
 
 	is_min: BOOLEAN
 			-- Indicates whether current state is a min state
-		require else
-			index_of_current_player /= VOID
 		do
 			if is_max then
 				Result := false
