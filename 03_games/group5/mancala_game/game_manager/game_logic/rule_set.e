@@ -31,8 +31,8 @@ feature -- Status report
 			non_void_parameters: a_player_id /= Void and a_action /= Void
 		deferred
 		ensure
-			non_performed_action: Result = false implies current_state = Old current_state
-			performed_action: Result = true implies current_state /= Old current_state
+			non_performed_action: (Result = false implies (current_state = Old current_state))
+			performed_action: (not attached {ACTION_OTHER} a_action) implies (Result = true implies (current_state /= Old current_state))
 		end
 
 feature -- Status setting

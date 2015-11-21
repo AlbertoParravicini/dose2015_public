@@ -146,6 +146,8 @@ feature -- Implementation
 
 				if engine.is_search_successful then
 					current_state := engine.path_to_obtained_solution.at (2)
+				else
+					print("asdasdasdasdasd")
 				end
 				l_is_valid := true
 			end
@@ -154,6 +156,11 @@ feature -- Implementation
 				current_state := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state, action_select)
 			elseif l_is_valid and then attached {ACTION_ROTATE} a_action as action_rotate then
 				current_state := create {SOLITAIRE_STATE}.make_from_parent_and_rule (current_state, action_rotate)
+				if action_rotate.rotation = (create {ENUM_ROTATE}).clockwise then
+					current_state.move_clockwise
+				else
+					current_state.move_counter_clockwise
+				end
 			end
 			Result := l_is_valid
 		end

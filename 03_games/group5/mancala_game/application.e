@@ -169,13 +169,9 @@ feature {NONE} -- Initialization
 					io.last_string.to_lower
 					if io.last_string.is_equal ("a") and solitaire_rule_set.is_valid_action (1, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise)) then
 						current_state_s := solitaire_rule_set.current_state
-						current_state_s.move_clockwise
-						solitaire_rule_set.set_current_state (current_state_s)
 						print ("%NRotation: Clockwise%N" + current_state_s.out + "%N%N")
 					elseif io.last_string.is_equal ("d") and solitaire_rule_set.is_valid_action (1, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise)) then
 						current_state_s := solitaire_rule_set.current_state
-						current_state_s.move_counter_clockwise
-						solitaire_rule_set.set_current_state (current_state_s)
 						print ("%NRotation: Counter-Clockwise%N" + current_state_s.out + "%N%N")
 					elseif (io.last_string.is_equal ("h") or io.last_string.is_equal ("hint")) and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint)) then
 						print ("Searching for the best move...%N")
