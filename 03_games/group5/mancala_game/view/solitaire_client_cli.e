@@ -10,4 +10,12 @@ class
 inherit
 	VIEW
 
+create
+	make_and_launch
+
+feature
+	make_and_launch
+		do
+			
+		end
 end
