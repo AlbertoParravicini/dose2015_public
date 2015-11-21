@@ -49,5 +49,5 @@ feature -- Status Setting
 		end
 
 invariant
-	num_of_stones_is_constant: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
+	--num_of_stones_is_constant: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
 end

@@ -26,7 +26,6 @@ feature {NONE} -- Initialization
 			i: INTEGER
 			current_state_a: ADVERSARY_STATE
 			solitaire_rule_set: SOLITAIRE_RULE_SET
-
 			selected_algorithm_string: STRING
 			mode_selected_string: STRING
 			initial_state_s: SOLITAIRE_STATE
@@ -45,6 +44,7 @@ feature {NONE} -- Initialization
 					mode_selected_string := "solitaire"
 					mode_selected := true
 				elseif io.last_string.is_equal ("2") or io.last_string.is_equal ("adversary") then
+					mode_selected_string := "adversary"
 					create problem_a.make
 					create players.make (2)
 					players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("pippo", 0))
@@ -76,7 +76,7 @@ feature {NONE} -- Initialization
 						print ("ERROR: " + io.last_string + " is not a valid algorithm!%N")
 					end
 				end
-			elseif problem_a /= void then
+			elseif mode_selected_string.is_equal ("adversary") then
 				from
 					algorithm_selected := false
 					print ("%NSelect an adversary search algorithm:%N 1. Minimax%N 2. Minimax with Alfa-Beta pruning%N 3. Negascout%N")
@@ -107,9 +107,9 @@ feature {NONE} -- Initialization
 			if mode_selected_string.is_equal ("solitaire") then
 				print ("SOLITAIRE MANCALA%N")
 				create initial_state_s.make
+
 				create solitaire_rule_set.make_by_state (initial_state_s, selected_algorithm_string, -1)
 				print (initial_state_s.out)
-
 
 					-- First move
 				from
@@ -175,8 +175,7 @@ feature {NONE} -- Initialization
 						print ("%NRotation: Counter-Clockwise%N" + current_state_s.out + "%N%N")
 					elseif (io.last_string.is_equal ("h") or io.last_string.is_equal ("hint")) and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint)) then
 						print ("Searching for the best move...%N")
-
-						if solitaire_rule_set.engine.is_search_successful  then
+						if solitaire_rule_set.engine.is_search_successful then
 							print ("The search was successful!%N%N")
 							current_state_s := solitaire_rule_set.engine.path_to_obtained_solution.at (2)
 							print (current_state_s.rule_applied.out + "%N" + current_state_s.out + "%N%N")
@@ -185,7 +184,6 @@ feature {NONE} -- Initialization
 						end
 					elseif (io.last_string.is_equal ("s") or io.last_string.is_equal ("solve")) and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve)) then
 						print ("Trying to solve the game...%N")
-
 						if solitaire_rule_set.engine.is_search_successful then
 							print ("The search was successful!%N%N")
 							from
@@ -219,7 +217,7 @@ feature {NONE} -- Initialization
 
 					---------------ADVERSARY GAME---------------------------------------------------------------------------
 
-			elseif problem_a /= void then
+			elseif mode_selected_string.is_equal ("adversary") then
 				print ("ADVERSARY MANCALA%N")
 				print (initial_state_a.out)
 				create adversary_rule_set.make_by_state (initial_state_a, "negascout", 5)
@@ -237,23 +235,62 @@ feature {NONE} -- Initialization
 						if io.last_string.is_integer and then adversary_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
 							current_state_a := adversary_rule_set.current_state
 							print (current_state_a.out + "%N")
+						elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") then
+							print ("Searching for the best move...%N")
+							current_state_a.set_parent (void)
+							current_state_a.set_rule_applied (void)
+							engine_a.reset_engine
+							engine_a.perform_search (current_state_a)
+							print ("Solution found!%N")
+							current_state_a := engine_a.obtained_successor
+							adversary_rule_set.set_current_state (engine_a.obtained_successor)
+							print (current_state_a.out + "%N")
+						elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") then
+							from
+							until
+								problem_a.is_end (current_state_a)
+							loop
+								print ("Thinking...%N")
+								engine_a.reset_engine
+								engine_a.perform_search (current_state_a)
+								print ("Solution found!%N")
+								current_state_a := engine_a.obtained_successor
+								adversary_rule_set.set_current_state (engine_a.obtained_successor)
+								print (current_state_a.out + "%N")
 							end
+						else
+							print ("ERROR: " + io.last_string + " isn't a valid move!%N")
+						end
+					else
+						print ("Thinking...%N")
+						engine_a.reset_engine
+						engine_a.perform_search (current_state_a)
+						print (engine_a.obtained_successor.out + "%N")
+						current_state_a := engine_a.obtained_successor
+						adversary_rule_set.set_current_state (engine_a.obtained_successor)
 					end
 				end
+				print ("%N%NGG%N")
+				if current_state_a.players.at (1).score > current_state_a.players.at (2).score then
+					print (current_state_a.players.at (1).name + " WON!%N")
+				elseif current_state_a.players.at (1).score < current_state_a.players.at (2).score then
+					print (current_state_a.players.at (2).name + " WON!%N")
+				else
+					print ("IT'S A DRAW!%N")
+				end
+			else
+				print ("ERROR: WHAT THE FUCK IS GOING ON?%N")
 			end
 		end
 
---	view_mode: MAIN_WINDOW_CLI
+		--	view_mode: MAIN_WINDOW_CLI
 
-
---	make
---		do
---			create view_mode.make_and_launch
---		end
-
+		--	make
+		--		do
+		--			create view_mode.make_and_launch
+		--		end
 
 feature {NONE} -- Implementation
-
 
 		--first_window: MAIN_WINDOW
 		-- Main window.

@@ -230,7 +230,7 @@ feature -- Status report
 				placed_in_empty_hole := (map.get_hole_value (selected_hole) <= 1)
 				no_score_increase := player.score = parent.player.score
 			end
-			Result := (placed_in_empty_hole and no_score_increase) or (map.get_hole_value (selected_hole) = 0 and (map.num_of_stones - map.sum_of_stores_token > 0))
+			Result := (placed_in_empty_hole and no_score_increase) or (selected_hole > 0 and then (map.get_hole_value (selected_hole) = 0 and (map.num_of_stones - map.sum_of_stores_token > 0)))
 		end
 
 	selected_hole: INTEGER
