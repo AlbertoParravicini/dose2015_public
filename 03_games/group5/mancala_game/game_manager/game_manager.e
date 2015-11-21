@@ -12,7 +12,8 @@ create
 
 feature {NONE} -- Creation
 
-	make (a_algorithm: STRING)
+
+	make (a_algorithm: STRING; a_algorithm_depth: INTEGER)
 			-- Creates a game manager based on the options chosen by the user;
 			-- the game mode is implied by the choice of the algorithm;
 			-- The game manager contains the main game loop, and a reference to the rules set and the current state;
@@ -20,12 +21,8 @@ feature {NONE} -- Creation
 		require
 			valid_algorthm: a_algorithm /= VOID and not a_algorithm.is_empty
 			supported_algorithms: is_valid_algorithm(a_algorithm)
-
+			a_algorithm_depth >= 0
 		do
-
-			if false then
-
-			end
 
 		end
 
@@ -56,4 +53,11 @@ feature {NONE} -- Implementation
 			Result := l_result
 		end
 
+feature -- Status report
+
+	rules_set: RULE_SET
+		-- Reference to the rules-set of the game; it holds a reference to most of the game logic and the AI;
+
+	current_state: GAME_STATE
+		-- The current state of the game;
 end

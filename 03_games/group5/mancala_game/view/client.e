@@ -13,6 +13,7 @@ feature
 			-- the ID will be assigned by the controller and used to identify univocally the client;
 		do
 			id_player := 0
+			current_game_manager := current_game_manager
 		end
 
 feature {NONE} -- Implementation

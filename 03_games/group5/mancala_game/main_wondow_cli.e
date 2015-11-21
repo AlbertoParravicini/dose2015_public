@@ -105,7 +105,7 @@ feature {NONE} -- Initialization
 				print ("%NSet the depth of the algorithm:%N")
 				io.read_line
 				io.last_string.to_lower
-				if io.last_string.is_integer and then io.last_string.to_integer > 0 then
+				if io.last_string.is_integer and then io.last_string.to_integer >= 0 then
 					l_algorithm_depth := io.last_string.to_integer
 					print ("Depth chosen: " + l_algorithm_depth.out + "%N")
 				else
@@ -116,9 +116,10 @@ feature {NONE} -- Initialization
 
 				-- INTERFACE CREATION
 			if selected_mode.is_equal ("solitaire") then
-				solitaire_view := create {SOLITAIRE_VIEW_CLI}.make_and_launch
+
+				solitaire_view := create {SOLITAIRE_VIEW_CLI}.make (create {GAME_MANAGER}.make (selected_algorithm, l_algorithm_depth))
 			elseif selected_mode.is_equal ("adversary")	then
-				adversary_view := create {ADVERSARY_VIEW_CLI}.make_and_launch
+				adversary_view := create {ADVERSARY_VIEW_CLI}.make (create {GAME_MANAGER}.make (selected_algorithm, l_algorithm_depth))
 			else
 				print ("ERROR")
 			end

@@ -11,13 +11,6 @@ inherit
 	VIEW
 
 create
-	make_and_launch
+	make
 
-feature
-	make_and_launch
-		do
-			-- crea game manager:
-					-- crea e contiene il ruleset
-					-- contiene il loop principale				
-		end
 end
