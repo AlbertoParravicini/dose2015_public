@@ -16,9 +16,7 @@ feature {NONE} -- Initialization
 		local
 			mode_selected: BOOLEAN
 			algorithm_selected: BOOLEAN
-			problem_s: SOLITAIRE_PROBLEM
 			problem_a: ADVERSARY_PROBLEM
-			engine_s: SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]
 			engine_a: ADVERSARY_SEARCH_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
 			initial_state_a: ADVERSARY_STATE
 			adversary_rule_set: ADVERSARY_RULE_SET
@@ -28,6 +26,10 @@ feature {NONE} -- Initialization
 			i: INTEGER
 			current_state_a: ADVERSARY_STATE
 			solitaire_rule_set: SOLITAIRE_RULE_SET
+
+			selected_algorithm_string: STRING
+			mode_selected_string: STRING
+			initial_state_s: SOLITAIRE_STATE
 		do
 				--------------------------------------------------------------------------------------------------------
 			print ("WELCOME TO MANCALA%N%N")
@@ -40,7 +42,7 @@ feature {NONE} -- Initialization
 				io.read_line
 				io.last_string.to_lower
 				if io.last_string.is_equal ("1") or io.last_string.is_equal ("solitaire") then
-					create problem_s.make
+					mode_selected_string := "solitaire"
 					mode_selected := true
 				elseif io.last_string.is_equal ("2") or io.last_string.is_equal ("adversary") then
 					create problem_a.make
@@ -55,7 +57,7 @@ feature {NONE} -- Initialization
 			end
 
 				--------------------------------------------------------------------------------------------------------
-			if problem_s /= void then
+			if mode_selected_string.is_equal ("solitaire") then
 				from
 					algorithm_selected := false
 					print ("%NSelect a single state search algorithm:%N 1.Cycle checking depth fist search%N 2. A*%N Other algorithms coming soon...%N")
@@ -65,10 +67,10 @@ feature {NONE} -- Initialization
 					io.read_line
 					io.last_string.to_lower
 					if io.last_string.is_equal ("1") then
-						engine_s := create {CYCLE_CHECKING_DEPTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]}.make (problem_s)
+						selected_algorithm_string := "depth_first_with_cycle_checking"
 						algorithm_selected := true
 					elseif io.last_string.is_equal ("2") then
-						engine_s := create {A_STAR_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]}.make (problem_s)
+						selected_algorithm_string := "a_star"
 						algorithm_selected := true
 					else
 						print ("ERROR: " + io.last_string + " is not a valid algorithm!%N")
@@ -102,14 +104,16 @@ feature {NONE} -- Initialization
 				--------------------------------------------------------------------------------------------------------
 
 				---------------SOLITAIRE--------------------------------------------------------------------------------
-			if problem_s /= void then
+			if mode_selected_string.is_equal ("solitaire") then
 				print ("SOLITAIRE MANCALA%N")
-				print (problem_s.initial_state.out)
-				create solitaire_rule_set.make_by_state (problem_s.initial_state, "a_star", -1)
+				create initial_state_s.make
+				create solitaire_rule_set.make_by_state (initial_state_s, selected_algorithm_string, -1)
+				print (initial_state_s.out)
+
 
 					-- First move
 				from
-					current_state_s := problem_s.initial_state
+					current_state_s := solitaire_rule_set.current_state
 					first_move_done := false
 				until
 					first_move_done = true
@@ -121,7 +125,7 @@ feature {NONE} -- Initialization
 					if io.last_string.is_integer and then solitaire_rule_set.is_valid_action (1, create {ACTION_SELECT}.make (io.last_string.to_integer)) then
 						current_state_s := solitaire_rule_set.current_state
 						first_move_done := true
-					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint)) then
+					elseif (io.last_string.is_equal ("h") or io.last_string.is_equal ("hint")) and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint)) then
 						print ("Searching for the best move...%N")
 						if solitaire_rule_set.engine.is_search_successful then
 							print ("The search was successful!%N")
@@ -130,7 +134,7 @@ feature {NONE} -- Initialization
 						else
 							print ("The search wasn't successful!%N")
 						end
-					elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve)) then
+					elseif (io.last_string.is_equal ("s") or io.last_string.is_equal ("solve")) and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve)) then
 						print ("Trying to solve the game...%N")
 						if solitaire_rule_set.engine.is_search_successful then
 							print ("The search was successful!%N")
@@ -157,7 +161,7 @@ feature {NONE} -- Initialization
 					-- Other moves
 				from
 				until
-					problem_s.is_successful (current_state_s) or current_state_s.is_game_over
+					solitaire_rule_set.problem.is_successful (current_state_s) or current_state_s.is_game_over
 				loop
 					print ("Do you want to move clockwise (A) or counter-clockwise (D)?%N")
 					print ("If you are stuck, ask for a hint (H),%N%Tor let the computer solve the game for you (S)!%N")
@@ -166,12 +170,14 @@ feature {NONE} -- Initialization
 					if io.last_string.is_equal ("a") and solitaire_rule_set.is_valid_action (1, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise)) then
 						current_state_s := solitaire_rule_set.current_state
 						current_state_s.move_clockwise
+						solitaire_rule_set.set_current_state (current_state_s)
 						print ("%NRotation: Clockwise%N" + current_state_s.out + "%N%N")
 					elseif io.last_string.is_equal ("d") and solitaire_rule_set.is_valid_action (1, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise)) then
 						current_state_s := solitaire_rule_set.current_state
 						current_state_s.move_counter_clockwise
+						solitaire_rule_set.set_current_state (current_state_s)
 						print ("%NRotation: Counter-Clockwise%N" + current_state_s.out + "%N%N")
-					elseif io.last_string.is_equal ("h") or io.last_string.is_equal ("hint") and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint)) then
+					elseif (io.last_string.is_equal ("h") or io.last_string.is_equal ("hint")) and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint)) then
 						print ("Searching for the best move...%N")
 
 						if solitaire_rule_set.engine.is_search_successful  then
@@ -181,7 +187,7 @@ feature {NONE} -- Initialization
 						else
 							print ("The search wasn't successful!%N")
 						end
-					elseif io.last_string.is_equal ("s") or io.last_string.is_equal ("solve") and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve)) then
+					elseif (io.last_string.is_equal ("s") or io.last_string.is_equal ("solve")) and then solitaire_rule_set.is_valid_action (1, create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve)) then
 						print ("Trying to solve the game...%N")
 
 						if solitaire_rule_set.engine.is_search_successful then
@@ -193,7 +199,7 @@ feature {NONE} -- Initialization
 								i > solitaire_rule_set.engine.path_to_obtained_solution.count
 							loop
 								if solitaire_rule_set.engine.path_to_obtained_solution.i_th (i).rule_applied /= void then
-									print (engine_s.path_to_obtained_solution.i_th (i).rule_applied.out + "%N")
+									print (solitaire_rule_set.engine.path_to_obtained_solution.i_th (i).rule_applied.out + "%N")
 								end
 								print (solitaire_rule_set.engine.path_to_obtained_solution.i_th (i).out + "%N%N")
 								solitaire_rule_set.engine.path_to_obtained_solution.forth

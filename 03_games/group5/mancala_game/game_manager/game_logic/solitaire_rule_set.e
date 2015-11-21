@@ -78,6 +78,8 @@ feature -- Initialization
 					engine_a_star.set_mark_closed_state (true)
 					engine_a_star.set_check_open_state (true)
 				end
+			else
+				print("ERROR, engine not selected%N")
 			end
 		end
 
@@ -105,19 +107,16 @@ feature -- Implementation
 
 				-- INVALID PLAYER:
 			if l_is_valid and then a_player_id /= current_state.index_of_current_player then
-				print("INVALID PLAYER%N")
 				l_is_valid := false
 			end
 
 				-- THE ACTION MUST BE AN ACTION_SELECT OR AN ACTION_ROTATE OR ANOTHER COMPATIBLE ACTION:
 			if l_is_valid and then (not attached {ACTION_SELECT} a_action and not attached {ACTION_ROTATE} a_action and not attached {ACTION_OTHER} a_action) then
-				print("THE ACTION MUST BE AN ACTION_SELECT OR AN ACTION_ROTATE OR ANOTHER COMPATIBLE ACTION%N")
 				l_is_valid := false
 			end
 
 				-- CHOSING THE HOLE IS ALLOWED ONLY IN THE FIRST TURN:
 			if l_is_valid and then attached {ACTION_SELECT} a_action as select_action and then l_is_first_turn = false then
-				print("CHOSING THE HOLE IS ALLOWED ONLY IN THE FIRST TURN%N")
 				l_is_valid := false
 			end
 
@@ -137,8 +136,7 @@ feature -- Implementation
 			end
 
 				-- THE ACTION IS A HINT OR A SOLVE REQUEST:
-			if l_is_valid and then attached {ACTION_OTHER} a_action as action_other and then (action_other = (create {ENUM_OTHER}).hint or action_other = (create {ENUM_OTHER}).solve) then
-				print(" THE ACTION IS A HINT OR A SOLVE REQUEST")
+			if l_is_valid and then attached {ACTION_OTHER} a_action as action_other and then (action_other.action = (create {ENUM_OTHER}).hint or action_other.action = (create {ENUM_OTHER}).solve) then
 				current_state.set_parent (Void)
 				current_state.set_rule_applied (Void)
 				problem.make_with_initial_state (current_state)
