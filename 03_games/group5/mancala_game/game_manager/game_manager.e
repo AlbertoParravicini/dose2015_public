@@ -55,7 +55,7 @@ feature {NONE} -- Implementation
 
 feature -- Status report
 
-	rules_set: RULE_SET
+	rules_set: RULE_SET[GAME_STATE]
 		-- Reference to the rules-set of the game; it holds a reference to most of the game logic and the AI;
 
 	current_state: GAME_STATE
