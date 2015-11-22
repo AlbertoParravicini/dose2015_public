@@ -1,6 +1,7 @@
 note
-	description: "Summary description for {ADVERSARY_RULE_SET}."
-	author: ""
+	description: "Rule-set for the Adversarial game mode; %
+				%it contains the validation of a move and its actual execution if it is positively evalutated."
+	author: "Alberto Parravicini"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -40,6 +41,9 @@ feature -- Initialization
 					engine := create {NEGASCOUT_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make_with_depth (problem, selected_depth)
 				end
 			end
+		ensure then
+			engine_initialized: engine /= Void
+			problem_initialized: problem /= Void
 		end
 
 
@@ -61,6 +65,10 @@ feature -- Implementation
 		do
 			l_is_valid := true
 
+				-- THE GAME IS OVER:
+			if l_is_valid and then problem.is_end (current_state) then
+				l_is_valid := false
+			end
 				-- INVALID PLAYER:
 			if l_is_valid and then a_player_id /= current_state.index_of_current_player then
 				l_is_valid := false
@@ -102,19 +110,22 @@ feature -- Implementation
 			end
 			Result := l_is_valid
 		ensure then
-				--	hole_of_another_player: attached {ACTION_SELECT} a_action as action_select implies (not Old current_state.valid_player_hole (current_state.index_of_current_player, action_select.get_selection) implies Result = false)
-			invalid_player: a_player_id /= Old current_state.index_of_current_player implies Result = false
-				--	hole_with_zero_value: attached {ACTION_SELECT} a_action as action_select implies (Old current_state.map.get_hole_value (action_select.get_selection) = 0 implies Result = false)
+			move_not_allowed_if_game_is_over: problem.is_end (old current_state) implies Result = false
 		end
 
 
 	ai_move (a_state: ADVERSARY_STATE)
+			-- The AI performs a move on the given state,
+			-- and the current state of the rule-set is updated accordingly;
 		require else
 			non_void_engine: engine /= VOID
 		do
 			engine.reset_engine
 			engine.perform_search (a_state)
+
 			current_state := engine.obtained_successor
+		ensure
+			current_state = engine.obtained_successor
 		end
 
 end

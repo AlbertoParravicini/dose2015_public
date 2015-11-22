@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	PLAYER
 
 	inherit
@@ -13,9 +13,6 @@ class
 			is_equal,
 			out
 		end
-
-create
-	make, make_with_name, make_with_initial_score, make_with_initial_values
 
 
 feature {NONE} -- Implementation

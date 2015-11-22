@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {ACTION}."
+	description: "Represents a generic action performed by a human player."
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"

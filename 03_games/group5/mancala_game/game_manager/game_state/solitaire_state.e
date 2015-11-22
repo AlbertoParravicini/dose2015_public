@@ -38,7 +38,7 @@ feature
 			-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
 
 		do
-			create player.make_with_initial_values ("pippo", 0)
+			current_player := create {HUMAN_PLAYER}.make_with_initial_values ("PLAYER", 0)
 			create map.make
 
 				-- Every hole has to contain at least one stone;
@@ -67,13 +67,13 @@ feature
 			no_rule_applied: rule_applied = void
 			no_parent: parent = void
 			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
-			score_is_zero: player.score = 0
+			score_is_zero: current_player.score = 0
 		end
 
 	make_from_parent_and_rule (a_parent: SOLITAIRE_STATE; a_rule: ACTION)
 		do
 			set_parent (a_parent)
-			player := create {HUMAN_PLAYER}.make_with_initial_values (a_parent.player.name, a_parent.player.score)
+			current_player := create {HUMAN_PLAYER}.make_with_initial_values (a_parent.current_player.name, a_parent.current_player.score)
 			set_rule_applied (a_rule)
 			set_map (create {GAME_MAP}.make_from_map (a_parent.map))
 
@@ -88,8 +88,8 @@ feature
 			parent_not_void: parent /= void
 			stones_placed: map.num_of_stones = {GAME_CONSTANTS}.num_of_stones
 			map_is_copied: map.is_equal (a_parent.map)
-			score_is_mantained: player.score = a_parent.player.score
-			name_is_mantained: player.name = a_parent.player.name
+			score_is_mantained: current_player.score = a_parent.current_player.score
+			name_is_mantained: current_player.name = a_parent.current_player.name
 		end
 
 feature -- Status setting
@@ -126,7 +126,7 @@ feature -- Status setting
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
 						map.add_stone_to_store (1)
-						player.increment_score
+						current_player.increment_score
 						stones_to_distribute := stones_to_distribute - 1
 					else
 							-- More than 1 stone left
@@ -147,7 +147,7 @@ feature -- Status setting
 							-- Only 1 stone left
 							--print(player.score.out)
 						map.add_stone_to_store (2)
-						player.increment_score
+						current_player.increment_score
 							--print(" " + player.score.out + "%N")
 						stones_to_distribute := stones_to_distribute - 1
 					else
@@ -182,7 +182,7 @@ feature -- Status setting
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
 						map.add_stone_to_store (2)
-						player.increment_score
+						current_player.increment_score
 						stones_to_distribute := stones_to_distribute - 1
 					else
 							-- More than 1 stone left
@@ -202,7 +202,7 @@ feature -- Status setting
 					if (stones_to_distribute = 1) then
 							-- Only 1 stone left
 						map.add_stone_to_store (1)
-						player.increment_score
+						current_player.increment_score
 						stones_to_distribute := stones_to_distribute - 1
 					else
 							-- More than 1 stone left
@@ -228,16 +228,13 @@ feature -- Status report
 				-- The initial state and the second state (where a hole is selected) are never final states;
 			if (parent /= void and then not map.is_equal (parent.map)) then
 				placed_in_empty_hole := (map.get_hole_value (selected_hole) <= 1)
-				no_score_increase := player.score = parent.player.score
+				no_score_increase := current_player.score = parent.current_player.score
 			end
 			Result := (placed_in_empty_hole and no_score_increase) or (selected_hole > 0 and then (map.get_hole_value (selected_hole) = 0 and (map.num_of_stones - map.sum_of_stores_token > 0)))
 		end
 
 	selected_hole: INTEGER
 			-- Target of the next move, it's the ending position after having moved in the previous state;
-
-	player: HUMAN_PLAYER
-			-- Reference to the player of the game;
 
 	parent: detachable SOLITAIRE_STATE
 			-- The parent of this state; it is void if this is the first state;
@@ -250,9 +247,9 @@ feature -- Status report
 	next_player: PLAYER
 			-- Return the player who will play in the next turn;
 		do
-			Result := player
+			Result := current_player
 		ensure then
-			next_player_consistent: equal (player, Result)
+			next_player_consistent: equal (current_player, Result)
 		end
 
 	index_of_current_player: INTEGER
@@ -281,7 +278,7 @@ feature -- Inherited
 			-- Compares current state with another state other.
 			-- Considered equal iff same map and same selected state.
 		do
-			Result := (selected_hole = other_state.selected_hole) and then player.is_equal (other_state.player) and then (map.is_equal (other_state.map))
+			Result := (selected_hole = other_state.selected_hole) and then current_player.is_equal (other_state.current_player) and then (map.is_equal (other_state.map))
 		end
 
 	out: STRING
@@ -290,6 +287,6 @@ feature -- Inherited
 		end
 
 invariant
-	score_consistent: map.sum_of_stores_token = player.score
+	score_consistent: map.sum_of_stores_token = current_player.score
 
 end

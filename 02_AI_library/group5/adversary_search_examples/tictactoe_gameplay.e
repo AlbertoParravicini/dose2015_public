@@ -17,7 +17,7 @@ feature -- Initialization
 
 	make
 		local
-			engine: NEGASCOUT_ENGINE[STRING, TICTACTOE_STATE, TICTACTOE]
+			engine: MINIMAX_ENGINE[STRING, TICTACTOE_STATE, TICTACTOE]
 			problem: TICTACTOE
 			initial_state: TICTACTOE_STATE
 			current_state: TICTACTOE_STATE
@@ -25,7 +25,7 @@ feature -- Initialization
 			create initial_state.make
 			create problem.make
 			create engine.make (problem)
-
+			engine.set_max_depth (0)
 			engine.perform_search (initial_state)
 			print ("Obtained value: " + engine.obtained_value.out + "%N")
 			print ("Obtained state: %N" + engine.obtained_successor.out + "%N")

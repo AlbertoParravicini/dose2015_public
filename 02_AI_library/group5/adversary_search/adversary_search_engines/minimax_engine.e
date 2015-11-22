@@ -89,16 +89,19 @@ feature -- Search execution
 			-- numbers generator every time the program runs.
 		do
 			current_successors := problem.get_successors (initial_state)
-
 			create time_seed_for_random_generator.make_now
 				-- Initializes random generator using current time seed.
 			create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
 			random_number_generator.start
-
 			if max_depth = 0 then
-				-- Select a random move from the successors of the current state;
-				obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
-				obtained_value := problem.value (obtained_successor)
+					-- Select a random move from the successors of the current state;
+				if current_successors.count > 0 then
+					obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
+					obtained_value := problem.value (obtained_successor)
+				else
+					obtained_successor := Void
+					obtained_value := problem.value (initial_state)
+				end
 			else
 				if not current_successors.is_empty then
 					from

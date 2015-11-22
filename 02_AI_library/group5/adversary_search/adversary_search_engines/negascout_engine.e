@@ -359,8 +359,13 @@ feature
 
 					-- Select a random move from the successors of the current state;
 				current_successors := problem.get_successors (initial_state)
-				obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
-				obtained_value := problem.value (obtained_successor)
+				if current_successors.count > 0 then
+					obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
+					obtained_value := problem.value (obtained_successor)
+				else
+					obtained_successor := Void
+					obtained_value := problem.value (initial_state)
+				end
 			else
 					-- If max_depth > 0, perform a real negascout search;
 				negascout_solution := negascout (initial_state, max_depth, problem.min_value, problem.max_value)

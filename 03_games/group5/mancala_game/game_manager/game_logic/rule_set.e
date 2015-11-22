@@ -33,6 +33,7 @@ feature -- Status report
 		ensure
 			non_performed_action: (Result = false implies (current_state = Old current_state))
 			performed_action: (not attached {ACTION_OTHER} a_action) implies (Result = true implies (current_state /= Old current_state))
+			invalid_player: a_player_id /= Old current_state.index_of_current_player implies Result = false
 		end
 
 feature -- Status setting
