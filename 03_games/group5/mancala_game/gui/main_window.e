@@ -32,27 +32,33 @@ feature {NONE} -- Implementation
 
 	action_select_solitaire
 		do
-
+			-- Change 'combo_engines' combo box with solitaire algorithms
 		end
 
 	action_select_adversary
 		do
-
+			-- Change 'combo_engine' combo box with adversary algorithms
 		end
 
 	action_select_engine
 		do
-
+			-- After selecting an engine, enable or disable 'text_field_max_depth'
+			-- in order to allow a user to insert a maximum depth on some
+			-- specific algorithms
 		end
 
 	action_start_click
 		do
-
+			-- Create game according to the value of 'radio_button_solitaire'
+			-- or 'radio_button_adversary' and 'combo_engines' and
+			-- 'text_field_max_depth'
+			-- Then display a new 'SINGLE_WINDOW' or 'ADVERSARY_WINDOW'
+			-- Eventually, destroy 'current'
 		end
 
 	action_help_click
 		do
-			
+			-- Display a new 'HELP_WINDOW' with rules and credits
 		end
 
 end

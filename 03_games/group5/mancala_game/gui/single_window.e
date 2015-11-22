@@ -32,31 +32,37 @@ feature {NONE} -- Implementation
 
 	action_hole_click
 		do
-
+			-- Create a new 'ACTION_SELECT' with the selected
+			-- hole as a parameter
 		end
 
 	action_hint_click
 		do
-
+			-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
+			-- as a parameter
 		end
 
 	action_solve_click
 		do
-
+			-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.solve'
+			-- as a parameter
 		end
 
 	action_clockwise_click
 		do
-
+			-- Create a new 'ACTION_ROTATE' with '{ENUM_ROTATE}.clockwise'
+			-- as a parameter
 		end
 
 	action_counter_clockwise_click
 		do
-
+			-- Create a new 'ACTION_ROTATE' with '{ENUM_ROTATE}.counter_clockwise'
+			-- as a parameter
 		end
 
 	action_log_click
 		do
-			
+			-- Toggle 'text_log' visibility and change the text
+			-- of the button according to the status of 'text_log'
 		end
 end

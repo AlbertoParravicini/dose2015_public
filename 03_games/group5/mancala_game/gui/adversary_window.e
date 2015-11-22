@@ -32,16 +32,19 @@ feature {NONE} -- Implementation
 
 	action_hole_click
 		do
-
+			-- Create a new 'ACTION_SELECT' with the selected
+			-- hole as a parameter
 		end
 
 	action_hint_click
 		do
-
+			-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
+			-- as a parameter
 		end
 
 	action_log_click
 		do
-			
+			-- Toggle 'text_log' visibility and change the text
+			-- of the button according to the status of 'text_log
 		end
 end

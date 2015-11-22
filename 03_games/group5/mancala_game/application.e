@@ -13,10 +13,12 @@ create
 feature {NONE} -- Initialization
 
 	view_mode: MAIN_WINDOW_CLI
+	gui: START_GUI
 
 	make
 		do
 			create view_mode.make_and_launch
+			create gui.make_and_launch
 		end
 
 end
