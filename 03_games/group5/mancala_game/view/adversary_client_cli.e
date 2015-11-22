@@ -23,7 +23,7 @@ feature -- Status Setting
 
 				-- Game loop
 			from
-				send_action_to_game_manager(create {ACTION_START_GAME}.default_create)
+				send_action_to_game_manager(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
 			until
 				equal(io.last_string, "exit")
 			loop

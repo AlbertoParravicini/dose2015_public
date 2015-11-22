@@ -29,6 +29,8 @@ feature
 				Result:="Action: Hint"
 			elseif (action = (create {ENUM_OTHER}).solve) then
 				Result:="Action: Solve"
+			elseif (action = (create {ENUM_OTHER}).start_game) then
+				Result:="Action: Start Game"
 			else
 				Result:= "Unknown action"
 			end

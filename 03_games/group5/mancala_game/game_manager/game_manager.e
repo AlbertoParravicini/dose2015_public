@@ -125,15 +125,20 @@ feature -- Status setting
 				-- SOLITAIRE
 			if is_valid_solitaire_algorithm (algorithm_selected) then
 
-					-- ACTION_START_GAME
-				if equal(a_action.generator, "ACTION_START_GAME") then
-					view.show_message ("%N%N%N%N----------------------------------%N")
-					view.show_message ("START SOLITAIRE GAME%N")
-					view.show_message ("----------------------------------%N")
-					view.show_message ("%N%N")
-					view.show_state (rules_set.current_state)
-					view.show_message ("TODO: write 'exit'%N")
-				end
+					-- OTHER ACTION
+				if attached {ACTION_OTHER} a_action as other_action then
+
+						-- ACTION: START_GAME
+					if other_action.action = (create {ENUM_OTHER}).start_game then
+						view.show_message ("%N%N%N%N----------------------------------%N")
+						view.show_message ("START SOLITAIRE GAME%N")
+						view.show_message ("----------------------------------%N")
+						view.show_message ("%N%N")
+						view.show_state (rules_set.current_state)
+						view.show_message ("TODO: write 'exit'%N")
+					end
+
+ 				end
 
 				-- TODO
 
@@ -143,16 +148,7 @@ feature -- Status setting
 				-- ADVERSARY
 			if is_valid_adversary_algorithm (algorithm_selected) then
 
-
-					-- ACTION_START_GAME
-				if equal(a_action.generator, "ACTION_START_GAME") then
-					view.show_message ("%N%N%N%N----------------------------------%N")
-					view.show_message ("START ADVERSARY GAME%N")
-					view.show_message ("----------------------------------%N")
-					show_adversary_turn_state_and_message
-				end
-
-					-- ACTION_SELECT
+					-- ACTION: SELECT
 				if equal(a_action.generator, "ACTION_SELECT") then
 					if human_player_turn and rules_set.is_valid_action (rules_set.current_state.index_of_current_player, a_action) then
 						show_adversary_turn_state_and_message
@@ -160,6 +156,20 @@ feature -- Status setting
 						view.show_message ("ERROR: it isn't a valid hole or it isn't your turn!%N")
 					end
 				end
+
+
+					-- OTHER ACTION
+				if attached {ACTION_OTHER} a_action as other_action then
+
+						-- ACTION: START_GAME
+					if other_action.action = (create {ENUM_OTHER}).start_game then
+						view.show_message ("%N%N%N%N----------------------------------%N")
+						view.show_message ("START ADVERSARY GAME%N")
+						view.show_message ("----------------------------------%N")
+						show_adversary_turn_state_and_message
+					end
+
+ 				end
 
 				adversary_ai_loop
 			end
@@ -182,7 +192,7 @@ feature {NONE} -- Implementation
 			view.show_message ("%N%N")
 			view.show_state (rules_set.current_state)
 			if human_player_turn then
-				view.show_message ("Insert which hole you want to select, from " + (1 + ((rules_set.current_state.index_of_current_player - 1) * {GAME_CONSTANTS}.num_of_holes // 2 )).out + " to " + ({GAME_CONSTANTS}.num_of_holes * rules_set.current_state.index_of_current_player // 2).out + "%N")
+				view.show_message (rules_set.current_state.current_player.name + " insert which hole you want to select, from " + (1 + ((rules_set.current_state.index_of_current_player - 1) * {GAME_CONSTANTS}.num_of_holes // 2 )).out + " to " + ({GAME_CONSTANTS}.num_of_holes * rules_set.current_state.index_of_current_player // 2).out + "%N")
 			end
 		end
 
