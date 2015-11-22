@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {ADVERSARY_PROBLEM}."
-	author: ""
+	description: "The class contains methods used by the AI to play the game and evaluate a generic game state."
+	author: "Alberto Parravicini"
 	date: "$Date$"
 	revision: "$Revision$"
 

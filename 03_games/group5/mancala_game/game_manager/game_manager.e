@@ -149,11 +149,10 @@ feature -- Status setting
 				elseif attached {ACTION_ROTATE} a_action as action_rotate then
 					solitaire_move (a_action)
 				end
-			end
 
 
 				-- ADVERSARY
-			if is_valid_adversary_algorithm (algorithm_selected) then
+			elseif is_valid_adversary_algorithm (algorithm_selected) then
 
 					-- ACTION: SELECT
 				if equal(a_action.generator, "ACTION_SELECT") then

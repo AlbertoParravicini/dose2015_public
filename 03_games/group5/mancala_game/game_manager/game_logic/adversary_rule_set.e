@@ -1,6 +1,7 @@
 note
-	description: "Summary description for {ADVERSARY_RULE_SET}."
-	author: ""
+	description: "Rule-set for the Adversarial game mode; %
+				%it contains the validation of a move and its actual execution if it is positively evalutated."
+	author: "Alberto Parravicini"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -102,19 +103,22 @@ feature -- Implementation
 			end
 			Result := l_is_valid
 		ensure then
-				--	hole_of_another_player: attached {ACTION_SELECT} a_action as action_select implies (not Old current_state.valid_player_hole (current_state.index_of_current_player, action_select.get_selection) implies Result = false)
 			invalid_player: a_player_id /= Old current_state.index_of_current_player implies Result = false
-				--	hole_with_zero_value: attached {ACTION_SELECT} a_action as action_select implies (Old current_state.map.get_hole_value (action_select.get_selection) = 0 implies Result = false)
 		end
 
 
 	ai_move (a_state: ADVERSARY_STATE)
+			-- The AI performs a move on the given state,
+			-- and the current state of the rule-set is updated accordingly;
 		require else
 			non_void_engine: engine /= VOID
 		do
 			engine.reset_engine
 			engine.perform_search (a_state)
+
 			current_state := engine.obtained_successor
+		ensure
+			current_state = engine.obtained_successor
 		end
 
 end

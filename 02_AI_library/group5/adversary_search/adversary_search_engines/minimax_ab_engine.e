@@ -93,8 +93,13 @@ feature -- Search execution
 			random_number_generator.start
 			if max_depth = 0 then
 					-- Select a random move from the successors of the current state;
-				obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
-				obtained_value := problem.value (obtained_successor)
+				if current_successors.count > 0 then
+					obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
+					obtained_value := problem.value (obtained_successor)
+				else
+					obtained_successor := Void
+					obtained_value := problem.value (initial_state)
+				end
 			else
 				if not current_successors.is_empty then
 					from

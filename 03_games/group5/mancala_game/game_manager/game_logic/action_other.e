@@ -1,6 +1,7 @@
 note
-	description: "Summary description for {ACTION_OTHER}."
-	author: ""
+	description: "Action that represents an operation not included in other categories;%
+				% it can be a request to have AI support, or a request to start the game."
+	author: "Alberto Parravicini"
 	date: "$Date$"
 	revision: "$Revision$"
 
