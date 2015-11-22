@@ -11,6 +11,9 @@ class
 inherit
 	MAIN_WINDOW_IMP
 
+feature {NONE} -- Auxiliary objects
+
+	adversary_algorithms, solitaire_algorithms, algorithms_with_depth : LINKED_LIST[EV_LIST_ITEM]
 
 feature {NONE} -- Initialization
 
@@ -19,6 +22,10 @@ feature {NONE} -- Initialization
 			-- Initialization for these objects must be performed in `user_initialization'.
 		do
 				-- Create attached types defined in class here, initialize them in `user_initialization'.
+				-- Create the lists that contain all the available algorithms
+				create adversary_algorithms.make
+				create solitaire_algorithms.make
+				create algorithms_with_depth.make
 		end
 
 	user_initialization
@@ -26,6 +33,9 @@ feature {NONE} -- Initialization
 			-- and from within current class itself.
 		do
 				-- Initialize types defined in current class
+				algorithms_with_depth.compare_objects
+				adversary_algorithms.compare_objects
+				algorithms_with_depth.compare_objects
 		end
 
 feature {NONE} -- Implementation
@@ -33,11 +43,15 @@ feature {NONE} -- Implementation
 	action_select_solitaire
 		do
 			-- Change 'combo_engines' combo box with solitaire algorithms
+			combo_engines.wipe_out
+			combo_engines.fill (solitaire_algorithms)
 		end
 
 	action_select_adversary
 		do
 			-- Change 'combo_engine' combo box with adversary algorithms
+			combo_engines.wipe_out
+			combo_engines.fill (adversary_algorithms)
 		end
 
 	action_select_engine
@@ -45,6 +59,11 @@ feature {NONE} -- Implementation
 			-- After selecting an engine, enable or disable 'text_field_max_depth'
 			-- in order to allow a user to insert a maximum depth on some
 			-- specific algorithms
+
+			-- If the selected algorithm has a parameter
+			text_field_max_depth.enable_edit
+			-- Otherwise
+			text_field_max_depth.disable_edit
 		end
 
 	action_start_click
