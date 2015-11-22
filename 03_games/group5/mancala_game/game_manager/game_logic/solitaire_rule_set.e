@@ -163,12 +163,4 @@ feature -- Implementation
 			Result := l_is_valid
 		end
 
-
-	ai_move (a_state: ADVERSARY_STATE)
-		require else
-			non_void_engine: engine /= VOID
-		do
-			-- TODO
-		end
-
 end

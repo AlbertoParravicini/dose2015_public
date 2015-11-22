@@ -196,7 +196,9 @@ feature {NONE} -- Implementation
 				human_player_turn
 			loop
 				view.show_message ("AI thinking...%N")
-				rules_set.ai_move (rules_set.current_state)
+				if attached {ADVERSARY_RULE_SET} rules_set as adv_rules_set then
+ 					adv_rules_set.ai_move (adv_rules_set.current_state)
+ 				end
 				show_adversary_turn_state_and_message
 			end
 		end

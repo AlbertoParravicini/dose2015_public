@@ -45,8 +45,4 @@ feature -- Status setting
 		ensure
 			setting_done: current_state = a_state
 		end
-
-	ai_move (a_state: GAME_STATE)
-		deferred
-		end
 end
