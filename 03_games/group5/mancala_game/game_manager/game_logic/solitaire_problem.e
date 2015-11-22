@@ -97,9 +97,9 @@ feature
 	is_successful (state: SOLITAIRE_STATE): BOOLEAN
 			-- Is the state successful, i.e. is the player score equal to the number of stones in the game?
 		do
-			Result := state.player.score = {GAME_CONSTANTS}.num_of_stones
+			Result := state.current_player.score = {GAME_CONSTANTS}.num_of_stones
 		ensure then
-			result_is_consistent: (Result = true implies (state.player.score = {GAME_CONSTANTS}.num_of_stones)) and ((state.player.score = {GAME_CONSTANTS}.num_of_stones) implies Result = true)
+			result_is_consistent: (Result = true implies (state.current_player.score = {GAME_CONSTANTS}.num_of_stones)) and ((state.current_player.score = {GAME_CONSTANTS}.num_of_stones) implies Result = true)
 		end
 
 feature
@@ -110,7 +110,7 @@ feature
 			-- even though the heuristic is both admissible and consistent,
 			-- it doesn't really provide a fast convergence to the solution :(
 		do
-			Result := 4*({GAME_CONSTANTS}.num_of_stones - state.player.score)
+			Result := 4*({GAME_CONSTANTS}.num_of_stones - state.current_player.score)
 		ensure then
 			result_is_non_negative: Result >= 0
 			result_is_zero_in_successful_state: (Result = 0 implies is_successful (state)) and then (is_successful (state) implies Result = 0)

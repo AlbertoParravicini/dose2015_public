@@ -140,8 +140,20 @@ feature -- Status setting
 
  				end
 
-				-- TODO
-
+				-- ACTION_SELECT AND ACTION_ROTATE
+				if attached {ACTION_SELECT} a_action as action_select then
+					if human_player_turn and rules_set.is_valid_action (rules_set.current_state.index_of_current_player, a_action) then
+						show_solitaire_turn_state_and_message
+					else
+						view.show_message ("ERROR: it isn't a valid hole or it isn't your turn!%N")
+					end
+				elseif attached {ACTION_ROTATE} a_action as action_rotate then
+					if human_player_turn and rules_set.is_valid_action (rules_set.current_state.index_of_current_player, a_action) then
+						show_solitaire_turn_state_and_message
+					else
+						view.show_message ("ERROR: it isn't a valid hole or it isn't your turn!%N")
+					end
+				end
 			end
 
 
@@ -182,7 +194,11 @@ feature {NONE} -- Implementation
 		require
 			rules_set /= VOID
 		do
-			Result := equal(rules_set.current_state.current_player.generator, "HUMAN_PLAYER")
+			if attached {HUMAN_PLAYER} rules_set.current_state.current_player then
+				Result := true
+			else
+				Result := false
+			end
 		end
 
 	show_adversary_turn_state_and_message
@@ -213,4 +229,14 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	show_solitaire_turn_state_and_message
+		require
+			non_void_view: view /= VOID
+		do
+			view.show_message ("%N%N")
+			view.show_state (rules_set.current_state)
+			if human_player_turn then
+			--	view.show_message (rules_set.current_state.current_player.name + " insert which hole you want to select, from " + (1 + ((rules_set.current_state.index_of_current_player - 1) * {GAME_CONSTANTS}.num_of_holes // 2 )).out + " to " + ({GAME_CONSTANTS}.num_of_holes * rules_set.current_state.index_of_current_player // 2).out + "%N")
+			end
+		end
 end
