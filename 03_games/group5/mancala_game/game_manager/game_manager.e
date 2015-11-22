@@ -139,11 +139,13 @@ feature -- Status setting
 					elseif other_action.action = (create {ENUM_OTHER}).hint then
 						solitaire_move (a_action)
 					elseif other_action.action = (create {ENUM_OTHER}).solve then
-						from
-						until
-							rules_set.is_game_over
-						loop
-							solitaire_move(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+						if attached {SOLITAIRE_RULE_SET} rules_set as sol_rules_set then
+							from
+							until
+								sol_rules_set.is_game_over or sol_rules_set.no_solution_found
+							loop
+								solitaire_move(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+							end
 						end
 					end
  				end
@@ -228,7 +230,7 @@ feature {NONE} -- Implementation
 				if attached {ADVERSARY_RULE_SET} rules_set as adv_rules_set then
  					adv_rules_set.ai_move (adv_rules_set.current_state)
  				end
-				show_adversary_turn_state_and_message
+ 				show_adversary_turn_state_and_message
 			end
 		end
 
@@ -244,7 +246,6 @@ feature {NONE} -- Implementation
 				if attached {ADVERSARY_RULE_SET} rules_set as adv_rules_set then
  					adversary_move(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
 				end
-				show_adversary_turn_state_and_message
 			end
 		end
 

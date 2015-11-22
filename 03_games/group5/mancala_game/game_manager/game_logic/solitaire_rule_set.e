@@ -112,7 +112,7 @@ feature -- Implementation
 
 				-- THE GAME IS OVER:
 			if l_is_valid and then (problem.is_successful (current_state) or (current_state.is_game_over)) then
-				l_is_first_turn := false
+				l_is_valid := false
 			end
 
 				-- INVALID PLAYER:
@@ -185,4 +185,13 @@ feature -- Implementation
 		ensure then
 			result_is_consistent: ((not Result = true) or (current_state.is_game_over or problem.is_successful (current_state))) and ((not (current_state.is_game_over or problem.is_successful (current_state))) or Result = true)
 		end
+
+	no_solution_found: BOOLEAN
+			-- Utility function used to know if no solution to the problem was found;
+		do
+			Result := engine.search_performed and not engine.is_search_successful
+		ensure
+			result_is_consistent: Result = engine.search_performed and not engine.is_search_successful
+		end
+
 end
