@@ -400,12 +400,12 @@ feature -- Access
 	label_stones_name: EV_LABEL
 	button_hole_12, button_hole_11, button_hole_10, button_hole_9,
 	button_hole_8, button_hole_7, button_hole_1, button_hole_2, button_hole_3, button_hole_4,
-	button_hole_5, button_hole_6: EV_TOGGLE_BUTTON
+	button_hole_5, button_hole_6: EV_BUTTON
 	button_hint, button_solve, button_clockwise, button_counter_clockwise,
 	button_log: EV_BUTTON
 	text_log: EV_TEXT
 
-	list_button_hole: LINKED_LIST[EV_TOGGLE_BUTTON]
+	list_button_hole: LINKED_LIST[EV_BUTTON]
 
 feature {NONE} -- Implementation
 

@@ -33,9 +33,8 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_SELECT' with the selected
 				-- hole as a parameter
-				print("prova1")
 				send_action_to_game_manager(create {ACTION_SELECT}.make (a_hole))
-				print("prova2")
+				text_log.append_text ("Send selection%N")
 		end
 
 	action_hint_click
@@ -105,7 +104,6 @@ feature -- Inherited from VIEW
 			-- for instance an error message or a notification which should be displayed to the user
 		do
 			text_log.append_text (a_message)
-
 		end
 
 feature {NONE} -- Auxiliary features
@@ -155,10 +153,8 @@ feature {NONE} -- Auxiliary features
 						counter > 12
 					loop
 						-- Enable select and deselect all
-						list_button_hole.i_th (counter).enable_select
-						if (list_button_hole.i_th (counter).is_selected) then
-							list_button_hole.i_th (counter).toggle
-						end
+						list_button_hole.i_th (counter).enable_sensitive
+
 						counter := counter + 1
 					end
 				else
@@ -169,15 +165,9 @@ feature {NONE} -- Auxiliary features
 						counter > 12
 					loop
 						-- Disable select and select the current one
-						list_button_hole.i_th (counter).disable_select
+						list_button_hole.i_th (counter).disable_sensitive
 						if(counter=l_selected_hole)then
-							if(not list_button_hole.i_th (counter).is_selected)then
-								list_button_hole.i_th (counter).toggle
-							end
-						else
-							if list_button_hole.i_th (counter).is_selected then
-								list_button_hole.i_th (counter).toggle
-							end
+								list_button_hole.i_th (counter).enable_sensitive
 						end
 					end
 				end
