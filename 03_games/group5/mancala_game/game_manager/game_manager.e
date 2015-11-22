@@ -127,6 +127,9 @@ feature -- Status setting
 
 					-- ACTION_START_GAME
 				if equal(a_action.generator, "ACTION_START_GAME") then
+					view.show_message ("%N%N%N%N----------------------------------%N")
+					view.show_message ("START SOLITAIRE GAME%N")
+					view.show_message ("----------------------------------%N")
 					view.show_message ("%N%N")
 					view.show_state (rules_set.current_state)
 					view.show_message ("TODO: write 'exit'%N")
@@ -143,6 +146,9 @@ feature -- Status setting
 
 					-- ACTION_START_GAME
 				if equal(a_action.generator, "ACTION_START_GAME") then
+					view.show_message ("%N%N%N%N----------------------------------%N")
+					view.show_message ("START ADVERSARY GAME%N")
+					view.show_message ("----------------------------------%N")
 					show_adversary_turn_state_and_message
 				end
 

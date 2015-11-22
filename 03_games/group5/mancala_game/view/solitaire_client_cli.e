@@ -48,9 +48,9 @@ feature -- Status Setting
 		do
 			-- TODO
 			if equal(a_input, "exit") then
-				print("QUIT!%N")
+				print("Quit!%N")
 			else
-				print("INVALID ACTION.%N")
+				print("ERROR: " + a_input + " isn't a valid move!%N")
 			end
 
 		end
