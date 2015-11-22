@@ -55,6 +55,10 @@ feature -- Status Setting
 				send_action_to_game_manager(create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
 			elseif a_input.is_equal("d") or a_input.is_equal("counter-clockwise") then
 				send_action_to_game_manager(create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
+			elseif a_input.is_equal("h") or a_input.is_equal("hint") then
+				send_action_to_game_manager(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+			elseif a_input.is_equal("s") or a_input.is_equal("solve") then
+				send_action_to_game_manager(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve))
 			else
 				print("ERROR: " + a_input + " isn't a valid move!%N")
 			end
