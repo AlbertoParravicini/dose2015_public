@@ -29,6 +29,7 @@ feature -- Status Setting
 			loop
 				io.read_line
 				io.last_string.to_lower
+				parse_input_string_to_action(io.last_string)
 			end
 		end
 
@@ -44,6 +45,12 @@ feature -- Status Setting
 
 	parse_input_string_to_action (a_input: STRING)
 		do
+			-- TODO
+			if equal(a_input, "exit") then
+				print("QUIT!%N")
+			else
+				print("INVALID ACTION.%N")
+			end
 
 		end
 

@@ -132,6 +132,8 @@ feature -- Status setting
 					view.show_message ("TODO: write 'exit'%N")
 				end
 
+				-- TODO
+
 			end
 
 
