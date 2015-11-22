@@ -17,7 +17,7 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			create view_mode.make_and_launch
+			--create view_mode.make_and_launch
 			create gui.make_and_launch
 		end
 
