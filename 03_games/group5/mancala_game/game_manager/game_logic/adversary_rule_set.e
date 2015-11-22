@@ -41,6 +41,9 @@ feature -- Initialization
 					engine := create {NEGASCOUT_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make_with_depth (problem, selected_depth)
 				end
 			end
+		ensure then
+			engine_initialized: engine /= Void
+			problem_initialized: problem /= Void
 		end
 
 
@@ -62,6 +65,10 @@ feature -- Implementation
 		do
 			l_is_valid := true
 
+				-- THE GAME IS OVER:
+			if l_is_valid and then problem.is_end (current_state) then
+				l_is_valid := false
+			end
 				-- INVALID PLAYER:
 			if l_is_valid and then a_player_id /= current_state.index_of_current_player then
 				l_is_valid := false
@@ -103,7 +110,7 @@ feature -- Implementation
 			end
 			Result := l_is_valid
 		ensure then
-			invalid_player: a_player_id /= Old current_state.index_of_current_player implies Result = false
+			move_not_allowed_if_game_is_over: problem.is_end (old current_state) implies Result = false
 		end
 
 

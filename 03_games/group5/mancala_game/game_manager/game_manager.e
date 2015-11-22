@@ -139,7 +139,14 @@ feature -- Status setting
 					elseif other_action.action = (create {ENUM_OTHER}).hint then
 						solitaire_move (a_action)
 					elseif other_action.action = (create {ENUM_OTHER}).solve then
-						solitaire_move (a_action)
+						if attached {SOLITAIRE_RULE_SET} rules_set as sol_rules_set then
+							from
+							until
+								sol_rules_set.problem.is_successful (sol_rules_set.current_state) or sol_rules_set.current_state.is_game_over
+							loop
+								solitaire_move(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+							end
+						end
 					end
  				end
 
