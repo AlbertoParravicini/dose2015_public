@@ -50,7 +50,7 @@ feature -- Status Setting
 		require
 			not_void_parameter: a_new_action /= VOID
 		do
-			game_manager.parse_action_string (a_new_action)
+			game_manager.execute_action (a_new_action)
 		end
 
 end
