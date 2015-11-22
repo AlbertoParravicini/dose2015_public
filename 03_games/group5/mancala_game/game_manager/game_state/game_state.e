@@ -7,6 +7,10 @@ note
 deferred class
 	GAME_STATE
 
+inherit
+
+	ANY
+
 feature -- Status Report
 
 	is_game_over: BOOLEAN

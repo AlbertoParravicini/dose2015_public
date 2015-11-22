@@ -22,19 +22,19 @@ feature -- Initialization
 			create problem.make
 
 			if selected_algorithm.is_equal ("minimax") then
-				if selected_depth > 0 then
+				if selected_depth <= 0 then
 					engine := create {MINIMAX_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem)
 				else
 					engine := create {MINIMAX_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make_with_depth (problem, selected_depth)
 				end
 			elseif selected_algorithm.is_equal ("minimax_ab") then
-				if selected_depth > 0 then
+				if selected_depth <= 0 then
 					engine := create {MINIMAX_AB_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem)
 				else
 					engine := create {MINIMAX_AB_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make_with_depth (problem, selected_depth)
 				end
 			elseif selected_algorithm.is_equal ("negascout") then
-				if selected_depth > 0 then
+				if selected_depth <= 0 then
 					engine := create {NEGASCOUT_ENGINE[ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make (problem)
 				else
 					engine := create {NEGASCOUT_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]}.make_with_depth (problem, selected_depth)

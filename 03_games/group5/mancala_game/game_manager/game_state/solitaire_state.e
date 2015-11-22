@@ -286,7 +286,7 @@ feature -- Inherited
 
 	out: STRING
 		do
-			Result := "%N---------------------------------------%NSelected hole: " + selected_hole.out + "%N%NMap: %N " + map.out + "%N"
+			Result := "%N---------------------------------------%NSelected hole: " + selected_hole.out + "%N%NMap:%N" + map.out + "%N"
 		end
 
 invariant

@@ -25,8 +25,8 @@ feature {NONE} -- Initialization
 			selected_mode: STRING
 			selected_algorithm: STRING
 
-			solitaire_view: SOLITAIRE_VIEW_CLI
-			adversary_view: ADVERSARY_VIEW_CLI
+			view: VIEW
+			game_manager: GAME_MANAGER
 
 			l_algorithm_depth: INTEGER
 			l_algorithms_with_depth: ARRAYED_LIST[STRING]
@@ -93,7 +93,6 @@ feature {NONE} -- Initialization
 				io.read_line
 				if io.last_string.is_integer and then (1 <= io.last_string.to_integer and io.last_string.to_integer <= l_algorithms.count) then
 					selected_algorithm := l_algorithms.i_th (io.last_string.to_integer)
-					print(selected_algorithm.out + " SELECTED%N")
 					exit_from_loop := true
 				else
 					print ("ERROR: " + io.last_string + " is not a valid alghorithm!%N")
@@ -107,7 +106,6 @@ feature {NONE} -- Initialization
 				io.last_string.to_lower
 				if io.last_string.is_integer and then io.last_string.to_integer >= 0 then
 					l_algorithm_depth := io.last_string.to_integer
-					print ("Depth chosen: " + l_algorithm_depth.out + "%N")
 				else
 					print (io.last_string + " isn't a valid depth!%N")
 				end
@@ -116,12 +114,15 @@ feature {NONE} -- Initialization
 
 				-- INTERFACE CREATION
 			if selected_mode.is_equal ("solitaire") then
-
-				solitaire_view := create {SOLITAIRE_VIEW_CLI}.make (create {GAME_MANAGER}.make (selected_algorithm, l_algorithm_depth))
+				view := create {SOLITAIRE_VIEW_CLI}.make
 			elseif selected_mode.is_equal ("adversary")	then
-				adversary_view := create {ADVERSARY_VIEW_CLI}.make (create {GAME_MANAGER}.make (selected_algorithm, l_algorithm_depth))
+				view := create {ADVERSARY_VIEW_CLI}.make
 			else
 				print ("ERROR")
 			end
+			
+			create game_manager.make (selected_algorithm, l_algorithm_depth, view)
+			view.start_view (game_manager)
+
 		end
 end

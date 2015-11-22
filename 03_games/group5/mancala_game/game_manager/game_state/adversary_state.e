@@ -9,17 +9,14 @@ class
 inherit
 	GAME_STATE
 		undefine
-			out
+			out,
+			is_equal
 		end
 
 	ADVERSARY_SEARCH_STATE[ACTION_SELECT]
-		undefine
-			out
-		end
-
-	ANY
 		redefine
-			out
+			out,
+			is_equal
 		end
 
 
@@ -331,6 +328,13 @@ feature -- Status Report
 		end
 
 
+
+	is_equal (other_state: like Current): BOOLEAN
+			-- Compares current state with another state other.
+			-- Considered equal iff same map and same selected state.
+		do
+			Result := index_of_current_player = other_state.index_of_current_player and then (map.is_equal (other_state.map))
+		end
 
 feature -- Status report
 
