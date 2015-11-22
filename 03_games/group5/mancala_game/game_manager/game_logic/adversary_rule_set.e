@@ -54,13 +54,6 @@ feature -- Status report
 
 feature -- Implementation
 
-	ai_move (a_state: ADVERSARY_STATE)
-		do
-			engine.reset_engine
-			engine.perform_search (a_state)
-			current_state := engine.obtained_successor
-		end
-
 	is_valid_action (a_player_id: INTEGER; a_action: ACTION): BOOLEAN
 		local
 			l_is_valid: BOOLEAN
@@ -112,6 +105,16 @@ feature -- Implementation
 				--	hole_of_another_player: attached {ACTION_SELECT} a_action as action_select implies (not Old current_state.valid_player_hole (current_state.index_of_current_player, action_select.get_selection) implies Result = false)
 			invalid_player: a_player_id /= Old current_state.index_of_current_player implies Result = false
 				--	hole_with_zero_value: attached {ACTION_SELECT} a_action as action_select implies (Old current_state.map.get_hole_value (action_select.get_selection) = 0 implies Result = false)
+		end
+
+
+	ai_move (a_state: ADVERSARY_STATE)
+		require else
+			non_void_engine: engine /= VOID
+		do
+			engine.reset_engine
+			engine.perform_search (a_state)
+			current_state := engine.obtained_successor
 		end
 
 end

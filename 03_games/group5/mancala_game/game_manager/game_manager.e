@@ -143,20 +143,24 @@ feature -- Status setting
 
 					-- ACTION_START_GAME
 				if equal(a_action.generator, "ACTION_START_GAME") then
-					send_it_is_your_turn
+					show_adversary_turn_state_and_message
 				end
 
 					-- ACTION_SELECT
 				if equal(a_action.generator, "ACTION_SELECT") then
 					if human_player_turn and rules_set.is_valid_action (rules_set.current_state.index_of_current_player, a_action) then
-						send_it_is_your_turn
+						show_adversary_turn_state_and_message
 					else
 						view.show_message ("ERROR: it isn't a valid hole or it isn't your turn!%N")
 					end
 				end
+
+				adversary_ai_loop
 			end
 
 		end
+
+feature {NONE} -- Implementation
 
 	human_player_turn: BOOLEAN
 		require
@@ -165,13 +169,30 @@ feature -- Status setting
 			Result := equal(rules_set.current_state.current_player.generator, "HUMAN_PLAYER")
 		end
 
-	send_it_is_your_turn
+	show_adversary_turn_state_and_message
 		require
 			non_void_view: view /= VOID
 		do
 			view.show_message ("%N%N")
 			view.show_state (rules_set.current_state)
-			view.show_message ("It's turn of " + rules_set.current_state.current_player.name + " insert which hole you want to select, from " + (1 + ((rules_set.current_state.index_of_current_player - 1) * {GAME_CONSTANTS}.num_of_holes // 2 )).out + " to " + ({GAME_CONSTANTS}.num_of_holes * rules_set.current_state.index_of_current_player // 2).out + "%N")
+			if human_player_turn then
+				view.show_message ("Insert which hole you want to select, from " + (1 + ((rules_set.current_state.index_of_current_player - 1) * {GAME_CONSTANTS}.num_of_holes // 2 )).out + " to " + ({GAME_CONSTANTS}.num_of_holes * rules_set.current_state.index_of_current_player // 2).out + "%N")
+			end
+		end
+
+	adversary_ai_loop
+		require
+			rules_set /= VOID
+		do
+			from
+
+			until
+				human_player_turn
+			loop
+				view.show_message ("AI thinking...%N")
+				rules_set.ai_move (rules_set.current_state)
+				show_adversary_turn_state_and_message
+			end
 		end
 
 end
