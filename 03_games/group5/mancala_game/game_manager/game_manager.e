@@ -119,7 +119,7 @@ feature -- Status report
 
 feature -- Status setting
 
-	parse_action_string (a_action: ACTION)
+	execute_action (a_action: ACTION)
 		do
 
 				-- SOLITAIRE

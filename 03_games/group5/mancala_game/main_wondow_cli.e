@@ -38,12 +38,9 @@ feature {NONE} -- Initialization
 
 
 				-- SUPPORTED ALGORITHMS
-			create l_adversary_algorithms.make_from_array (<<"minimax","minimax_ab","negascout","two_players">>)
-			create l_solitaire_algorithms.make_from_array (<<"bounded_breadth_first_search","bounded_depth_first_search",
-				"depth_first_with_cycle_checking","iterative_deepening","heuristic_depth_first_search","hill_climbing","steepest_ascent_hill_climbing",
-				"lowest_cost_first_search", "best_first_search","a_star">>)
-
-			create l_algorithms_with_depth.make_from_array (<<"minimax", "minimax_ab", "negascout", "bounded_breadth_first_search", "bounded_depth_first_search">>)
+			l_adversary_algorithms := (create {GAME_CONSTANTS}.default_create).adversary_algorithms
+			l_solitaire_algorithms :=  (create {GAME_CONSTANTS}.default_create).solitaire_algorithms
+			l_algorithms_with_depth :=  (create {GAME_CONSTANTS}.default_create).algorithms_with_depth
 			l_algorithms_with_depth.compare_objects
 
 
