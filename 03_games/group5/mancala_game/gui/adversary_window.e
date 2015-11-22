@@ -30,38 +30,82 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
-	action_hole_click
+	action_hole_click(a_hole:INTEGER)
 		do
-			-- Create a new 'ACTION_SELECT' with the selected
-			-- hole as a parameter
+				-- Create a new 'ACTION_SELECT' with the selected
+				-- hole as a parameter
+				send_action_to_game_manager(create {ACTION_SELECT}.make (a_hole))
+				text_log.append_text ("Send selection%N")
 		end
 
 	action_hint_click
 		do
-			-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
-			-- as a parameter
+				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
+				-- as a parameter
+				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+				text_log.append_text ("Hint%N")
 		end
 
 	action_log_click
 		do
-			-- Toggle 'text_log' visibility and change the text
-			-- of the button according to the status of 'text_log
+				-- Toggle 'text_log' visibility and change the text
+				-- of the button according to the status of 'text_log'
+				if(text_log.is_show_requested)then
+					-- Hide log
+					text_log.hide
+					button_log.set_text ("Show Log")
+				else
+					-- Show log
+					text_log.show
+					button_log.set_text ("Hide Log")
+				end
 		end
 
 feature -- Inherited from VIEW
 	start_view (a_game_manager: GAME_MANAGER)
 		do
+			game_manager := a_game_manager
+			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
 		end
 
 	show_state (a_current_state: GAME_STATE)
 			-- Used to show a representation of the current state:
 			-- the GUI updates its values (labels text, etc...), the CLI can print the state;
 		do
+			update_holes (a_current_state)
+			update_stores (a_current_state)
 		end
 
 	show_message (a_message: STRING)
 			-- Used to communicate generic messages to the client,
 			-- for instance an error message or a notification which should be displayed to the user
 		do
+			text_log.append_text (a_message)
 		end
+
+feature {NONE} -- Auxiliary features
+
+	update_holes (a_current_state: GAME_STATE)
+			-- Updates holes
+		local
+			counter: INTEGER
+		do
+			from
+				counter := 1
+			until
+				counter > 12
+			loop
+				list_button_hole.i_th (counter).set_text ((a_current_state.map.get_hole_value (counter).out))
+				counter := counter + 1
+			end
+		end
+
+	update_stores (a_current_state: GAME_STATE)
+			-- Update stores
+		do
+			label_store_1_value.set_text ((a_current_state.map.get_store_value (1)).out)
+			label_store_2_value.set_text ((a_current_state.map.get_store_value (2)).out)
+		end
+
+
 end

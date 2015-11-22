@@ -45,8 +45,8 @@ feature {NONE}-- Initialization
 			box_container_main.extend (box_container_main_2)
 			box_container_main_2.extend (box_container_game)
 			box_container_game.extend (box_container_ai)
-			box_container_ai.extend (label_ai_score_value)
-			box_container_ai.extend (label_ai_score_name)
+			box_container_ai.extend (label_store_2_value)
+			box_container_ai.extend (label_store_2_name)
 			box_container_game.extend (box_container_hole)
 			box_container_hole.extend (box_top_row_hole)
 			box_top_row_hole.extend (button_hole_12)
@@ -63,8 +63,8 @@ feature {NONE}-- Initialization
 			box_bottom_row_hole.extend (button_hole_5)
 			box_bottom_row_hole.extend (button_hole_6)
 			box_container_game.extend (box_container_player)
-			box_container_player.extend (label_player_score_value)
-			box_container_player.extend (label_player_score_name)
+			box_container_player.extend (label_store_1_value)
+			box_container_player.extend (label_store_1_name)
 			box_container_game.extend (box_container_extra)
 			box_container_extra.extend (button_hint)
 			box_container_extra.extend (button_log)
@@ -81,12 +81,12 @@ feature {NONE}-- Initialization
 			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
 			internal_font.set_height_in_points (72)
 			internal_font.preferred_families.extend ("Ubuntu")
-			label_ai_score_value.set_font (internal_font)
-			label_ai_score_value.set_text ("48")
-			integer_constant_set_procedures.extend (agent label_ai_score_value.set_minimum_width (?))
+			label_store_2_value.set_font (internal_font)
+			label_store_2_value.set_text ("48")
+			integer_constant_set_procedures.extend (agent label_store_2_value.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent label_score_width)
-			label_ai_score_name.set_text ("Cpu Score")
-			integer_constant_set_procedures.extend (agent label_ai_score_name.set_minimum_width (?))
+			label_store_2_name.set_text ("Cpu Score")
+			integer_constant_set_procedures.extend (agent label_store_2_name.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent label_score_width)
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
@@ -248,12 +248,12 @@ feature {NONE}-- Initialization
 			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
 			internal_font.set_height_in_points (72)
 			internal_font.preferred_families.extend ("Ubuntu")
-			label_player_score_value.set_font (internal_font)
-			label_player_score_value.set_text ("0")
-			integer_constant_set_procedures.extend (agent label_player_score_value.set_minimum_width (?))
+			label_store_1_value.set_font (internal_font)
+			label_store_1_value.set_text ("0")
+			integer_constant_set_procedures.extend (agent label_store_1_value.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent label_score_width)
-			label_player_score_name.set_text ("Player Score")
-			integer_constant_set_procedures.extend (agent label_player_score_name.set_minimum_width (?))
+			label_store_1_name.set_text ("Player Score")
+			integer_constant_set_procedures.extend (agent label_store_1_name.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent label_score_width)
 			box_container_extra.set_border_width (10)
 			create internal_font
@@ -265,7 +265,7 @@ feature {NONE}-- Initialization
 			button_hint.set_font (internal_font)
 			button_hint.set_text ("Hint")
 			button_hint.set_minimum_height (90)
-			button_log.set_text ("Show Log")
+			button_log.set_text ("Hide Log")
 			text_log.set_minimum_height (80)
 			text_log.disable_edit
 			set_title ("Display window")
@@ -304,8 +304,8 @@ feature {NONE}-- Initialization
 			create box_container_main_2
 			create box_container_game
 			create box_container_ai
-			create label_ai_score_value
-			create label_ai_score_name
+			create label_store_2_value
+			create label_store_2_name
 			create box_container_hole
 			create box_top_row_hole
 			create button_hole_12
@@ -322,8 +322,8 @@ feature {NONE}-- Initialization
 			create button_hole_5
 			create button_hole_6
 			create box_container_player
-			create label_player_score_value
-			create label_player_score_name
+			create label_store_1_value
+			create label_store_1_name
 			create box_container_extra
 			create button_hint
 			create button_log
@@ -343,6 +343,23 @@ feature {NONE}-- Initialization
 			create color_constant_set_procedures.make (10)
 			create color_constant_retrieval_functions.make (10)
 			user_create_interface_objects
+
+			--- I added this
+			create list_button_hole.make
+			list_button_hole.extend (button_hole_1)
+			list_button_hole.extend (button_hole_2)
+			list_button_hole.extend (button_hole_3)
+			list_button_hole.extend (button_hole_4)
+			list_button_hole.extend (button_hole_5)
+			list_button_hole.extend (button_hole_6)
+			list_button_hole.extend (button_hole_7)
+			list_button_hole.extend (button_hole_8)
+			list_button_hole.extend (button_hole_9)
+			list_button_hole.extend (button_hole_10)
+			list_button_hole.extend (button_hole_11)
+			list_button_hole.extend (button_hole_12)
+			---
+
 		end
 
 
@@ -351,13 +368,14 @@ feature -- Access
 	box_container_main, box_container_game, box_top_row_hole, box_bottom_row_hole: EV_HORIZONTAL_BOX
 	box_container_main_2,
 	box_container_ai, box_container_hole, box_container_player, box_container_extra: EV_VERTICAL_BOX
-	label_ai_score_value,
-	label_ai_score_name, label_player_score_value, label_player_score_name: EV_LABEL
+	label_store_2_value,
+	label_store_2_name, label_store_1_value, label_store_1_name: EV_LABEL
 	button_hole_12,
 	button_hole_11, button_hole_10, button_hole_9, button_hole_8, button_hole_7, button_hole_1,
 	button_hole_2, button_hole_3, button_hole_4, button_hole_5, button_hole_6, button_hint,
 	button_log: EV_BUTTON
 	text_log: EV_TEXT
+	list_button_hole:LINKED_LIST[EV_BUTTON]
 
 feature {NONE} -- Implementation
 
@@ -377,7 +395,7 @@ feature {NONE} -- Implementation
 		deferred
 		end
 
-	action_hole_click
+	action_hole_click (a_hole:INTEGER)
 			-- Called by `select_actions' of `button_hole_12'.
 		deferred
 		end
