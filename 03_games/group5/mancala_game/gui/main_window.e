@@ -14,8 +14,10 @@ inherit
 feature {NONE} -- Auxiliary objects
 
 	adversary_algorithms, solitaire_algorithms: LINKED_LIST [EV_LIST_ITEM]
-	algorithms_with_depth: LIST[STRING]
-	help_window : HELP_WINDOW
+
+	algorithms_with_depth: LIST [STRING]
+
+	help_window: HELP_WINDOW
 
 feature {NONE} -- Initialization
 
@@ -38,7 +40,7 @@ feature {NONE} -- Initialization
 		do
 				-- Initialize types defined in current class
 
-			-- Initializing arrays of algorithms
+				-- Initializing arrays of algorithms
 			l_adversary_algorithms := (create {GAME_CONSTANTS}.default_create).adversary_algorithms
 			l_solitaire_algorithms := (create {GAME_CONSTANTS}.default_create).solitaire_algorithms
 			algorithms_with_depth := (create {GAME_CONSTANTS}.default_create).algorithms_with_depth
@@ -64,8 +66,6 @@ feature {NONE} -- Initialization
 
 				-- Initialize the default selection
 			action_select_solitaire
-
-	
 		end
 
 feature {NONE} -- Implementation
@@ -91,33 +91,73 @@ feature {NONE} -- Implementation
 				-- specific algorithms
 
 				-- If the selected algorithm has a parameter
+			text_field_max_depth.set_text ("3")
 			if (algorithms_with_depth.has (combo_engines.selected_item.text)) then
 				text_field_max_depth.enable_edit
-
 			else
 					-- Otherwise
 				text_field_max_depth.disable_edit
-
 			end
 		end
 
 	action_start_click
+		local
+			l_selected_algorithm: STRING
+			l_gui: EV_TITLED_WINDOW
+			l_game_manager: GAME_MANAGER
+			l_algorithm_depth: INTEGER
+			l_valid_setup: BOOLEAN
 		do
 				-- Create game according to the value of 'radio_button_solitaire'
 				-- or 'radio_button_adversary' and 'combo_engines' and
 				-- 'text_field_max_depth'
 				-- Then display a new 'SINGLE_WINDOW' or 'ADVERSARY_WINDOW'
 				-- Eventually, destroy 'current'
+
+			l_valid_setup := true
+
+				-- get selected algorithm
+			l_selected_algorithm := combo_engines.selected_item.text
+
+				-- get the depth
+			if text_field_max_depth.text.is_integer_32 then
+				l_algorithm_depth := text_field_max_depth.text.to_integer_32
+				if l_algorithm_depth < 0 then
+					l_valid_setup := false
+				end
+			else
+				l_valid_setup := false
+			end
+
+				-- start the game if the settings are ok
+			if (l_valid_setup) then
+					-- create gui
+				if (radio_button_adversary.is_selected) then
+					l_gui := create {ADVERSARY_WINDOW}
+				else
+					l_gui := create {SINGLE_WINDOW}
+				end
+				if attached {VIEW}l_gui as l_view then
+					create l_game_manager.make (l_selected_algorithm, l_algorithm_depth, l_view)
+					l_view.start_view (l_game_manager)
+					l_gui.show
+					--current.destroy
+				else
+					-- Error while casting
+					(create {EV_ERROR_DIALOG}.make_with_text ("Error in creating the game!")).show
+				end
+			else
+				(create {EV_INFORMATION_DIALOG}.make_with_text ("Hey! That's not a valid maximum depth!")).show
+			end
 		end
 
 	action_help_click
-
 		do
 				-- Display a new 'HELP_WINDOW' with rules and credits
-				if (help_window.is_destroyed) then
-					create help_window
-				end
-				help_window.show
+			if (help_window.is_destroyed) then
+				create help_window
+			end
+			help_window.show
 		end
 
 end

@@ -47,4 +47,21 @@ feature {NONE} -- Implementation
 			-- Toggle 'text_log' visibility and change the text
 			-- of the button according to the status of 'text_log
 		end
+
+feature -- Inherited from VIEW
+	start_view (a_game_manager: GAME_MANAGER)
+		do
+		end
+
+	show_state (a_current_state: GAME_STATE)
+			-- Used to show a representation of the current state:
+			-- the GUI updates its values (labels text, etc...), the CLI can print the state;
+		do
+		end
+
+	show_message (a_message: STRING)
+			-- Used to communicate generic messages to the client,
+			-- for instance an error message or a notification which should be displayed to the user
+		do
+		end
 end

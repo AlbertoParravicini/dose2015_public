@@ -18,10 +18,15 @@ inherit
 		redefine
 			create_interface_objects, initialize, is_in_default_state
 		end
-			
+
 	CONSTANTS
 		undefine
 			is_equal, default_create, copy
+		end
+
+	VIEW
+		undefine
+			default_create, copy
 		end
 
 feature {NONE}-- Initialization
@@ -34,7 +39,7 @@ feature {NONE}-- Initialization
 			Precursor {EV_TITLED_WINDOW}
 			initialize_constants
 
-			
+
 				-- Build widget structure.
 			extend (box_container_main)
 			box_container_main.extend (box_container_main_2)
@@ -154,7 +159,6 @@ feature {NONE}-- Initialization
 			internal_font.set_height_in_points (32)
 			internal_font.preferred_families.extend ("Ubuntu")
 			button_hole_7.set_font (internal_font)
-			button_hole_7.enable_select
 			button_hole_7.set_text ("7")
 			integer_constant_set_procedures.extend (agent button_hole_7.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent button_hole_width)
@@ -276,27 +280,27 @@ feature {NONE}-- Initialization
 			button_counter_clockwise.set_text ("Move Counter")
 			integer_constant_set_procedures.extend (agent button_counter_clockwise.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent generic_extra_width)
-			button_log.set_text ("Show Log")
+			button_log.set_text ("Hide Log")
 			text_log.set_minimum_height (80)
 			text_log.disable_edit
 			set_minimum_height (430)
 			set_title ("Display window")
 
 			set_all_attributes_using_constants
-			
+
 				-- Connect events.
-			button_hole_12.select_actions.extend (agent action_hole_click)
-			button_hole_11.select_actions.extend (agent action_hole_click)
-			button_hole_10.select_actions.extend (agent action_hole_click)
-			button_hole_9.select_actions.extend (agent action_hole_click)
-			button_hole_8.select_actions.extend (agent action_hole_click)
-			button_hole_7.select_actions.extend (agent action_hole_click)
-			button_hole_1.select_actions.extend (agent action_hole_click)
-			button_hole_2.select_actions.extend (agent action_hole_click)
-			button_hole_3.select_actions.extend (agent action_hole_click)
-			button_hole_4.select_actions.extend (agent action_hole_click)
-			button_hole_5.select_actions.extend (agent action_hole_click)
-			button_hole_6.select_actions.extend (agent action_hole_click)
+			button_hole_12.select_actions.extend (agent action_hole_click(12))
+			button_hole_11.select_actions.extend (agent action_hole_click(11))
+			button_hole_10.select_actions.extend (agent action_hole_click(10))
+			button_hole_9.select_actions.extend (agent action_hole_click(9))
+			button_hole_8.select_actions.extend (agent action_hole_click(8))
+			button_hole_7.select_actions.extend (agent action_hole_click(7))
+			button_hole_1.select_actions.extend (agent action_hole_click(1))
+			button_hole_2.select_actions.extend (agent action_hole_click(2))
+			button_hole_3.select_actions.extend (agent action_hole_click(3))
+			button_hole_4.select_actions.extend (agent action_hole_click(4))
+			button_hole_5.select_actions.extend (agent action_hole_click(5))
+			button_hole_6.select_actions.extend (agent action_hole_click(6))
 			button_hint.select_actions.extend (agent action_hint_click)
 			button_solve.select_actions.extend (agent action_solve_click)
 			button_clockwise.select_actions.extend (agent action_clockwise_click)
@@ -309,11 +313,11 @@ feature {NONE}-- Initialization
 				-- Call `user_initialization'.
 			user_initialization
 		end
-		
+
 	frozen create_interface_objects
 			-- Create objects
 		do
-			
+
 				-- Create all widgets.
 			create box_container_main
 			create box_container_main_2
@@ -364,7 +368,25 @@ feature {NONE}-- Initialization
 			create pixmap_constant_retrieval_functions.make (10)
 			create color_constant_set_procedures.make (10)
 			create color_constant_retrieval_functions.make (10)
+
+			--- I added this
+			create list_button_hole.make
+			list_button_hole.extend (button_hole_1)
+			list_button_hole.extend (button_hole_2)
+			list_button_hole.extend (button_hole_3)
+			list_button_hole.extend (button_hole_4)
+			list_button_hole.extend (button_hole_5)
+			list_button_hole.extend (button_hole_6)
+			list_button_hole.extend (button_hole_7)
+			list_button_hole.extend (button_hole_8)
+			list_button_hole.extend (button_hole_9)
+			list_button_hole.extend (button_hole_10)
+			list_button_hole.extend (button_hole_11)
+			list_button_hole.extend (button_hole_12)
+			---
+
 			user_create_interface_objects
+
 		end
 
 
@@ -382,6 +404,8 @@ feature -- Access
 	button_hint, button_solve, button_clockwise, button_counter_clockwise,
 	button_log: EV_BUTTON
 	text_log: EV_TEXT
+
+	list_button_hole: LINKED_LIST[EV_TOGGLE_BUTTON]
 
 feature {NONE} -- Implementation
 
@@ -405,37 +429,37 @@ feature {NONE} -- Implementation
 			-- Feature for custom initialization, called at end of `initialize'.
 		deferred
 		end
-	
-	action_hole_click
+
+	action_hole_click (a_hole : INTEGER)
 			-- Called by `select_actions' of `button_hole_12'.
 		deferred
 		end
-	
+
 	action_hint_click
 			-- Called by `select_actions' of `button_hint'.
 		deferred
 		end
-	
+
 	action_solve_click
 			-- Called by `select_actions' of `button_solve'.
 		deferred
 		end
-	
+
 	action_clockwise_click
 			-- Called by `select_actions' of `button_clockwise'.
 		deferred
 		end
-	
+
 	action_counter_clockwise_click
 			-- Called by `select_actions' of `button_counter_clockwise'.
 		deferred
 		end
-	
+
 	action_log_click
 			-- Called by `select_actions' of `button_log'.
 		deferred
 		end
-	
+
 
 feature {NONE} -- Constant setting
 
@@ -520,7 +544,7 @@ feature {NONE} -- Constant setting
 				f := font_constant_retrieval_functions.i_th (font_constant_set_procedures.index).item (Void)
 				font_constant_set_procedures.item.call ([f])
 				font_constant_set_procedures.forth
-			end	
+			end
 		end
 
 	frozen set_attributes_using_color_constants
@@ -550,7 +574,7 @@ feature {NONE} -- Constant setting
 			set_attributes_using_font_constants
 			set_attributes_using_color_constants
 		end
-	
+
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]]
 	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE, STRING_32]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]

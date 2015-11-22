@@ -18,10 +18,15 @@ inherit
 		redefine
 			create_interface_objects, initialize, is_in_default_state
 		end
-			
+
 	CONSTANTS
 		undefine
 			is_equal, default_create, copy
+		end
+
+	VIEW
+		undefine
+			default_create, copy
 		end
 
 feature {NONE}-- Initialization
@@ -34,7 +39,7 @@ feature {NONE}-- Initialization
 			Precursor {EV_TITLED_WINDOW}
 			initialize_constants
 
-			
+
 				-- Build widget structure.
 			extend (box_container_main)
 			box_container_main.extend (box_container_main_2)
@@ -266,7 +271,7 @@ feature {NONE}-- Initialization
 			set_title ("Display window")
 
 			set_all_attributes_using_constants
-			
+
 				-- Connect events.
 			button_hole_12.select_actions.extend (agent action_hole_click)
 			button_hole_11.select_actions.extend (agent action_hole_click)
@@ -289,11 +294,11 @@ feature {NONE}-- Initialization
 				-- Call `user_initialization'.
 			user_initialization
 		end
-		
+
 	frozen create_interface_objects
 			-- Create objects
 		do
-			
+
 				-- Create all widgets.
 			create box_container_main
 			create box_container_main_2
@@ -371,22 +376,22 @@ feature {NONE} -- Implementation
 			-- Feature for custom initialization, called at end of `initialize'.
 		deferred
 		end
-	
+
 	action_hole_click
 			-- Called by `select_actions' of `button_hole_12'.
 		deferred
 		end
-	
+
 	action_hint_click
 			-- Called by `select_actions' of `button_hint'.
 		deferred
 		end
-	
+
 	action_log_click
 			-- Called by `select_actions' of `button_log'.
 		deferred
 		end
-	
+
 
 feature {NONE} -- Constant setting
 
@@ -471,7 +476,7 @@ feature {NONE} -- Constant setting
 				f := font_constant_retrieval_functions.i_th (font_constant_set_procedures.index).item (Void)
 				font_constant_set_procedures.item.call ([f])
 				font_constant_set_procedures.forth
-			end	
+			end
 		end
 
 	frozen set_attributes_using_color_constants
@@ -501,7 +506,7 @@ feature {NONE} -- Constant setting
 			set_attributes_using_font_constants
 			set_attributes_using_color_constants
 		end
-	
+
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]]
 	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE, STRING_32]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]
