@@ -140,19 +140,38 @@ feature -- Status setting
 				-- ADVERSARY
 			if is_valid_adversary_algorithm (algorithm_selected) then
 
+
 					-- ACTION_START_GAME
 				if equal(a_action.generator, "ACTION_START_GAME") then
-					view.show_message ("%N%N")
-					view.show_state (rules_set.current_state)
-					view.show_message ("It's your turn: insert which hole you want to select, from 1 to " + ({GAME_CONSTANTS}.num_of_holes // 2).out + "%N")
+					send_it_is_your_turn
 				end
 
 					-- ACTION_SELECT
 				if equal(a_action.generator, "ACTION_SELECT") then
-					-- TODO
+					if human_player_turn and rules_set.is_valid_action (rules_set.current_state.index_of_current_player, a_action) then
+						send_it_is_your_turn
+					else
+						view.show_message ("ERROR: it isn't a valid hole or it isn't your turn!%N")
+					end
 				end
 			end
 
+		end
+
+	human_player_turn: BOOLEAN
+		require
+			rules_set /= VOID
+		do
+			Result := equal(rules_set.current_state.current_player.generator, "HUMAN_PLAYER")
+		end
+
+	send_it_is_your_turn
+		require
+			non_void_view: view /= VOID
+		do
+			view.show_message ("%N%N")
+			view.show_state (rules_set.current_state)
+			view.show_message ("It's turn of " + rules_set.current_state.current_player.name + " insert which hole you want to select, from " + (1 + ((rules_set.current_state.index_of_current_player - 1) * {GAME_CONSTANTS}.num_of_holes // 2 )).out + " to " + ({GAME_CONSTANTS}.num_of_holes * rules_set.current_state.index_of_current_player // 2).out + "%N")
 		end
 
 end

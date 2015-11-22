@@ -38,7 +38,7 @@ feature {NONE} -- Initialization
 
 
 				-- SUPPORTED ALGORITHMS
-			create l_adversary_algorithms.make_from_array (<<"minimax","minimax_ab","negascout">>)
+			create l_adversary_algorithms.make_from_array (<<"minimax","minimax_ab","negascout","two_players">>)
 			create l_solitaire_algorithms.make_from_array (<<"bounded_breadth_first_search","bounded_depth_first_search",
 				"depth_first_with_cycle_checking","iterative_deepening","heuristic_depth_first_search","hill_climbing","steepest_ascent_hill_climbing",
 				"lowest_cost_first_search", "best_first_search","a_star">>)
@@ -120,7 +120,7 @@ feature {NONE} -- Initialization
 			else
 				print ("ERROR")
 			end
-			
+
 			create game_manager.make (selected_algorithm, l_algorithm_depth, view)
 			view.start_view (game_manager)
 
