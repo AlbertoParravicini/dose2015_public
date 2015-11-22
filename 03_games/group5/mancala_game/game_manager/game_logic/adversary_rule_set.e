@@ -120,12 +120,21 @@ feature -- Implementation
 		require else
 			non_void_engine: engine /= VOID
 		do
-			engine.reset_engine
-			engine.perform_search (a_state)
+			if not problem.is_end (a_state) then
+				engine.reset_engine
+				engine.perform_search (a_state)
 
-			current_state := engine.obtained_successor
+				current_state := engine.obtained_successor
+			end
 		ensure
 			current_state = engine.obtained_successor
+		end
+
+	is_game_over: BOOLEAN
+		do
+			Result := problem.is_end (current_state)
+		ensure then
+			result_is_consistent: Result = problem.is_end (current_state)
 		end
 
 end

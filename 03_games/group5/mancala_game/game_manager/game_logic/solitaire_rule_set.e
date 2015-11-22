@@ -175,4 +175,14 @@ feature -- Implementation
 			move_not_allowed_if_game_is_over: (problem.is_successful (old current_state) or old (current_state.is_game_over)) implies Result = false
 		end
 
+	is_game_over: BOOLEAN
+		do
+			if current_state.is_game_over or problem.is_successful (current_state) then
+				Result := true
+			else
+				Result := false
+			end
+		ensure then
+			result_is_consistent: ((not Result = true) or (current_state.is_game_over or problem.is_successful (current_state))) and ((not (current_state.is_game_over or problem.is_successful (current_state))) or Result = true)
+		end
 end

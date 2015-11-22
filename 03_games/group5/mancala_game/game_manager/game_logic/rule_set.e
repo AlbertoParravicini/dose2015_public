@@ -35,7 +35,11 @@ feature -- Status report
 			performed_action: (not attached {ACTION_OTHER} a_action) implies (Result = true implies (current_state /= Old current_state))
 			invalid_player: a_player_id /= Old current_state.index_of_current_player implies Result = false
 		end
-
+	is_game_over: BOOLEAN
+			-- Utility function which tells if the current state is a final state for the game which is being played;
+		deferred
+		end
+		
 feature -- Status setting
 
 	set_current_state (a_state: STATE)

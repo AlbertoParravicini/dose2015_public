@@ -139,13 +139,11 @@ feature -- Status setting
 					elseif other_action.action = (create {ENUM_OTHER}).hint then
 						solitaire_move (a_action)
 					elseif other_action.action = (create {ENUM_OTHER}).solve then
-						if attached {SOLITAIRE_RULE_SET} rules_set as sol_rules_set then
-							from
-							until
-								sol_rules_set.problem.is_successful (sol_rules_set.current_state) or sol_rules_set.current_state.is_game_over
-							loop
-								solitaire_move(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
-							end
+						from
+						until
+							rules_set.is_game_over
+						loop
+							solitaire_move(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
 						end
 					end
  				end
@@ -163,11 +161,7 @@ feature -- Status setting
 
 					-- ACTION: SELECT
 				if equal(a_action.generator, "ACTION_SELECT") then
-					if human_player_turn and rules_set.is_valid_action (rules_set.current_state.index_of_current_player, a_action) then
-						show_adversary_turn_state_and_message
-					else
-						view.show_message ("ERROR: it isn't a valid hole or it isn't your turn!%N")
-					end
+					adversary_move (a_action)
 				end
 
 
@@ -180,6 +174,16 @@ feature -- Status setting
 						view.show_message ("START ADVERSARY GAME%N")
 						view.show_message ("----------------------------------%N")
 						show_adversary_turn_state_and_message
+					elseif other_action.action = (create {ENUM_OTHER}).hint then
+						adversary_move (a_action)
+					elseif other_action.action = (create {ENUM_OTHER}).solve then
+						from
+						until
+							rules_set.is_game_over
+						loop
+							adversary_human_loop
+							adversary_ai_loop
+						end
 					end
  				end
 				adversary_ai_loop
@@ -218,13 +222,40 @@ feature {NONE} -- Implementation
 			from
 
 			until
-				human_player_turn
+				human_player_turn or rules_set.is_game_over
 			loop
 				view.show_message ("AI thinking...%N")
 				if attached {ADVERSARY_RULE_SET} rules_set as adv_rules_set then
  					adv_rules_set.ai_move (adv_rules_set.current_state)
  				end
 				show_adversary_turn_state_and_message
+			end
+		end
+
+	adversary_human_loop
+		require
+			rules_set /= VOID
+		do
+			from
+
+			until
+				(not human_player_turn) or rules_set.is_game_over
+			loop
+				if attached {ADVERSARY_RULE_SET} rules_set as adv_rules_set then
+ 					adversary_move(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+				end
+				show_adversary_turn_state_and_message
+			end
+		end
+
+	adversary_move (a_action: ACTION)
+			-- Commodity funciton used to send the player's action to the adversary rules-set,
+			-- and update the view accordingly to the result of the action;
+		do
+			if human_player_turn and then rules_set.is_valid_action (rules_set.current_state.index_of_current_player, a_action) then
+				show_adversary_turn_state_and_message
+			else
+				view.show_message ("ERROR: it isn't a valid hole or it isn't your turn!%N")
 			end
 		end
 
@@ -240,13 +271,14 @@ feature {NONE} -- Implementation
 		end
 
 	solitaire_move (a_action: ACTION)
-			-- Commodity funciton used to send the player's action to the rules-set,
+			-- Commodity funciton used to send the player's action to the solitaire rules-set,
 			-- and update the view accordingly to the result of the action;
 		do
-			if human_player_turn and rules_set.is_valid_action (rules_set.current_state.index_of_current_player, a_action) then
+			if human_player_turn and then rules_set.is_valid_action (rules_set.current_state.index_of_current_player, a_action) then
 				show_solitaire_turn_state_and_message
 			else
 				view.show_message ("ERROR: it isn't a valid hole or it isn't your turn!%N")
 			end
 		end
+
 end
