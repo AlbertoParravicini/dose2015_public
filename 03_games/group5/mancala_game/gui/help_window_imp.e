@@ -49,10 +49,12 @@ feature {NONE}-- Initialization
 			box_argentina.extend (label_arg_1)
 			box_argentina.extend (label_arg_2)
 			box_argentina.extend (label_arg_3)
+			l_ev_vertical_box_1.extend (l_ev_pixmap_1)
+
 
 			l_ev_vertical_box_1.set_padding (2)
 			l_ev_vertical_box_1.set_border_width (5)
-			text_rules.set_text ("SOLITAIRE RULES:%N%NADVERSARY RULES:")
+			text_rules.set_text (" # ADVERSARY MODE #%N%NMancala is an ancient family of board games, and there are numerous variants. This is a version of the basic game, known as two-rank Mancala and also known as Kalah.%N%N - Holes and store%NYour holes on the board are on the bottom or right side. Your store is the big hole on the right or top edge.%N%N - Sow stones%NChose a hole to pick up all pieces. Moving counter-clockwise, the game now deposits one of the stones in each hole until the stones run out.%N%N - Store%NIf you run into your own store, deposit one piece in it. If you run into your opponent's store, skip it.%N%N - Free turn%NIf the last piece you drop is in your own store, you get a free turn.%N%N - Capture%NIf the last piece you drop is in an empty hole on your side, you capture that piece and any pieces in the hole directly opposite.%N%N - End%NThe game ends when all six spaces on one side of the Mancala board are empty. The player who still has pieces on his side of the board when the game ends captures all of those pieces.%N%N - Win%NCount all the pieces in each store. The winner is the player with the most pieces.%N%N # SOLITAIRE MODE #%N%NThe game is played on a standard mancala board by one player. The goal is to put all the stones in the stores, leaving all the holes empty%N%N - Begin of first round%NThe player shall select a hole (in any row, thus any of the 12 holes)%N%N - Round%NWhen a hole is selected, all stones in the selected hole are distributed either clockwise or anti-clockwise%N%N - Dropping clockwise%NOne stone is placed in each hole starting with the hole next to the selected one, in clockwise direction. If the number of stones remaining to be distributed is more than 1 after dropping in hole07 or hole01, then store01 or store02 respectively is skipped, and the next stone is dropped in hole06 or hole12 respectively.%NIf the number of stones remaining to be distributed is 1 after dropping in hole07 (hole01), this stone is dropped in store01 (store02)%NThe round is over when there are no more stones to distribute. If the game is not over, a new round starts, where the selected hole will be the one where the last stone of this round was dropped.%N%N - Dropping anti-clockwise%NOne stone is placed in each hole starting with the hole next to the selected one, in anti-clockwise direction. If the number of stones remaining to be distributed is more than 1 after dropping in hole06 or hole12, then store01 or store02 respectively is skipped, and the next stone is dropped in hole07 or hole01 respectively.%NIf the number of stones remaining to be distributed is 1 after dropping in hole06 (hole12), this stone is dropped in store01 (store02)%NThe round is over when there are no more stones to distribute. If the game is not over, a new round starts, where the selected hole will be the one where the last stone of this round was dropped.%N%N - Game over: lose%NWhen the last stone distributed in a round is placed in an empty hole, the player loses and the game is over.%N%N - Game over: win%NThe player wins the game if no stone remains in any of the 12 holes")
 			text_rules.set_minimum_height (200)
 			text_rules.disable_edit
 			create internal_font
@@ -71,6 +73,8 @@ feature {NONE}-- Initialization
 			label_arg_1.set_text ("Andruvetto Daniel")
 			label_arg_2.set_text ("Lanzoni Lucas Fermin")
 			label_arg_3.set_text ("Castagneris Nazareno")
+			l_ev_pixmap_1.set_with_named_file (".\extra\dummy.png")
+			l_ev_pixmap_1.hide
 			set_minimum_width (400)
 			set_minimum_height (400)
 			set_title ("Display window")
@@ -78,6 +82,8 @@ feature {NONE}-- Initialization
 			set_all_attributes_using_constants
 
 				-- Connect events.
+				Current.minimize_actions.extend (agent action_enable_show_image)
+				Current.restore_actions.extend (agent action_show_image)
 				-- Close the application when an interface close
 				-- request is received on `Current'. i.e. the cross is clicked.
 			close_request_actions.extend (agent destroy_and_exit_if_last)
@@ -104,6 +110,8 @@ feature {NONE}-- Initialization
 			create label_arg_1
 			create label_arg_2
 			create label_arg_3
+			create l_ev_pixmap_1
+
 
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
@@ -133,6 +141,8 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
+	l_ev_pixmap_1: EV_PIXMAP
+
 
 feature {NONE} -- Implementation
 
@@ -149,6 +159,15 @@ feature {NONE} -- Implementation
 
 	user_initialization
 			-- Feature for custom initialization, called at end of `initialize'.
+		deferred
+		end
+
+	action_show_image
+			-- Called by `pointer_button_release_actions' of `label_dose_group'.
+		deferred
+		end
+
+	action_enable_show_image
 		deferred
 		end
 
