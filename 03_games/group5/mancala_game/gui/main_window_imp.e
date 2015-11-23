@@ -18,7 +18,7 @@ inherit
 		redefine
 			create_interface_objects, initialize, is_in_default_state
 		end
-			
+
 	CONSTANTS
 		undefine
 			is_equal, default_create, copy
@@ -34,7 +34,7 @@ feature {NONE}-- Initialization
 			Precursor {EV_TITLED_WINDOW}
 			initialize_constants
 
-			
+
 				-- Build widget structure.
 			extend (box_container_main)
 			box_container_main.extend (title_label)
@@ -66,7 +66,7 @@ feature {NONE}-- Initialization
 			box_table_engines.put_at_position (radio_button_solitaire, 1, 1, 1, 1)
 			box_table_engines.put_at_position (radio_button_adversary, 2, 1, 1, 1)
 			radio_button_solitaire.set_text ("Solitaire")
-			radio_button_adversary.set_text ("Player vs AI")
+			radio_button_adversary.set_text ("Adversary")
 			combo_engines.set_text ("Engines")
 			box_frame_parameters.set_text ("Additional Parameters")
 			l_ev_horizontal_box_1.set_border_width (5)
@@ -97,7 +97,7 @@ feature {NONE}-- Initialization
 			set_title ("Mancala")
 
 			set_all_attributes_using_constants
-			
+
 				-- Connect events.
 			radio_button_solitaire.select_actions.extend (agent action_select_solitaire)
 			radio_button_adversary.select_actions.extend (agent action_select_adversary)
@@ -111,11 +111,11 @@ feature {NONE}-- Initialization
 				-- Call `user_initialization'.
 			user_initialization
 		end
-		
+
 	frozen create_interface_objects
 			-- Create objects
 		do
-			
+
 				-- Create all widgets.
 			create box_container_main
 			create title_label
@@ -188,32 +188,32 @@ feature {NONE} -- Implementation
 			-- Feature for custom initialization, called at end of `initialize'.
 		deferred
 		end
-	
+
 	action_select_solitaire
 			-- Called by `select_actions' of `radio_button_solitaire'.
 		deferred
 		end
-	
+
 	action_select_adversary
 			-- Called by `select_actions' of `radio_button_adversary'.
 		deferred
 		end
-	
+
 	action_select_engine
 			-- Called by `change_actions' of `combo_engines'.
 		deferred
 		end
-	
+
 	action_start_click
 			-- Called by `select_actions' of `button_start'.
 		deferred
 		end
-	
+
 	action_help_click
 			-- Called by `select_actions' of `button_help'.
 		deferred
 		end
-	
+
 
 feature {NONE} -- Constant setting
 
@@ -298,7 +298,7 @@ feature {NONE} -- Constant setting
 				f := font_constant_retrieval_functions.i_th (font_constant_set_procedures.index).item (Void)
 				font_constant_set_procedures.item.call ([f])
 				font_constant_set_procedures.forth
-			end	
+			end
 		end
 
 	frozen set_attributes_using_color_constants
@@ -328,7 +328,7 @@ feature {NONE} -- Constant setting
 			set_attributes_using_font_constants
 			set_attributes_using_color_constants
 		end
-	
+
 	string_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [READABLE_STRING_GENERAL]]]
 	string_constant_retrieval_functions: ARRAYED_LIST [FUNCTION [ANY, TUPLE, STRING_32]]
 	integer_constant_set_procedures: ARRAYED_LIST [PROCEDURE [ANY, TUPLE [INTEGER]]]

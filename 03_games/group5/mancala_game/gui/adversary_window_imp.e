@@ -85,7 +85,7 @@ feature {NONE}-- Initialization
 			label_store_2_value.set_text ("48")
 			integer_constant_set_procedures.extend (agent label_store_2_value.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent label_score_width)
-			label_store_2_name.set_text ("Cpu Score")
+			label_store_2_name.set_text ("Player 2 Score")
 			integer_constant_set_procedures.extend (agent label_store_2_name.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent label_score_width)
 			create internal_font
@@ -252,7 +252,7 @@ feature {NONE}-- Initialization
 			label_store_1_value.set_text ("0")
 			integer_constant_set_procedures.extend (agent label_store_1_value.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent label_score_width)
-			label_store_1_name.set_text ("Player Score")
+			label_store_1_name.set_text ("Player 1 Score")
 			integer_constant_set_procedures.extend (agent label_store_1_name.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent label_score_width)
 			box_container_extra.set_border_width (10)
