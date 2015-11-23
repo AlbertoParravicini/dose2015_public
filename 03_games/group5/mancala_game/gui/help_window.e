@@ -30,5 +30,14 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
+	action_show_image
+			-- Called by `pointer_button_release_actions' of `label_dose_group'.
+		do
+				text_rules.hide
+				label_dose_group.hide
+				frame_argentina.hide
+				frame_italy.hide
+				l_ev_pixmap_1.show
+		end
 
 end

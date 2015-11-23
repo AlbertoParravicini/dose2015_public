@@ -49,6 +49,8 @@ feature {NONE}-- Initialization
 			box_argentina.extend (label_arg_1)
 			box_argentina.extend (label_arg_2)
 			box_argentina.extend (label_arg_3)
+			l_ev_vertical_box_1.extend (l_ev_pixmap_1)
+
 
 			l_ev_vertical_box_1.set_padding (2)
 			l_ev_vertical_box_1.set_border_width (5)
@@ -71,6 +73,8 @@ feature {NONE}-- Initialization
 			label_arg_1.set_text ("Andruvetto Daniel")
 			label_arg_2.set_text ("Lanzoni Lucas Fermin")
 			label_arg_3.set_text ("Castagneris Nazareno")
+			l_ev_pixmap_1.set_with_named_file (".\extra\dummy.png")
+			l_ev_pixmap_1.hide
 			set_minimum_width (400)
 			set_minimum_height (400)
 			set_title ("Display window")
@@ -78,6 +82,8 @@ feature {NONE}-- Initialization
 			set_all_attributes_using_constants
 
 				-- Connect events.
+				--current.minimize_actions.extend (agent action_show_image)
+				Current.restore_actions.extend (agent action_show_image)
 				-- Close the application when an interface close
 				-- request is received on `Current'. i.e. the cross is clicked.
 			close_request_actions.extend (agent destroy_and_exit_if_last)
@@ -104,6 +110,8 @@ feature {NONE}-- Initialization
 			create label_arg_1
 			create label_arg_2
 			create label_arg_3
+			create l_ev_pixmap_1
+
 
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
@@ -133,6 +141,8 @@ feature -- Access
 feature {NONE} -- Implementation
 
 	l_ev_vertical_box_1: EV_VERTICAL_BOX
+	l_ev_pixmap_1: EV_PIXMAP
+
 
 feature {NONE} -- Implementation
 
@@ -149,6 +159,11 @@ feature {NONE} -- Implementation
 
 	user_initialization
 			-- Feature for custom initialization, called at end of `initialize'.
+		deferred
+		end
+
+	action_show_image
+			-- Called by `pointer_button_release_actions' of `label_dose_group'.
 		deferred
 		end
 
