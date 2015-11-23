@@ -70,7 +70,7 @@ feature
 			-- Return the difference between the maximizing player' score and the minimizing player' score;
 		do
 			if not state.is_game_over then
-				Result := h1(state) + h3(state)
+				Result := h5 (state)
 			elseif state.players.at (1).score > state.players.at (2).score then
 				Result := max_value - 1
 			elseif state.players.at (1).score < state.players.at (2).score then
@@ -82,8 +82,10 @@ feature
 			result_is_consistent: Result >= min_value and Result <= max_value
 		end
 
+feature {NONE} -- Heuristic functions
+
 	h1 (state: ADVERSARY_STATE): INTEGER
-			--  How far ahead of my opponent I am. (My Mancala - Opponent's Mancala
+			--  How far ahead of my opponent I am. (my score - the opponent's score);
 		require
 			non_game_over_state: not state.is_game_over
 		do
@@ -91,20 +93,84 @@ feature
 		end
 
 	h2 (state: ADVERSARY_STATE): INTEGER
-		-- How close I am to winning (> half).
+			-- How close I am to winning (my score > half of the max score).
+			-- The idea is to maximize my score;
 		require
 			non_game_over_state: not state.is_game_over
 		do
-			Result := state.players.at (1).score - (({GAME_CONSTANTS}.num_of_stones // 2) + 1)
+			Result := {GAME_CONSTANTS}.num_of_stones - ((({GAME_CONSTANTS}.num_of_stones // 2) + 1) - state.players.at (1).score)
 		end
 
 	h3 (state: ADVERSARY_STATE): INTEGER
-		-- How close opponent is to winning (> half).
+			-- How far the opponent is to winning (opponent's score > half of the max score).
+			-- The idea is to minimize the score gained by the opponent;
 		require
 			non_game_over_state: not state.is_game_over
 		do
 			Result := ({GAME_CONSTANTS}.num_of_stones // 2) + 1 - state.players.at (2).score
 		end
+
+	h4 (state: ADVERSARY_STATE): INTEGER
+			-- The number of stones close to the current player store (counting the closest 1/3 holes to the store);
+		require
+			non_game_over_state: not state.is_game_over
+		local
+			i: INTEGER
+			sum: INTEGER
+		do
+			from
+				i := {GAME_CONSTANTS}.num_of_holes // (1 + (state.is_min.to_integer))
+			until
+				i <= (({GAME_CONSTANTS}.num_of_holes // 2) * (2 / 3)).ceiling + (({GAME_CONSTANTS}.num_of_holes // 2) * (state.is_max.to_integer))
+			loop
+				sum := sum + state.map.get_hole_value (i)
+
+				i := i - 1
+			end
+			Result := (sum * (-1).power(state.is_max.to_integer)).floor
+
+		end
+
+	h5 (state: ADVERSARY_STATE): INTEGER
+			-- The number of stones in the middle of the map on the current player's side (counting the mid 1/3 holes);
+		require
+			non_game_over_state: not state.is_game_over
+		local
+			i: INTEGER
+			sum: INTEGER
+		do
+			from
+				i := 1 + (({GAME_CONSTANTS}.num_of_holes // 2) * (1 / 3)).ceiling + ({GAME_CONSTANTS}.num_of_holes // 2) * ((state.is_max).to_integer)
+
+			until
+				i >= (({GAME_CONSTANTS}.num_of_holes // 2) * (2 / 3)).ceiling + ({GAME_CONSTANTS}.num_of_holes // 2) * ((state.is_max).to_integer)
+			loop
+				sum := sum + state.map.get_hole_value (i)
+				i := i + 1
+			end
+			Result := (sum * (-1).power(state.is_max.to_integer)).floor
+		end
+
+	h6 (state: ADVERSARY_STATE): INTEGER
+			-- The number of stones far away from the current player's store (counting the farthest 1/3 holes);
+		require
+			non_game_over_state: not state.is_game_over
+		local
+			i: INTEGER
+			sum: INTEGER
+		do
+			from
+				i := 1 + (({GAME_CONSTANTS}.num_of_holes // 2)  * (state.is_max.to_integer))
+			until
+				i > (({GAME_CONSTANTS}.num_of_holes // 2) * 1 / 3).floor + (({GAME_CONSTANTS}.num_of_holes // 2) * (state.is_max.to_integer))
+			loop
+				sum := sum + state.map.get_hole_value (i)
+				i := i + 1
+			end
+			Result := (sum * (-1).power(state.is_max.to_integer)).floor
+		end
+
+feature -- Constant values
 
 	min_value: INTEGER = -1000
 

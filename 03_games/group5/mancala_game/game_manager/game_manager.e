@@ -135,7 +135,6 @@ feature -- Status setting
 						view.show_message ("----------------------------------%N")
 						view.show_message ("%N%N")
 						view.show_state (rules_set.current_state)
-						view.show_message ("TODO: write 'exit'%N")
 					elseif other_action.action = (create {ENUM_OTHER}).hint then
 						solitaire_move (a_action)
 					elseif other_action.action = (create {ENUM_OTHER}).solve then
