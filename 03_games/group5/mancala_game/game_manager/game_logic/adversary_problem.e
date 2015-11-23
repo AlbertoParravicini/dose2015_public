@@ -70,7 +70,7 @@ feature
 			-- Return the difference between the maximizing player' score and the minimizing player' score;
 		do
 			if not state.is_game_over then
-				Result := h1(state) + h2(state) + h3(state)
+				Result := h1(state) + h3(state)
 			elseif state.players.at (1).score > state.players.at (2).score then
 				Result := max_value - 1
 			elseif state.players.at (1).score < state.players.at (2).score then

@@ -42,8 +42,9 @@ feature -- Initialization
 				end
 			end
 		ensure then
-			engine_initialized: engine /= Void
-			problem_initialized: problem /= Void
+			engine_initialized: not selected_algorithm.is_equal ("two_players") implies engine /= Void
+			problem_initialized: not selected_algorithm.is_equal ("two_players") implies problem /= Void
+			two_players: (engine = Void and problem = Void) implies selected_algorithm.is_equal ("two_players")
 		end
 
 
