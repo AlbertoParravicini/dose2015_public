@@ -13,11 +13,15 @@ inherit
 
 feature {NONE} -- Initialization
 
+	default_button_color : EV_COLOR
+	default_button_selected_color : EV_COLOR
+
 	user_create_interface_objects
 			-- Create any auxilliary objects needed for SINGLE_WINDOW.
 			-- Initialization for these objects must be performed in `user_initialization'.
 		do
 				-- Create attached types defined in class here, initialize them in `user_initialization'.
+				create default_button_selected_color.make_with_8_bit_rgb (0, 255, 0)
 		end
 
 	user_initialization
@@ -25,6 +29,7 @@ feature {NONE} -- Initialization
 			-- and from within current class itself.
 		do
 				-- Initialize types defined in current class
+				default_button_color:=button_hole_1.background_color
 		end
 
 feature {NONE} -- Implementation
@@ -133,7 +138,7 @@ feature {NONE} -- Auxiliary features
 	update_stones (a_current_state: GAME_STATE)
 			-- Update remaining stones
 		do
-			label_stones_value.set_text ((a_current_state.map.num_of_stones).out)
+			label_stones_value.set_text ((a_current_state.map.num_of_stones - a_current_state.map.get_store_value (1)-a_current_state.map.get_store_value (2)).out)
 		end
 
 	update_selected_hole (a_current_state: GAME_STATE)
@@ -154,7 +159,7 @@ feature {NONE} -- Auxiliary features
 					loop
 						-- Enable select and deselect all
 						list_button_hole.i_th (counter).enable_sensitive
-
+						list_button_hole.i_th (counter).set_background_color (default_button_color)
 						counter := counter + 1
 					end
 				else
@@ -166,8 +171,10 @@ feature {NONE} -- Auxiliary features
 					loop
 						-- Disable select and select the current one
 						list_button_hole.i_th (counter).disable_sensitive
+						list_button_hole.i_th (counter).set_background_color (default_button_color)
 						if(counter=l_selected_hole)then
-								list_button_hole.i_th (counter).enable_sensitive
+								--list_button_hole.i_th (counter).enable_sensitive
+								list_button_hole.i_th (counter).set_background_color (default_button_selected_color)
 						end
 
 						counter := counter + 1
