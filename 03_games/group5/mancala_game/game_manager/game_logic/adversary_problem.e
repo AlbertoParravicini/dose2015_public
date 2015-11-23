@@ -70,7 +70,7 @@ feature
 			-- Return the difference between the maximizing player' score and the minimizing player' score;
 		do
 			if not state.is_game_over then
-				Result := state.players.at (1).score - state.players.at (2).score
+				Result := h1(state) + h2(state) + h3(state)
 			elseif state.players.at (1).score > state.players.at (2).score then
 				Result := max_value - 1
 			elseif state.players.at (1).score < state.players.at (2).score then
@@ -80,6 +80,30 @@ feature
 			end
 		ensure then
 			result_is_consistent: Result >= min_value and Result <= max_value
+		end
+
+	h1 (state: ADVERSARY_STATE): INTEGER
+			--  How far ahead of my opponent I am. (My Mancala - Opponent's Mancala
+		require
+			non_game_over_state: not state.is_game_over
+		do
+			Result := state.players.at (1).score - state.players.at (2).score
+		end
+
+	h2 (state: ADVERSARY_STATE): INTEGER
+		-- How close I am to winning (> half).
+		require
+			non_game_over_state: not state.is_game_over
+		do
+			Result := state.players.at (1).score - (({GAME_CONSTANTS}.num_of_stones // 2) + 1)
+		end
+
+	h3 (state: ADVERSARY_STATE): INTEGER
+		-- How close opponent is to winning (> half).
+		require
+			non_game_over_state: not state.is_game_over
+		do
+			Result := ({GAME_CONSTANTS}.num_of_stones // 2) + 1 - state.players.at (2).score
 		end
 
 	min_value: INTEGER = -1000
