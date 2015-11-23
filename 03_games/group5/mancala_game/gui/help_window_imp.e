@@ -82,7 +82,7 @@ feature {NONE}-- Initialization
 			set_all_attributes_using_constants
 
 				-- Connect events.
-				--current.minimize_actions.extend (agent action_show_image)
+				Current.minimize_actions.extend (agent action_enable_show_image)
 				Current.restore_actions.extend (agent action_show_image)
 				-- Close the application when an interface close
 				-- request is received on `Current'. i.e. the cross is clicked.
@@ -164,6 +164,10 @@ feature {NONE} -- Implementation
 
 	action_show_image
 			-- Called by `pointer_button_release_actions' of `label_dose_group'.
+		deferred
+		end
+
+	action_enable_show_image
 		deferred
 		end
 
