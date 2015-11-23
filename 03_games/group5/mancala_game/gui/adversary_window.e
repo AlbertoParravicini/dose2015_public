@@ -14,6 +14,8 @@ inherit
 
 feature {NONE} -- Initialization
 
+	default_button_color : EV_COLOR
+
 	user_create_interface_objects
 			-- Create any auxilliary objects needed for ADVERSARY_WINDOW.
 			-- Initialization for these objects must be performed in `user_initialization'.
@@ -26,6 +28,7 @@ feature {NONE} -- Initialization
 			-- and from within current class itself.
 		do
 				-- Initialize types defined in current class
+			default_button_color := list_button_hole.i_th (1).background_color
 		end
 
 feature {NONE} -- Implementation
@@ -61,7 +64,7 @@ feature {NONE} -- Implementation
 				end
 		end
 
-	activate_player_button(a_index_of_current_player: INTEGER; a_enable: BOOLEAN)
+	activate_player_buttons(a_index_of_current_player: INTEGER; a_enable: BOOLEAN)
 		require
 			a_index_of_current_player > 0 and a_index_of_current_player <= 2
 		local
@@ -82,6 +85,45 @@ feature {NONE} -- Implementation
 			end
 		end
 
+	activate_current_player_buttons (a_current_state: GAME_STATE)
+		do
+
+			if attached {ADVERSARY_STATE} a_current_state as adv_state then
+				if attached {HUMAN_PLAYER} a_current_state.current_player then
+					activate_player_buttons(adv_state.index_of_current_player, true)
+					activate_player_buttons((adv_state.index_of_current_player \\ 2) + 1, false)
+				else
+					activate_player_buttons(1, false)
+					activate_player_buttons(2, false)
+				end
+			end
+
+		end
+
+		show_last_move (a_current_state: GAME_STATE)
+			local
+				counter: INTEGER
+			do
+				from
+					counter := 1
+				until
+					counter > {GAME_CONSTANTS}.num_of_holes
+				loop
+					-- Enable select and deselect all
+					if (attached {ADVERSARY_STATE} a_current_state as adv_state) and then adv_state.parent /= VOID then
+
+						if counter = adv_state.rule_applied.get_selection then
+							list_button_hole.i_th (counter).set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (150, 150, 150))
+						else
+							list_button_hole.i_th (counter).set_background_color (default_button_color)
+						end
+
+					end
+					counter := counter + 1
+				end
+
+			end
+
 feature -- Inherited from VIEW
 	start_view (a_game_manager: GAME_MANAGER)
 		do
@@ -93,17 +135,8 @@ feature -- Inherited from VIEW
 			-- Used to show a representation of the current state:
 			-- the GUI updates its values (labels text, etc...), the CLI can print the state;
 		do
-
-			if attached {ADVERSARY_STATE} a_current_state as adv_state then
-				if attached {HUMAN_PLAYER} a_current_state.current_player then
-					activate_player_button(adv_state.index_of_current_player, true)
-					activate_player_button((adv_state.index_of_current_player \\ 2) + 1, false)
-				else
-					activate_player_button(1, false)
-					activate_player_button(2, false)
-				end
-			end
-
+			activate_current_player_buttons (a_current_state)
+			show_last_move (a_current_state)
 			update_holes (a_current_state)
 			update_stores (a_current_state)
 		end
