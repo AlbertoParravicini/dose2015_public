@@ -10,7 +10,6 @@ class
 inherit
 
 	ADVERSARY_SEARCH_PROBLEM [ACTION_SELECT, ADVERSARY_STATE]
-	DOUBLE_MATH
 
 create
 	make
@@ -166,36 +165,6 @@ feature {NONE} -- Heuristic functions
 				i := i + 1
 			end
 			Result := (sum * (-1).power (state.is_max.to_integer)).floor
-		end
-
-	box_muller_transform (mean: REAL; variance: REAL)
-		local
-			u1: REAL_64
-			u2: REAL_64
-			z1: REAL_64
-			z2: REAL_64
-			random_number_generator: RANDOM
-				-- Random numbers generator to have a stochastic move choice, if the maximum depth is set to 0;
-			time_seed_for_random_generator: TIME
-				-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
-
-		do
-			create time_seed_for_random_generator.make_now
-				-- Initializes random generator using current time seed.
-			create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
-			random_number_generator.start
-
-			u1 := random_number_generator.real_item
-			random_number_generator.forth
-			u2 := random_number_generator.real_item
-
-
-			z1 := sqrt (-2 * log (u1)) * cosine (2 * pi * u2)
-			z2 := sqrt (-2 * log (u1)) * sine (2 * pi * u2)
-
-
-			z1 := z1 * sqrt (variance) + mean
-			z2 := z2 * sqrt (variance) + mean
 		end
 
 
