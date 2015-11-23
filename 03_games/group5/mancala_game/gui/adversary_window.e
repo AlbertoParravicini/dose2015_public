@@ -61,6 +61,27 @@ feature {NONE} -- Implementation
 				end
 		end
 
+	activate_player_button(a_index_of_current_player: INTEGER; a_enable: BOOLEAN)
+		require
+			a_index_of_current_player > 0 and a_index_of_current_player <= 2
+		local
+			counter: INTEGER
+		do
+			from
+				counter := 1 + (a_index_of_current_player - 1) * ({GAME_CONSTANTS}.num_of_holes // 2)
+			until
+				counter > (1 + (a_index_of_current_player - 1)) * ({GAME_CONSTANTS}.num_of_holes // 2)
+			loop
+				-- Enable select and deselect all
+				if a_enable then
+					list_button_hole.i_th (counter).enable_sensitive
+				else
+					list_button_hole.i_th (counter).disable_sensitive
+				end
+				counter := counter + 1
+			end
+		end
+
 feature -- Inherited from VIEW
 	start_view (a_game_manager: GAME_MANAGER)
 		do
@@ -72,6 +93,17 @@ feature -- Inherited from VIEW
 			-- Used to show a representation of the current state:
 			-- the GUI updates its values (labels text, etc...), the CLI can print the state;
 		do
+
+			if attached {ADVERSARY_STATE} a_current_state as adv_state then
+				if attached {HUMAN_PLAYER} a_current_state.current_player then
+					activate_player_button(adv_state.index_of_current_player, true)
+					activate_player_button((adv_state.index_of_current_player \\ 2) + 1, false)
+				else
+					activate_player_button(1, false)
+					activate_player_button(2, false)
+				end
+			end
+
 			update_holes (a_current_state)
 			update_stores (a_current_state)
 		end

@@ -286,10 +286,10 @@ feature -- Status Report
 	is_game_over: BOOLEAN
 		-- Is the game over?
 		do
-			if (map.sum_of_stores_token = {GAME_CONSTANTS}.num_of_stones) or (players.at (1).score > {GAME_CONSTANTS}.num_of_stones // 2)
-				or (players.at (2).score > {GAME_CONSTANTS}.num_of_stones // 2)  then
+			if map.sum_of_stores_token = {GAME_CONSTANTS}.num_of_stones then
 					Result := true
-			else Result := false
+			else
+				Result := false
 			end
 		end
 
