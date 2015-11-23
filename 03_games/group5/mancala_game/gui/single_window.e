@@ -39,7 +39,6 @@ feature {NONE} -- Implementation
 				-- Create a new 'ACTION_SELECT' with the selected
 				-- hole as a parameter
 				send_action_to_game_manager(create {ACTION_SELECT}.make (a_hole))
-				text_log.append_text ("Send selection%N")
 		end
 
 	action_hint_click
@@ -109,6 +108,7 @@ feature -- Inherited from VIEW
 			-- for instance an error message or a notification which should be displayed to the user
 		do
 			text_log.append_text (a_message)
+			text_log.scroll_to_end
 		end
 
 feature {NONE} -- Auxiliary features
