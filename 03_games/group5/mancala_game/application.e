@@ -12,7 +12,7 @@ create
 
 feature {NONE} -- Initialization
 
-	view_mode: MAIN_WINDOW_CLI
+	cli: MAIN_WINDOW_CLI
 	gui: START_GUI
 
 	make

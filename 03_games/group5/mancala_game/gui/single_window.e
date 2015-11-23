@@ -169,6 +169,8 @@ feature {NONE} -- Auxiliary features
 						if(counter=l_selected_hole)then
 								list_button_hole.i_th (counter).enable_sensitive
 						end
+
+						counter := counter + 1
 					end
 				end
 			end
