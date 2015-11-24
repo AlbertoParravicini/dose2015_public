@@ -25,7 +25,7 @@ feature -- Initialization
 				if attached {BOUNDED_BREADTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]} engine as engine_bfs then
 					engine_bfs.set_mark_visited_states (true)
 					engine_bfs.set_check_queue (true)
-					if selected_depth > 0 then
+					if selected_depth >= 0 then
 						engine_bfs.set_max_depth (selected_depth)
 					else
 						engine_bfs.set_max_depth (5)
@@ -36,7 +36,7 @@ feature -- Initialization
 				if attached {BOUNDED_DEPTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]} engine as engine_dfs then
 					engine_dfs.enable_cycle_checking
 					print("%N%Ndesired depth: " + selected_depth.out)
-					if selected_depth > 0 then
+					if selected_depth >= 0 then
 						engine_dfs.set_max_depth (selected_depth)
 					else
 						engine_dfs.set_max_depth (5)
