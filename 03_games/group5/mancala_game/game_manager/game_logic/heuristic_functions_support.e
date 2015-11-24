@@ -174,7 +174,8 @@ feature
 
 				bred_variance := (breeding_factor * (better_weights.i_th (i).variance + better_weights.i_th (i).weight.power(2)) + (1.0 - breeding_factor) * (worse_weigths.i_th (i).variance + worse_weigths.i_th (i).weight.power(2))) - bred_mean.power (2)
 
-			
+				--bred_variance := better_weights.i_th (i).variance * (mean_diff / split_factor).power(1/3)
+
 
 				bred_vector.extend ([bred_mean, bred_variance])
 				i := i + 1
