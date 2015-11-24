@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <system xmlns="http://www.eiffel.com/developers/xml/configuration-1-14-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-14-0 http://www.eiffel.com/developers/xml/configuration-1-14-0.xsd" name="mancala_game" uuid="36F76BBA-3719-48A7-8D58-0BE73F50E4F8">
 	<target name="mancala_game">
-		<root cluster="root_cluster" class="MAIN_WINDOW_CLI" feature="make_and_launch"/>
+		<root cluster="root_cluster" class="HEURISTIC_EVOLUTION" feature="make"/>
 		<option profile="true" warning="true" cat_call_detection="none" void_safety="none">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>

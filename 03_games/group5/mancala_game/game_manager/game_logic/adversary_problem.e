@@ -18,13 +18,28 @@ feature
 
 	make
 			-- Default constructor, it generates an adversary problem;
+			-- The weights in the heuristic will all have value equal to 1;
+		local
+			i: INTEGER
 		do
+			create weights.make({HEURISTIC_FUNCTIONS_SUPPORT}.num_of_weights)
+			from
+				i := 1
+			until
+				i > {HEURISTIC_FUNCTIONS_SUPPORT}.num_of_weights
+			loop
+				weights.extend (1.0)
+				i := i + 1
+			end
 		end
 
 feature
 
 	initial_state: ADVERSARY_STATE
 			-- The initial state of the problem;
+
+	weights: ARRAYED_LIST[REAL_64]
+			-- List of the weights used in the heuristic function;
 
 	get_successors (a_state: ADVERSARY_STATE): LIST [ADVERSARY_STATE]
 		local
@@ -70,7 +85,12 @@ feature
 			-- Return the difference between the maximizing player' score and the minimizing player' score;
 		do
 			if not state.is_game_over then
-				Result := h1 (state) + h2 (state) + h3 (state) + h4 (state) + h5 (state) + h6 (state)
+				Result := (h1 (state) * weights.i_th (1)
+					 + h2 (state) * weights.i_th (2)
+					 + h3 (state) * weights.i_th (3)
+					 + h4 (state) * weights.i_th (4)
+					 + h5 (state) * weights.i_th (5)
+					 + h6 (state) * weights.i_th (6)).floor
 			elseif state.players.at (1).score > state.players.at (2).score then
 				Result := max_value - 1
 			elseif state.players.at (1).score < state.players.at (2).score then
@@ -80,6 +100,21 @@ feature
 			end
 		ensure then
 			result_is_consistent: Result >= min_value and Result <= max_value
+		end
+
+	set_weights (a_weights: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]])
+			-- Set the weights used by the heuristic functions given a weights list as input;
+		local
+			i: INTEGER
+		do
+			from
+				i := 1
+			until
+				i > {HEURISTIC_FUNCTIONS_SUPPORT}.num_of_weights
+			loop
+				weights.i_th (i) := a_weights.i_th (i).weight
+				i := i + 1
+			end
 		end
 
 feature {NONE} -- Heuristic functions
@@ -174,4 +209,6 @@ feature -- Constant values
 
 	max_value: INTEGER = 1000
 
+invariant
+	weights_consistent: across weights as curr_weight all (curr_weight.item >= 0 and curr_weight.item <= 1) end
 end

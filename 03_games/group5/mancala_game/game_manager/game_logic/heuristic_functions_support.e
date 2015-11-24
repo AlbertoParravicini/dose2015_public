@@ -27,8 +27,11 @@ feature
 	breeding_factor: REAL_64 = 0.7
 		-- How much the better weights list should be valued over the worse list when breeding a new weights list;
 
-	variance_variation: REAL_64 = 1.0
+	variance_variation: REAL_64 = 10.0
 		-- Positive value which should normalize the variance found after a breeding;
+
+	split_factor: REAL_64 = 0.05
+		-- If the mean difference between two weights is lower than this value, the weights should start to converge;
 
 
 	make
@@ -52,7 +55,7 @@ feature
 			until
 				i > num_of_weights
 			loop
-				l_weights.extend ([1 / l_weights.capacity, 1.0])
+				l_weights.extend ([1 / l_weights.capacity, 0.1])
 				i := i + 1
 			end
 
@@ -128,14 +131,14 @@ feature
 	normalize_weights (a_weights:  ARRAYED_LIST [TUPLE [weight: REAL_64; variance: REAL_64]]): ARRAYED_LIST [TUPLE [weight: REAL_64; variance: REAL_64]]
 			-- Normalize the weights so that their sum is 1; useful so that the results aren't randomly skewed;
 		local
-			weights_norm: REAL_64
+			weights_sum: REAL_64
 		do
 			from
 				a_weights.start
 			until
 				a_weights.exhausted
 			loop
-				weights_norm := weights_norm + a_weights.item.weight.power (2)
+				weights_sum := weights_sum + a_weights.item.weight
 				a_weights.forth
 			end
 
@@ -144,7 +147,7 @@ feature
 			until
 				a_weights.exhausted
 			loop
-				a_weights.item.weight := a_weights.item.weight.power (2) / weights_norm
+				a_weights.item.weight := a_weights.item.weight / weights_sum
 				a_weights.forth
 			end
 			Result := a_weights
@@ -157,6 +160,8 @@ feature
 			i: INTEGER
 			bred_mean: REAL_64
 			bred_variance: REAL_64
+
+			mean_diff: REAL_64
 		do
 			create bred_vector.make (num_of_weights)
 			from
@@ -165,8 +170,14 @@ feature
 				i > num_of_weights
 			loop
 				bred_mean := breeding_factor * better_weights.i_th (i).weight + (1.0 - breeding_factor) * worse_weigths.i_th (i).weight
-				print (bred_mean.out + "%N")
-				bred_variance := better_weights.i_th (i).variance * (better_weights.i_th (i).weight - worse_weigths.i_th (i).weight) * variance_variation
+
+				mean_diff := dabs(better_weights.i_th (i).weight - worse_weigths.i_th (i).weight)
+
+				if mean_diff < split_factor then
+					bred_variance := better_weights.i_th (i).variance * sqrt(mean_diff)
+				else
+					bred_variance := better_weights.i_th (i).variance * sqrt(mean_diff) * variance_variation
+				end
 
 				bred_vector.extend ([bred_mean, bred_variance])
 				i := i + 1
