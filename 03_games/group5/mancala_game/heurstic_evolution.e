@@ -32,7 +32,7 @@ feature -- Attributes
 	max_num_of_epochs: INTEGER = 20
 		-- Number of iterations of the breeding process;
 
-	engine_depth: INTEGER = 4
+	engine_depth: INTEGER = 2
 		-- Depth of the engine;
 
 feature
