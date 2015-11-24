@@ -130,15 +130,17 @@ feature -- Status setting
 
 						-- ACTION: START_GAME
 					if other_action.action = (create {ENUM_OTHER}).start_game then
-						view.show_message ("%N%N%N%N----------------------------------%N")
-						view.show_message ("START SOLITAIRE GAME%N")
-						view.show_message ("----------------------------------%N")
-						view.show_message ("%N%N")
+						view.show_message ("--------------------------------------%N")
+						view.show_message ("--    STARTING SOLITAIRE GAME    --%N")
+						view.show_message ("--------------------------------------%N")
+						view.show_message ("%N")
 						view.show_state (rules_set.current_state)
 					elseif other_action.action = (create {ENUM_OTHER}).hint then
+						view.show_message ("AI is looking for a possible move...%N")
 						solitaire_move (a_action)
 					elseif other_action.action = (create {ENUM_OTHER}).solve then
 						if attached {SOLITAIRE_RULE_SET} rules_set as sol_rules_set then
+							view.show_message ("AI is looking for a possible solution...%N")
 							from
 							until
 								sol_rules_set.is_game_over or sol_rules_set.no_solution_found
@@ -152,8 +154,10 @@ feature -- Status setting
 				-- ACTION_SELECT AND ACTION_ROTATE
 				if attached {ACTION_SELECT} a_action as action_select then
 					solitaire_move (a_action)
+					view.show_message ("Selection done%N")
 				elseif attached {ACTION_ROTATE} a_action as action_rotate then
 					solitaire_move (a_action)
+					view.show_message ("Rotation done%N")
 				end
 
 
@@ -161,8 +165,9 @@ feature -- Status setting
 			elseif is_valid_adversary_algorithm (algorithm_selected) then
 
 					-- ACTION: SELECT
-				if equal(a_action.generator, "ACTION_SELECT") then
-					adversary_move (a_action)
+				if attached {ACTION_SELECT} a_action as action_select then
+					adversary_move (action_select)
+					view.show_message ("Selection done%N")
 				end
 
 
@@ -171,13 +176,15 @@ feature -- Status setting
 
 						-- ACTION: START_GAME
 					if other_action.action = (create {ENUM_OTHER}).start_game then
-						view.show_message ("%N%N%N%N----------------------------------%N")
-						view.show_message ("START ADVERSARY GAME%N")
-						view.show_message ("----------------------------------%N")
+						view.show_message ("---------------------------------------%N")
+						view.show_message ("--   STARTING ADVERSARY GAME   --%N")
+						view.show_message ("---------------------------------------%N")
 						show_adversary_turn_state_and_message
 					elseif other_action.action = (create {ENUM_OTHER}).hint then
+						view.show_message ("Your AI is looking for a possible move...%N")
 						adversary_move (a_action)
 					elseif other_action.action = (create {ENUM_OTHER}).solve then
+						view.show_message ("Your AI is looking for a possible solution...%N")
 						from
 						until
 							rules_set.is_game_over
@@ -209,10 +216,9 @@ feature {NONE} -- Implementation
 		require
 			non_void_view: view /= VOID
 		do
-			view.show_message ("%N%N")
 			view.show_state (rules_set.current_state)
 			if human_player_turn then
-				view.show_message (rules_set.current_state.current_player.name + " insert which hole you want to select, from " + (1 + ((rules_set.current_state.index_of_current_player - 1) * {GAME_CONSTANTS}.num_of_holes // 2 )).out + " to " + ({GAME_CONSTANTS}.num_of_holes * rules_set.current_state.index_of_current_player // 2).out + "%N")
+				view.show_message ("Please chose a hole%N")
 			end
 		end
 
@@ -263,7 +269,7 @@ feature {NONE} -- Implementation
 		require
 			non_void_view: view /= VOID
 		do
-			view.show_message ("%N%N")
+			--view.show_message ("%N%N")
 			view.show_state (rules_set.current_state)
 			if human_player_turn then
 			--	view.show_message (rules_set.current_state.current_player.name + " insert which hole you want to select, from " + (1 + ((rules_set.current_state.index_of_current_player - 1) * {GAME_CONSTANTS}.num_of_holes // 2 )).out + " to " + ({GAME_CONSTANTS}.num_of_holes * rules_set.current_state.index_of_current_player // 2).out + "%N")
