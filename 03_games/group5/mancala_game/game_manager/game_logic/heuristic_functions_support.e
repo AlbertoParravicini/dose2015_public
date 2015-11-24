@@ -19,7 +19,7 @@ feature
 	num_of_weights: INTEGER = 6
 
 	random_number_generator: RANDOM
-		-- Random numbers generator to have a stochastic move choice, if the maximum depth is set to 0;
+		-- Random numbers generator to have a random number;
 
 	time_seed_for_random_generator: TIME
 		-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
@@ -30,7 +30,7 @@ feature
 	split_factor: REAL_64 = 0.1
 		-- If the mean difference between two weights is lower than this value, the weights should start to converge;
 
-	starting_variance: REAL_64 = 0.4
+	starting_variance: REAL_64 = 0.2
 		-- The variance of the starting weights list;
 
 
@@ -172,7 +172,9 @@ feature
 
 				mean_diff := dabs(better_weights.i_th (i).weight - worse_weigths.i_th (i).weight)
 
-				bred_variance := better_weights.i_th (i).variance * (mean_diff / split_factor).power(1/3)
+				bred_variance := (breeding_factor * (better_weights.i_th (i).variance + better_weights.i_th (i).weight.power(2)) + (1.0 - breeding_factor) * (worse_weigths.i_th (i).variance + worse_weigths.i_th (i).weight.power(2))) - bred_mean.power (2)
+
+			
 
 				bred_vector.extend ([bred_mean, bred_variance])
 				i := i + 1

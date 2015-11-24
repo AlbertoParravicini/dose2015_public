@@ -35,7 +35,7 @@ feature
 			random_number_generator: RANDOM
 				-- Random numbers generator to have a random hole to which a stone will be added;
 			time_seed_for_random_generator: TIME
-			-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
+				-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
 
 		do
 			current_player := create {HUMAN_PLAYER}.make_with_initial_values ("PLAYER", 0)
