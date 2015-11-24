@@ -40,7 +40,6 @@ feature
 				-- Initializes random generator using current time seed.
 			create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
 			random_number_generator.start
-
 		end
 
 	initialize_weights: ARRAYED_LIST [TUPLE [weight: REAL_64; variance: REAL_64]]
