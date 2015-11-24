@@ -15,7 +15,7 @@ feature -- Attributes
 	problem: ADVERSARY_PROBLEM
 	math: HEURISTIC_FUNCTIONS_SUPPORT
 	engine: MINIMAX_AB_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
-	engine_depth: INTEGER
+
 	current_state: ADVERSARY_STATE
 	initial_state: ADVERSARY_STATE
 
@@ -29,8 +29,11 @@ feature -- Attributes
 	epoch: INTEGER
 		-- Current epoch of the breeding process;
 
-	max_num_of_epochs: INTEGER = 10
+	max_num_of_epochs: INTEGER = 20
 		-- Number of iterations of the breeding process;
+
+	engine_depth: INTEGER = 4
+		-- Depth of the engine;
 
 feature
 	make
@@ -42,7 +45,6 @@ feature
 			random_winner: INTEGER
 			sum: REAL_64
 		do
-			engine_depth := 2
 			create problem.make
 			create players.make (2)
 			players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("PLAYER", 0))
@@ -93,7 +95,7 @@ feature
 				end
 
 
-				
+
 					-- Breed the new weights;
 				inspect overall_winner
 				when 1 then
