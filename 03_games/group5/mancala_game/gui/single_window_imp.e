@@ -284,7 +284,7 @@ feature {NONE}-- Initialization
 			text_log.set_minimum_height (80)
 			text_log.disable_edit
 			set_minimum_height (430)
-			set_title ("Display window")
+			set_title ("Solitaire Mode")
 
 			set_all_attributes_using_constants
 

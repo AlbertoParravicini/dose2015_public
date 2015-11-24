@@ -14,8 +14,6 @@ inherit
 
 feature {NONE} -- Initialization
 
-	default_button_color : EV_COLOR
-
 	user_create_interface_objects
 			-- Create any auxilliary objects needed for ADVERSARY_WINDOW.
 			-- Initialization for these objects must be performed in `user_initialization'.
@@ -28,23 +26,46 @@ feature {NONE} -- Initialization
 			-- and from within current class itself.
 		do
 				-- Initialize types defined in current class
-			default_button_color := list_button_hole.i_th (1).background_color
 		end
 
 feature {NONE} -- Implementation
+
+	is_solve_processing: BOOLEAN
+	is_two_player_mode: BOOLEAN
 
 	action_hole_click(a_hole:INTEGER)
 		do
 				-- Create a new 'ACTION_SELECT' with the selected
 				-- hole as a parameter
 				send_action_to_game_manager(create {ACTION_SELECT}.make (a_hole))
+				refresh_now
 		end
 
 	action_hint_click
 		do
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
 				-- as a parameter
+				activate_player_buttons(1,false)
+				avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\hint.png")
+				label_player_name.set_text ("HINT")
+				button_hint.disable_sensitive
+				button_solve.disable_sensitive
 				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+				refresh_now
+		end
+
+	action_solve_click
+		do
+				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
+				-- as a parameter
+				is_solve_processing := true
+				activate_player_buttons(1,false)
+				avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\solve.png")
+				label_player_name.set_text ("SOLVE")
+				button_hint.disable_sensitive
+				button_solve.disable_sensitive
+				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve))
+				refresh_now
 		end
 
 	action_log_click
@@ -60,6 +81,7 @@ feature {NONE} -- Implementation
 					text_log.show
 					button_log.set_text ("Hide Log")
 				end
+				refresh_now
 		end
 
 	activate_player_buttons(a_index_of_current_player: INTEGER; a_enable: BOOLEAN)
@@ -87,13 +109,28 @@ feature {NONE} -- Implementation
 		do
 
 			if attached {ADVERSARY_STATE} a_current_state as adv_state then
-				if attached {HUMAN_PLAYER} a_current_state.current_player then
+				if not is_solve_processing and attached {HUMAN_PLAYER} a_current_state.current_player then
 					activate_player_buttons(adv_state.index_of_current_player, true)
 					activate_player_buttons((adv_state.index_of_current_player \\ 2) + 1, false)
+					button_hint.enable_sensitive
+					button_solve.enable_sensitive
+					avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\human.png")
+					label_player_name.set_text (a_current_state.current_player.name)
 				else
 					activate_player_buttons(1, false)
 					activate_player_buttons(2, false)
+					button_hint.disable_sensitive
+					button_solve.disable_sensitive
+					if not is_solve_processing then
+					avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\ai.png")
+					label_player_name.set_text (a_current_state.current_player.name)
+					end
 				end
+			end
+
+			if is_two_player_mode then
+				button_hint.disable_sensitive
+				button_solve.disable_sensitive
 			end
 
 		end
@@ -111,9 +148,9 @@ feature {NONE} -- Implementation
 					if (attached {ADVERSARY_STATE} a_current_state as adv_state) and then adv_state.parent /= VOID then
 
 						if counter = adv_state.rule_applied.get_selection then
-							list_button_hole.i_th (counter).set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (150, 150, 150))
+							list_button_hole.i_th (counter).set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (193, 203, 213))
 						else
-							list_button_hole.i_th (counter).set_background_color (default_button_color)
+							list_button_hole.i_th (counter).set_default_colors
 						end
 
 					end
@@ -122,11 +159,41 @@ feature {NONE} -- Implementation
 
 			end
 
+			show_game_over (a_current_state: GAME_STATE)
+				do
+					if attached {ADVERSARY_STATE} a_current_state as adv_state and then adv_state.is_game_over then
+						if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
+							label_player_name.set_text (adv_state.players.i_th (1).name + " WINS")
+							avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\human.png")
+						elseif adv_state.map.get_store_value (1) < adv_state.map.get_store_value (2) then
+							label_player_name.set_text (adv_state.players.i_th (2).name + " WINS")
+							if is_two_player_mode then
+								avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\human.png")
+							else
+								avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\ripa.png")
+							end
+						else
+							avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\draw.png")
+							label_player_name.set_text ("DRAW")
+						end
+					end
+				end
+
 feature -- Inherited from VIEW
 	start_view (a_game_manager: GAME_MANAGER)
 		do
 			game_manager := a_game_manager
+			is_solve_processing := false
+
+			if attached {ADVERSARY_RULE_SET} game_manager.rules_set as adv_rule_set and then adv_rule_set.engine = VOID then
+				is_two_player_mode := true
+			else
+				is_two_player_mode := false
+			end
+
 			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
+
+			refresh_now
 		end
 
 	show_state (a_current_state: GAME_STATE)
@@ -135,8 +202,10 @@ feature -- Inherited from VIEW
 		do
 			activate_current_player_buttons (a_current_state)
 			show_last_move (a_current_state)
+			show_game_over (a_current_state)
 			update_holes (a_current_state)
 			update_stores (a_current_state)
+			refresh_now
 		end
 
 	show_message (a_message: STRING)
@@ -145,6 +214,7 @@ feature -- Inherited from VIEW
 		do
 			text_log.append_text (a_message)
 			text_log.scroll_to_end
+			refresh_now
 		end
 
 feature {NONE} -- Auxiliary features
