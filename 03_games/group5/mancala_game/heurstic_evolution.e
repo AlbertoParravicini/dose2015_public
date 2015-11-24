@@ -62,9 +62,9 @@ feature
 			print_weights (weights_1)
 
 				-- Initialize the second weights list based on the first one;
-			create	weights_2.make_from_array (<<[0.11, 0.1], [0.1, 0.1], [0.086, 0.1], [0.3, 0.1], [0.15, 0.1], [0.24, 0.1]>>)
-			--weights_2 := math.generate_gaussian_weights (weights_2)
-			--weights_2 := math.log_normal_weights (weights_2)
+			--create	weights_2.make_from_array (<<[0.11, 0.1], [0.1, 0.1], [0.086, 0.1], [0.3, 0.1], [0.15, 0.1], [0.24, 0.1]>>)
+			weights_2 := math.generate_gaussian_weights (weights_2)
+			weights_2 := math.log_normal_weights (weights_2)
 			weights_2 := math.normalize_weights (weights_2)
 
 			print ("v2: ")
