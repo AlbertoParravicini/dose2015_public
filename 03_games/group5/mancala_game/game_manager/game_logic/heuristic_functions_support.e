@@ -27,11 +27,14 @@ feature
 	breeding_factor: REAL_64 = 0.7
 		-- How much the better weights list should be valued over the worse list when breeding a new weights list;
 
-	variance_variation: REAL_64 = 10.0
+	variance_variation: REAL_64 = 4.0
 		-- Positive value which should normalize the variance found after a breeding;
 
 	split_factor: REAL_64 = 0.05
 		-- If the mean difference between two weights is lower than this value, the weights should start to converge;
+
+	starting_variance: REAL_64 = 0.4
+		-- The variance of the starting weights list;
 
 
 	make
@@ -54,7 +57,7 @@ feature
 			until
 				i > num_of_weights
 			loop
-				l_weights.extend ([1 / l_weights.capacity, 0.1])
+				l_weights.extend ([1 / l_weights.capacity, starting_variance])
 				i := i + 1
 			end
 
@@ -196,7 +199,7 @@ feature
 			until
 				a_weights.exhausted
 			loop
-				print ("WEIGHT: " + a_weights.item.weight.out + ", VARIANCE: " + a_weights.item.variance.out + "%N")
+				print ("WEIGHT: " + a_weights.item.weight.truncated_to_real.out + ", VARIANCE: " + a_weights.item.variance.truncated_to_real.out + "%N")
 				a_weights.forth
 			end
 			print ("%N")
