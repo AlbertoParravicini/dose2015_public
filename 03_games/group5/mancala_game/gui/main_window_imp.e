@@ -106,7 +106,7 @@ feature {NONE}-- Initialization
 			button_help.select_actions.extend (agent action_help_click)
 				-- Close the application when an interface close
 				-- request is received on `Current'. i.e. the cross is clicked.
-			close_request_actions.extend (agent destroy_and_exit_if_last)
+			close_request_actions.extend (agent request_close_window)
 
 				-- Call `user_initialization'.
 			user_initialization
@@ -151,6 +151,30 @@ feature {NONE}-- Initialization
 			create color_constant_retrieval_functions.make (10)
 			user_create_interface_objects
 		end
+
+feature {NONE} -- Implementation, Close event
+	request_close_window
+			-- Process user request to close the window.
+		local
+			question_dialog: EV_CONFIRMATION_DIALOG
+		do
+			create question_dialog.make_with_text ("You are about close this window. %NClick OK to proceed.")
+			question_dialog.show_modal_to_window (Current)
+
+			if question_dialog.selected_button ~ (create {EV_DIALOG_CONSTANTS}).ev_ok then
+					-- Destroy the window.
+				destroy
+
+					-- End the application.
+					--| TODO: Remove next instruction if you don't want the application
+					--|       to end when the first window is closed..
+				if attached (create {EV_ENVIRONMENT}).application as a then
+					a.destroy
+				end
+			end
+		end
+
+
 
 
 feature -- Access
