@@ -128,11 +128,6 @@ feature {NONE} -- Implementation
 				end
 			end
 
-			if is_two_player_mode then
-				button_hint.disable_sensitive
-				button_solve.disable_sensitive
-			end
-
 		end
 
 		show_last_move (a_current_state: GAME_STATE)
@@ -187,6 +182,8 @@ feature -- Inherited from VIEW
 
 			if attached {ADVERSARY_RULE_SET} game_manager.rules_set as adv_rule_set and then adv_rule_set.engine = VOID then
 				is_two_player_mode := true
+				button_hint.hide
+				button_solve.hide
 			else
 				is_two_player_mode := false
 			end
