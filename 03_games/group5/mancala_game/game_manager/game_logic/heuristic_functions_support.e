@@ -62,7 +62,7 @@ feature
 		end
 
 	generate_gaussian_weights (a_weights:  ARRAYED_LIST [TUPLE [weight: REAL_64; variance: REAL_64]]): ARRAYED_LIST [TUPLE [weight: REAL_64; variance: REAL_64]]
-			-- Updates the weights list by applying the Box-Muller transform to each element;
+			-- Updates the given weights list by applying the Box-Muller transform to each element;
 		local
 			box_muller_result: TUPLE[z1: REAL_64; z2: REAL_64]
 		do

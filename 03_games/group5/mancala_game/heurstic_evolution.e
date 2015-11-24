@@ -38,6 +38,7 @@ feature
 			overall_winner: INTEGER
 
 			random_winner: INTEGER
+			sum: REAL_64
 		do
 			engine_depth := 2
 			create problem.make
@@ -51,27 +52,31 @@ feature
 
 				-- Initialize the first weights list as default;
 			weights_1 := math.initialize_weights
+			weights_2 := math.initialize_weights
 
 			print ("v1: ")
 			print_weights (weights_1)
 
 				-- Initialize the second weights list based on the first one;
-			weights_2 := math.generate_gaussian_weights (weights_1)
-			weights_2 := math.log_normal_weights (weights_1)
-			weights_2 := math.normalize_weights (weights_1)
+			weights_2 := math.generate_gaussian_weights (weights_2)
+			weights_2 := math.log_normal_weights (weights_2)
+			weights_2 := math.normalize_weights (weights_2)
 
 			print ("v2: ")
 			print_weights (weights_2)
 
+
 				-- Play two games: each game has a different starting player;
 			winner_player_game_1 := play_game (weights_1, weights_2)
+
 			winner_player_game_2 := play_game (weights_2, weights_1)
 
 				-- Get the best weights list among the two;
 			overall_winner := evaluate_overall_winner (winner_player_game_1, winner_player_game_2)
 
-
+			print ("%N%NOVERALL WINNER: " + overall_winner.out + "%N%N")
 				-- Breed the new weights;
+
 			inspect overall_winner
 			when 1 then
 				-- Weights_1 is the winner
@@ -82,9 +87,32 @@ feature
 				random_winner := (math.random_number_generator.item \\ 2) + 1
 				print ("%N%NRANDOM_WINNER: " + random_winner.out + "%N%N")
 				math.random_number_generator.forth
+
+				if random_winner = 1 then
+					bred_weights := math.breed_weights (weights_1, weights_2)
+				else
+					bred_weights := math.breed_weights (weights_2, weights_1)
+				end
+
 			else
 				print ("%N%NERROR: CAN'T BREED!%N%N")
 			end
+
+			if bred_weights /= void then
+				from
+				bred_weights.start
+				until
+					bred_weights.exhausted
+				loop
+					sum := bred_weights.item.weight + sum
+					bred_weights.forth
+				end
+				print (sum.out + ": sum%N")
+				math.print_weights (bred_weights)
+			else
+				print ("%N%NERROR: BRED VECTOR IS VOID!%N%N")
+			end
+
 
 		end
 
@@ -95,11 +123,10 @@ feature
 			from
 				engine.reset_engine
 				problem.set_weights (player_1_weights)
+
 				engine.perform_search (initial_state)
-				print ("Obtained value: " + engine.obtained_value.out + "%N")
-				print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
 				current_state := engine.obtained_successor
-			until
+				until
 				problem.is_end (current_state)
 			loop
 				if current_state.index_of_current_player = 2 then
@@ -109,8 +136,6 @@ feature
 				end
 				engine.reset_engine
 				engine.perform_search (current_state)
-		  	    print ("Obtained value: " + engine.obtained_value.out + "%N")
-				print ("Obtained state: %N" + engine.obtained_successor.out + "%N")
 				current_state := engine.obtained_successor
 			end
 
@@ -171,4 +196,7 @@ feature
 			end
 				print ("]%N%N")
 		end
+
+invariant
+	not weights_1.is_equal (weights_2)
 end
