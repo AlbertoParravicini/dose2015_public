@@ -26,9 +26,11 @@ feature -- Attributes
 	weights_1: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
 	weights_2: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
 
-	winner_weights: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
-	loser_weights: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
-	bred_weights: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
+	epoch: INTEGER
+		-- Current epoch of the breeding process;
+
+	max_num_of_epochs: INTEGER = 10
+		-- Number of iterations of the breeding process;
 
 feature
 	make
@@ -66,54 +68,55 @@ feature
 			print_weights (weights_2)
 
 
+			from
+				epoch := 0
+			until
+				epoch = max_num_of_epochs
+			loop
+				print ("EPOCH NUMBER: " + epoch.out + "%N%N")
 				-- Play two games: each game has a different starting player;
-			winner_player_game_1 := play_game (weights_1, weights_2)
+				winner_player_game_1 := play_game (weights_1, weights_2)
 
-			winner_player_game_2 := play_game (weights_2, weights_1)
+				winner_player_game_2 := play_game (weights_2, weights_1)
 
-				-- Get the best weights list among the two;
-			overall_winner := evaluate_overall_winner (winner_player_game_1, winner_player_game_2)
+					-- Get the best weights list among the two;
+				overall_winner := evaluate_overall_winner (winner_player_game_1, winner_player_game_2)
 
-			print ("%N%NOVERALL WINNER: " + overall_winner.out + "%N%N")
-				-- Breed the new weights;
+				print ("%N%NOVERALL WINNER: " + overall_winner.out + "%N%N")
+					-- Breed the new weights;
 
-			inspect overall_winner
-			when 1 then
-				-- Weights_1 is the winner
-				bred_weights := math.breed_weights (weights_1, weights_2)
-			when 2 then
-				bred_weights := math.breed_weights (weights_2, weights_1)
-			when 0 then
-				random_winner := (math.random_number_generator.item \\ 2) + 1
-				print ("%N%NRANDOM_WINNER: " + random_winner.out + "%N%N")
-				math.random_number_generator.forth
+				print ("BRED_VECTOR: ")
+				inspect overall_winner
+				when 1 then
+					-- Weights_1 is the winner
+					weights_2 := math.breed_weights (weights_1, weights_2)
+					print_weights (weights_2)
+				when 2 then
+					weights_1 := math.breed_weights (weights_2, weights_1)
+					print_weights (weights_1)
+				when 0 then
+					random_winner := (math.random_number_generator.item \\ 2) + 1
+					math.random_number_generator.forth
 
-				if random_winner = 1 then
-					bred_weights := math.breed_weights (weights_1, weights_2)
+					if random_winner = 1 then
+						weights_2 := math.breed_weights (weights_1, weights_2)
+						print_weights (weights_2)
+					else
+						weights_1 := math.breed_weights (weights_2, weights_1)
+						print_weights (weights_1)
+					end
+
 				else
-					bred_weights := math.breed_weights (weights_2, weights_1)
+					print ("%N%NERROR: CAN'T BREED!%N%N")
 				end
 
-			else
-				print ("%N%NERROR: CAN'T BREED!%N%N")
+				print ("v1: ")
+				print_weights (weights_1)
+				print ("v2: ")
+				print_weights (weights_2)
+
+				epoch := epoch + 1
 			end
-
-			if bred_weights /= void then
-				from
-				bred_weights.start
-				until
-					bred_weights.exhausted
-				loop
-					sum := bred_weights.item.weight + sum
-					bred_weights.forth
-				end
-				print (sum.out + ": sum%N")
-				math.print_weights (bred_weights)
-			else
-				print ("%N%NERROR: BRED VECTOR IS VOID!%N%N")
-			end
-
-
 		end
 
 	play_game (player_1_weights: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]; player_2_weights:  ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]): INTEGER
