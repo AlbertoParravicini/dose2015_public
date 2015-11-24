@@ -127,6 +127,9 @@ feature -- Inherited from VIEW
 		do
 			game_manager := a_game_manager
 			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
+			if game_manager.algorithm_selected.is_equal ("two_players") then
+				button_hint.hide
+			end
 		end
 
 	show_state (a_current_state: GAME_STATE)
