@@ -29,25 +29,31 @@ feature {NONE}-- Initialization
 			Precursor {EV_DIALOG}
 
 			create internal_font
-			internal_font.set_height_in_points (50)
+			internal_font.set_height_in_points (20)
 			l_ev_label_1.set_font (internal_font)
 
 				-- Build widget structure.
 			extend (l_ev_vertical_box_1)
+			l_ev_vertical_box_1.extend (end_avatar_pixmap)
 			l_ev_vertical_box_1.extend (l_ev_label_1)
 			l_ev_vertical_box_1.extend (retry_button)
 			l_ev_vertical_box_1.extend (menu_button)
+			l_ev_vertical_box_1.extend (exit_button)
 
+			end_avatar_pixmap.set_minimum_size (100, 80)
 			retry_button.set_text ("RETRY?")
 			menu_button.set_text ("GO TO MENU")
+			exit_button.set_text ("EXIT")
 			disable_user_resize
 			set_title ("End Game")
+			set_minimum_width (400)
 
 			set_all_attributes_using_constants
 
 				-- Connect events.
 			retry_button.select_actions.extend (agent action_retry_click)
 			menu_button.select_actions.extend (agent action_menu_click)
+			exit_button.select_actions.extend (agent action_exit_click)
 
 				-- Call `user_initialization'.
 			user_initialization
@@ -59,9 +65,11 @@ feature {NONE}-- Initialization
 
 				-- Create all widgets.
 			create l_ev_vertical_box_1
+			create end_avatar_pixmap
 			create l_ev_label_1
 			create retry_button
 			create menu_button
+			create exit_button
 
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
@@ -82,7 +90,8 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	retry_button, menu_button: EV_BUTTON
+	retry_button, menu_button, exit_button: EV_BUTTON
+	end_avatar_pixmap: EV_PIXMAP
 
 feature {NONE} -- Implementation
 
@@ -120,6 +129,11 @@ feature {NONE} -- Implementation
 		end
 
 	action_menu_click
+			-- Called by `select_actions' of `menu_button'.
+		deferred
+		end
+
+	action_exit_click
 			-- Called by `select_actions' of `menu_button'.
 		deferred
 		end

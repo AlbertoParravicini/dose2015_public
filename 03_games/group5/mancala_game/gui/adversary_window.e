@@ -195,65 +195,66 @@ feature {NONE} -- Implementation
 
 		end
 
-		show_last_move (a_current_state: GAME_STATE)
-			local
-				counter: INTEGER
-			do
-				from
-					counter := 1
-				until
-					counter > {GAME_CONSTANTS}.num_of_holes
-				loop
-					-- Enable select and deselect all
-					if (attached {ADVERSARY_STATE} a_current_state as adv_state) and then adv_state.parent /= VOID then
+	show_last_move (a_current_state: GAME_STATE)
+		local
+			counter: INTEGER
+		do
+			from
+				counter := 1
+			until
+				counter > {GAME_CONSTANTS}.num_of_holes
+			loop
+				-- Enable select and deselect all
+				if (attached {ADVERSARY_STATE} a_current_state as adv_state) and then adv_state.parent /= VOID then
 
-						if counter = adv_state.rule_applied.get_selection then
-							list_button_hole.i_th (counter).set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (193, 203, 213))
-						else
-							list_button_hole.i_th (counter).set_default_colors
-						end
-
+					if counter = adv_state.rule_applied.get_selection then
+						list_button_hole.i_th (counter).set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (193, 203, 213))
+					else
+						list_button_hole.i_th (counter).set_default_colors
 					end
-					counter := counter + 1
-				end
 
+				end
+				counter := counter + 1
 			end
 
-			show_game_over (a_current_state: GAME_STATE)
-				local
-					game_over_message: STRING
-					game_over_avatar: STRING
-					end_game_dialog : ENDGAME_DIALOG
-				do
+		end
 
-					if attached {ADVERSARY_STATE} a_current_state as adv_state and then adv_state.is_game_over then
+		show_game_over (a_current_state: GAME_STATE)
+			local
+				game_over_message: STRING
+				game_over_avatar: STRING
+				end_game_dialog : ENDGAME_DIALOG
+			do
+
+				if attached {ADVERSARY_STATE} a_current_state as adv_state and then adv_state.is_game_over then
 
 
-							-- Player 1 wins
-						if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
-							game_over_message := " " + player1_name + " Wins! "
-							game_over_avatar := avatar_human
+						-- Player 1 wins
+					if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
+						game_over_message := " " + player1_name + " Wins! "
+						game_over_avatar := avatar_human
 
-						-- Player 2 wins
-						elseif adv_state.map.get_store_value (1) < adv_state.map.get_store_value (2) then
-							game_over_message := " " + player2_name + " Wins! "
-							game_over_avatar := avatar_ai
+					-- Player 2 wins
+					elseif adv_state.map.get_store_value (1) < adv_state.map.get_store_value (2) then
+						game_over_message := " " + player2_name + " Wins! "
+						game_over_avatar := avatar_ai
 
-						-- Tie	
-						else
-							game_over_message := " Tie! "
-							game_over_avatar := avatar_tie
-						end
-
-						avatar_pixmap.set_with_named_file (game_over_avatar)
-						label_player_name.set_text (game_over_message)
-						show_message(game_over_message + "%N")
-						current.disable_sensitive
-						create end_game_dialog
-						end_game_dialog.set_label(game_over_message)
-						end_game_dialog.show
+					-- Tie	
+					else
+						game_over_message := " Tie! "
+						game_over_avatar := avatar_tie
 					end
+
+					avatar_pixmap.set_with_named_file (game_over_avatar)
+					label_player_name.set_text (game_over_message)
+					show_message(game_over_message + "%N")
+					current.disable_sensitive
+					create end_game_dialog
+					end_game_dialog.end_avatar_pixmap.set_with_named_file (game_over_avatar)
+					end_game_dialog.set_label(game_over_message)
+					end_game_dialog.show
 				end
+			end
 
 
 	initialize_players
