@@ -29,10 +29,10 @@ feature -- Attributes
 	epoch: INTEGER
 		-- Current epoch of the breeding process;
 
-	max_num_of_epochs: INTEGER = 10
+	max_num_of_epochs: INTEGER = 100
 		-- Number of iterations of the breeding process;
 
-	engine_depth: INTEGER = 1
+	engine_depth: INTEGER = 3
 		-- Depth of the engine;
 
 feature
@@ -58,19 +58,19 @@ feature
 			weights_1 := math.initialize_weights
 			weights_2 := math.initialize_weights
 
-			--print ("v1: ")
-			--print_weights (weights_1)
+			print ("v1: ")
+			print_weights (weights_1)
 
 				-- Initialize the second weights list based on the first one;
-			create	weights_2.make_from_array (<<[0.31, 2.0], [0.19, 2.0], [0.09, 2.0], [0.16, 2.0], [0.13, 2.0], [0.10, 2.0]>>)
+			create	weights_2.make_from_array (<<[0.173409, 2.0], [0.551606, 2.0], [0.209192, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0657929, 2.0]>>)
 			--weights_2 := math.generate_gaussian_weights (weights_2)
 			--weights_2 := math.log_normal_weights (weights_2)+
 
 			--weights_2 := math.generate_uniform_weights (weights_2)
 			weights_2 := math.normalize_weights (weights_2)
 
-			--print ("v2: ")
-			--print_weights (weights_2)
+			print ("v2: ")
+			print_weights (weights_2)
 
 
 			from
@@ -78,9 +78,9 @@ feature
 			until
 				epoch = max_num_of_epochs
 			loop
-				--print ("%N--------------------------------------------%N")
-				--print ("EPOCH NUMBER: " + epoch.out + "%N")
-				-- Play two games: each game has a different starting player;
+				print ("%N--------------------------------------------%N")
+				print ("EPOCH NUMBER: " + epoch.out + "%N")
+					-- Play two games: each game has a different starting player;
 				winner_player_game_1 := play_game (weights_1, weights_2)
 
 				winner_player_game_2 := play_game (weights_2, weights_1)
@@ -88,14 +88,14 @@ feature
 					-- Get the best weights list among the two;
 				overall_winner := evaluate_overall_winner (winner_player_game_1, winner_player_game_2)
 
-				--print ("SCORE: " + winner_player_game_1.out + ", " + winner_player_game_2.out + "%N")
+				print ("SCORE: " + winner_player_game_1.out + ", " + winner_player_game_2.out + "%N")
 				if overall_winner = 1 or overall_winner = 2 then
-					--print ("%N%NOVERALL WINNER: " + overall_winner.out + "%N%N")
-					--print ("%N%NOVERALL WINNER: " + overall_winner.out + "%N%N")
+					print ("%N%NOVERALL WINNER: " + overall_winner.out + "%N%N")
+					print ("%N%NOVERALL WINNER: " + overall_winner.out + "%N%N")
 				else
 					random_winner := (math.random_number_generator.item \\ 2) + 1
 					math.random_number_generator.forth
-					--print ("%N%NRANDOM WINNER: " + random_winner.out + "%N%N")
+					print ("%N%NRANDOM WINNER: " + random_winner.out + "%N%N")
 				end
 
 
@@ -123,7 +123,7 @@ feature
 					end
 
 				else
-					--print ("%N%NERROR: CAN'T BREED!%N%N")
+					print ("%N%NERROR: CAN'T BREED!%N%N")
 				end
 
 				epoch := epoch + 1
@@ -198,27 +198,33 @@ feature
 
 	print_weights (a_weights: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]])
 			-- Print the given weights;
+		local
+			output : PLAIN_TEXT_FILE
 		do
 			from
 				a_weights.start
-				--print ("[ ")
+				create output.make_open_append ("out.txt")
+
+				print ("[ ")
 			until
 				a_weights.islast
 			loop
 				print (a_weights.item.weight.truncated_to_real.out + ", ")
+				output.put_string (a_weights.item.weight.truncated_to_real.out + ", ")
 				a_weights.forth
 			end
+				output.put_string (a_weights.item.weight.truncated_to_real.out + "%N")
 				print (a_weights.item.weight.truncated_to_real.out + "%N")
-				--print ("]%N%N")
+				print ("]%N%N")
 		end
 
 	print_results (current_winner: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]; bred_weights: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]])
 			-- Print the current best weights and the newly bred weights;
 		do
-			--print ("CURRENT WINNER: ")
+			print ("CURRENT WINNER: ")
 			print_weights (current_winner)
-			--print ("%TBRED_VECTOR: %N")
-			--math.print_weights (bred_weights)
+			print ("%TBRED_VECTOR: %N")
+			math.print_weights (bred_weights)
 		end
 
 invariant
