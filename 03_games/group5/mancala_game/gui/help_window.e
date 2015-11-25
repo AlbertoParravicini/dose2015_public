@@ -28,7 +28,6 @@ feature {NONE} -- Initialization
 		do
 				-- Initialize types defined in current class
 			show_image := false
-			l_ev_pixmap_1.hide
 		end
 
 feature {NONE} -- Implementation
