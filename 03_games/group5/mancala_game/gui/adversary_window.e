@@ -19,6 +19,7 @@ feature {NONE} -- Initialization
 	avatar_human2: STRING
 	avatar_human: STRING
 	avatar_ai: STRING
+	avatar_ai0: STRING
 	avatar_tie: STRING
 	avatar_hint1: STRING
 	avatar_hint2: STRING
@@ -55,15 +56,20 @@ feature {NONE} -- Initialization
 			avatar_human2 := "./extra/avatar/" + avatar_folder + "/human2.png"
 			avatar_human := "./extra/avatar/" + avatar_folder + "/human.png"
 			avatar_ai := "./extra/avatar/" + avatar_folder + "/ai.png"
+			avatar_ai0 := "./extra/avatar/" + avatar_folder + "/ai0.png"
 			avatar_tie := "./extra/avatar/" + avatar_folder + "/tie.png"
 			avatar_hint1 := "./extra/avatar/" + avatar_folder + "/hint1.png"
 			avatar_hint2 := "./extra/avatar/" + avatar_folder + "/hint2.png"
 			avatar_hint := avatar_hint1
 			avatar_solve := "./extra/avatar/" + avatar_folder + "/solve.png"
 
-			if attached {ADVERSARY_RULE_SET} game_manager.rules_set as adv_rule_set and then adv_rule_set.engine = VOID then
-				avatar_human := avatar_human1
-				avatar_ai := avatar_human2
+			if attached {ADVERSARY_RULE_SET} game_manager.rules_set as adv_rule_set then
+				if adv_rule_set.engine = VOID then
+					avatar_human := avatar_human1
+					avatar_ai := avatar_human2
+				elseif adv_rule_set.engine.max_depth = 0 then
+					avatar_solve := avatar_ai0
+				end
 			end
 		end
 
