@@ -14,6 +14,7 @@ inherit
 
 feature {NONE} -- Initialization
 
+	avatar_folder: STRING
 	avatar_human1: STRING
 	avatar_human2: STRING
 	avatar_human: STRING
@@ -23,6 +24,8 @@ feature {NONE} -- Initialization
 	avatar_hint2: STRING
 	avatar_hint: STRING
 	avatar_solve: STRING
+
+	log_counter: INTEGER
 
 	user_create_interface_objects
 			-- Create any auxilliary objects needed for ADVERSARY_WINDOW.
@@ -36,15 +39,29 @@ feature {NONE} -- Initialization
 			-- and from within current class itself.
 		do
 				-- Initialize types defined in current class
-			avatar_human1 := "./extra/avatar/star_wars/human1.png"
-			avatar_human2 := "./extra/avatar/star_wars/human2.png"
-			avatar_human := "./extra/avatar/star_wars/human.png"
-			avatar_ai := "./extra/avatar/star_wars/ai.png"
-			avatar_tie := "./extra/avatar/star_wars/tie.png"
-			avatar_hint1 := "./extra/avatar/star_wars/hint1.png"
-			avatar_hint2 := "./extra/avatar/star_wars/hint2.png"
+				set_avatar_folder
+				log_counter := 0
+		end
+
+	set_avatar_folder
+		do
+			if avatar_folder = VOID then
+				avatar_folder := "star_wars"
+			elseif avatar_folder.is_equal ("star_wars") then
+				avatar_folder := "marvel"
+			elseif avatar_folder.is_equal ("marvel") then
+				avatar_folder := "star_wars"
+			end
+
+			avatar_human1 := "./extra/avatar/" + avatar_folder + "/human1.png"
+			avatar_human2 := "./extra/avatar/" + avatar_folder + "/human2.png"
+			avatar_human := "./extra/avatar/" + avatar_folder + "/human.png"
+			avatar_ai := "./extra/avatar/" + avatar_folder + "/ai.png"
+			avatar_tie := "./extra/avatar/" + avatar_folder + "/tie.png"
+			avatar_hint1 := "./extra/avatar/" + avatar_folder + "/hint1.png"
+			avatar_hint2 := "./extra/avatar/" + avatar_folder + "/hint2.png"
 			avatar_hint := avatar_hint1
-			avatar_solve := "./extra/avatar/star_wars/solve.png"
+			avatar_solve := "./extra/avatar/" + avatar_folder + "/solve.png"
 		end
 
 feature {NONE} -- Implementation
@@ -98,17 +115,31 @@ feature {NONE} -- Implementation
 
 	action_log_click
 		do
+
 				-- Toggle 'text_log' visibility and change the text
 				-- of the button according to the status of 'text_log'
 				if(text_log.is_show_requested)then
 					-- Hide log
 					text_log.hide
 					button_log.set_text ("Show Log")
+					set_minimum_height (298)
+					set_height (298)
 				else
 					-- Show log
 					text_log.show
 					button_log.set_text ("Hide Log")
+					set_minimum_height (430)
+					set_height (430)
 				end
+
+				log_counter := log_counter + 1
+				if log_counter >= 10 then
+					log_counter := 0
+					set_avatar_folder
+					show_message (capitalize_string (avatar_folder) + " mode!%N")
+					show_state (game_manager.rules_set.current_state)
+				end
+
 				refresh_now
 		end
 
@@ -197,12 +228,12 @@ feature {NONE} -- Implementation
 
 							-- Player 1 wins
 						if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
-							game_over_message := player2_name + " Wins!"
+							game_over_message := player1_name + " Wins!"
 							game_over_avatar := avatar_human
 
 						-- Player 2 wins
 						elseif adv_state.map.get_store_value (1) < adv_state.map.get_store_value (2) then
-							game_over_message := player1_name + " Wins!"
+							game_over_message := player2_name + " Wins!"
 							game_over_avatar := avatar_ai
 
 						-- Tie	
@@ -221,10 +252,9 @@ feature {NONE} -- Implementation
 					end
 				end
 
-feature -- Inherited from VIEW
-	start_view (a_game_manager: GAME_MANAGER)
+
+	initialize_players_and_avatar
 		do
-			game_manager := a_game_manager
 			is_solve_processing := false
 
 			if attached {ADVERSARY_RULE_SET} game_manager.rules_set as adv_rule_set then
@@ -247,6 +277,13 @@ feature -- Inherited from VIEW
 
 			end
 
+		end
+feature -- Inherited from VIEW
+	start_view (a_game_manager: GAME_MANAGER)
+		do
+			action_log_click
+			game_manager := a_game_manager
+			initialize_players_and_avatar
 			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
 
 			refresh_now
@@ -272,7 +309,6 @@ feature -- Inherited from VIEW
 			text_log.scroll_to_end
 			refresh_now
 		end
-
 
 feature {NONE} -- Auxiliary features
 

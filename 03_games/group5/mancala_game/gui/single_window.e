@@ -82,10 +82,14 @@ feature {NONE} -- Implementation
 					-- Hide log
 					text_log.hide
 					button_log.set_text ("Show Log")
+					set_minimum_height (298)
+					set_height (298)
 				else
 					-- Show log
 					text_log.show
 					button_log.set_text ("Hide Log")
+					set_minimum_height (430)
+					set_height (430)
 				end
 				refresh_now
 		end
@@ -94,6 +98,7 @@ feature -- Inherited from VIEW
 
 	start_view (a_game_manager: GAME_MANAGER)
 		do
+			action_log_click
 			game_manager := a_game_manager
 			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
 			refresh_now
