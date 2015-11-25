@@ -90,7 +90,7 @@ feature
 					successor_2.move_counter_clockwise
 					successors.extend (successor_2)
 				end
-				
+
 			end -- End external if
 
 			Result := successors
@@ -113,8 +113,21 @@ feature
 			-- Return the remaining number of stones in the game;
 			-- even though the heuristic is both admissible and consistent,
 			-- it doesn't really provide a fast convergence to the solution :(
+		local
+			l_priori_game_over_heuristic: INTEGER
 		do
-			Result := 4*({GAME_CONSTANTS}.num_of_stones - state.current_player.score)
+			l_priori_game_over_heuristic := 0
+			if state.parent /= VOID and not state.is_game_over then
+				if game_over_a_priori(state, (create {ENUM_ROTATE}).clockwise) and game_over_a_priori(state, (create {ENUM_ROTATE}).counter_clockwise) then
+					l_priori_game_over_heuristic := 999
+				elseif game_over_a_priori(state, (create {ENUM_ROTATE}).clockwise) then
+					l_priori_game_over_heuristic := 10
+				elseif game_over_a_priori(state, (create {ENUM_ROTATE}).counter_clockwise) then
+					l_priori_game_over_heuristic := 10
+				end
+			end
+
+			Result := 4 * ({GAME_CONSTANTS}.num_of_stones - state.current_player.score) + l_priori_game_over_heuristic
 		ensure then
 			result_is_non_negative: Result >= 0
 			result_is_zero_in_successful_state: (Result = 0 implies is_successful (state)) and then (is_successful (state) implies Result = 0)
