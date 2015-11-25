@@ -53,6 +53,20 @@ feature {NONE} -- Implementation
 
 	end
 
+	action_exit_click
+		do
+
+				-- Destroy the window.
+			destroy
+
+				-- End the application.
+				--| TODO: Remove next instruction if you don't want the application
+				--|       to end when the first window is closed..
+			if attached (create {EV_ENVIRONMENT}).application as a then
+			a.destroy
+			end
+		end
+
 feature {ANY}
 	set_label (text : STRING)
 	do

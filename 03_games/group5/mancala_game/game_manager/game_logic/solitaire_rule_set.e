@@ -189,7 +189,7 @@ feature -- Implementation
 		do
 			Result := engine.search_performed and not engine.is_search_successful
 		ensure
-			result_is_consistent: Result = engine.search_performed and not engine.is_search_successful
+			result_is_consistent: Result = (engine.search_performed and not engine.is_search_successful)
 		end
 
 end
