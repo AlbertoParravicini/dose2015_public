@@ -227,7 +227,7 @@ feature {NONE} -- Implementation
 				do
 
 					if attached {ADVERSARY_STATE} a_current_state as adv_state and then adv_state.is_game_over then
-						create end_game_dialog
+
 
 							-- Player 1 wins
 						if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
@@ -245,12 +245,12 @@ feature {NONE} -- Implementation
 							game_over_avatar := avatar_tie
 						end
 
-
 						avatar_pixmap.set_with_named_file (game_over_avatar)
 						label_player_name.set_text (game_over_message)
 						show_message(game_over_message + "%N")
+						current.disable_sensitive
+						create end_game_dialog
 						end_game_dialog.set_label(game_over_message)
-						end_game_dialog.set_window(current)
 						end_game_dialog.show
 					end
 				end

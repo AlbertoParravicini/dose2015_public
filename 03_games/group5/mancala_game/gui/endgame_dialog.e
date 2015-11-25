@@ -36,15 +36,21 @@ feature {NONE} -- Implementation
 
 	action_menu_click
 	local
-		gui : APPLICATION
+		menu : MAIN_WINDOW
+	    windows : LINEAR[EV_WINDOW]
 	do
-		current.destroy
-		window.destroy
-		if attached (create {EV_ENVIRONMENT}).application as a then
-			a.destroy
+		windows := current.ev_application.windows
+		from
+			windows.start
+		until
+			windows.exhausted
+		loop
+			windows.item.destroy
+			windows.forth
 		end
-		create gui.make
-		--current.destroy_and_exit_if_last
+		create menu
+		menu.show
+
 	end
 
 feature {ANY}
@@ -52,13 +58,5 @@ feature {ANY}
 	do
 		l_ev_label_1.set_text (text)
 	end
-
-feature {ANY}
-	set_window (w : EV_WINDOW)
-	do
-		window := w
-	end
-
-	window : EV_WINDOW
 
 end
