@@ -32,6 +32,11 @@ feature {NONE} -- Implementation
 
 	is_solve_processing: BOOLEAN
 	is_two_player_mode: BOOLEAN
+	avatar_human: STRING = "./extra/avatar/star_wars/human.png"
+	avatar_ai: STRING = "./extra/avatar/star_wars/ai.png"
+	avatar_draw: STRING = "./extra/avatar/star_wars/draw.png"
+	avatar_hint: STRING = "./extra/avatar/star_wars/hint.png"
+	avatar_solve: STRING = "./extra/avatar/star_wars/solve.png"
 
 	action_hole_click(a_hole:INTEGER)
 		do
@@ -46,7 +51,7 @@ feature {NONE} -- Implementation
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
 				-- as a parameter
 				activate_player_buttons(1,false)
-				avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\hint.png")
+				avatar_pixmap.set_with_named_file (avatar_hint)
 				label_player_name.set_text ("HINT")
 				button_hint.disable_sensitive
 				button_solve.disable_sensitive
@@ -60,7 +65,7 @@ feature {NONE} -- Implementation
 				-- as a parameter
 				is_solve_processing := true
 				activate_player_buttons(1,false)
-				avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\solve.png")
+				avatar_pixmap.set_with_named_file (avatar_solve)
 				label_player_name.set_text ("SOLVE")
 				button_hint.disable_sensitive
 				button_solve.disable_sensitive
@@ -114,7 +119,7 @@ feature {NONE} -- Implementation
 					activate_player_buttons((adv_state.index_of_current_player \\ 2) + 1, false)
 					button_hint.enable_sensitive
 					button_solve.enable_sensitive
-					avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\human.png")
+					avatar_pixmap.set_with_named_file (avatar_human)
 					label_player_name.set_text (a_current_state.current_player.name)
 				else
 					activate_player_buttons(1, false)
@@ -122,7 +127,7 @@ feature {NONE} -- Implementation
 					button_hint.disable_sensitive
 					button_solve.disable_sensitive
 					if not is_solve_processing then
-					avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\ai.png")
+					avatar_pixmap.set_with_named_file (avatar_ai)
 					label_player_name.set_text (a_current_state.current_player.name)
 					end
 				end
@@ -159,16 +164,16 @@ feature {NONE} -- Implementation
 					if attached {ADVERSARY_STATE} a_current_state as adv_state and then adv_state.is_game_over then
 						if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
 							label_player_name.set_text (adv_state.players.i_th (1).name + " WINS")
-							avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\human.png")
+							avatar_pixmap.set_with_named_file (avatar_human)
 						elseif adv_state.map.get_store_value (1) < adv_state.map.get_store_value (2) then
 							label_player_name.set_text (adv_state.players.i_th (2).name + " WINS")
 							if is_two_player_mode then
-								avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\human.png")
+								avatar_pixmap.set_with_named_file (avatar_human)
 							else
-								avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\ripa.png")
+								avatar_pixmap.set_with_named_file (avatar_ai)
 							end
 						else
-							avatar_pixmap.set_with_named_file (".\extra\avatar\star_wars\draw.png")
+							avatar_pixmap.set_with_named_file (avatar_draw)
 							label_player_name.set_text ("DRAW")
 						end
 					end
