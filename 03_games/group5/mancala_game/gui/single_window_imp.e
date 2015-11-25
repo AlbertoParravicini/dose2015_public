@@ -440,6 +440,7 @@ feature {NONE} -- Implementation, Close event
 			windows : LINEAR[EV_WINDOW]
 		do
 			create question_dialog.make_with_text ("You really want to return to the menu?. %NClick YES to proceed.")
+			current.disable_sensitive
 			question_dialog.show_modal_to_window (Current)
 			if question_dialog.selected_button ~ (create {EV_DIALOG_CONSTANTS}).ev_ok then
 				destroy
