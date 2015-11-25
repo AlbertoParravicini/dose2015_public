@@ -41,46 +41,46 @@ feature {NONE}-- Initialization
 
 
 				-- Build widget structure.
-			extend (box_container_main)
-			box_container_main.extend (box_container_main_2)
-			box_container_main_2.extend (box_container_game)
-			box_container_game.extend (box_container_store_2)
-			box_container_store_2.extend (label_store_2)
-			box_container_game.extend (box_container_hole)
-			box_container_hole.extend (box_top_row_hole)
-			box_top_row_hole.extend (button_hole_12)
-			box_top_row_hole.extend (button_hole_11)
-			box_top_row_hole.extend (button_hole_10)
-			box_top_row_hole.extend (button_hole_9)
-			box_top_row_hole.extend (button_hole_8)
-			box_top_row_hole.extend (button_hole_7)
-			box_container_hole.extend (box_bottom_row_hole)
-			box_bottom_row_hole.extend (button_hole_1)
-			box_bottom_row_hole.extend (button_hole_2)
-			box_bottom_row_hole.extend (button_hole_3)
-			box_bottom_row_hole.extend (button_hole_4)
-			box_bottom_row_hole.extend (button_hole_5)
-			box_bottom_row_hole.extend (button_hole_6)
-			box_container_game.extend (box_container_store_1)
-			box_container_store_1.extend (label_store_1)
-			box_container_game.extend (l_ev_vertical_separator_1)
-			box_container_game.extend (box_container_extra)
-			box_container_extra.extend (box_stones)
-			box_stones.extend (label_stones_value)
-			box_stones.extend (label_stones_name)
-			box_stones.extend (l_ev_horizontal_separator_1)
-			box_container_extra.extend (box_extra_buttons)
-			box_extra_buttons.extend (button_hint)
-			box_extra_buttons.extend (button_solve)
-			box_extra_buttons.extend (button_clockwise)
-			box_extra_buttons.extend (button_counter_clockwise)
-			box_extra_buttons.extend (button_log)
-			box_container_main_2.extend (text_log)
+			extend (h_box_container_main)
+			h_box_container_main.extend (v_box_container_main_2)
+			v_box_container_main_2.extend (h_box_container_game)
+			h_box_container_game.extend (v_box_container_store_2)
+			v_box_container_store_2.extend (label_store_2)
+			h_box_container_game.extend (v_box_container_hole)
+			v_box_container_hole.extend (h_box_top_row_hole)
+			h_box_top_row_hole.extend (button_hole_12)
+			h_box_top_row_hole.extend (button_hole_11)
+			h_box_top_row_hole.extend (button_hole_10)
+			h_box_top_row_hole.extend (button_hole_9)
+			h_box_top_row_hole.extend (button_hole_8)
+			h_box_top_row_hole.extend (button_hole_7)
+			v_box_container_hole.extend (h_box_bottom_row_hole)
+			h_box_bottom_row_hole.extend (button_hole_1)
+			h_box_bottom_row_hole.extend (button_hole_2)
+			h_box_bottom_row_hole.extend (button_hole_3)
+			h_box_bottom_row_hole.extend (button_hole_4)
+			h_box_bottom_row_hole.extend (button_hole_5)
+			h_box_bottom_row_hole.extend (button_hole_6)
+			h_box_container_game.extend (v_box_container_store_1)
+			v_box_container_store_1.extend (label_store_1)
+			h_box_container_game.extend (l_ev_vertical_separator_1)
+			h_box_container_game.extend (v_box_container_extra)
+			v_box_container_extra.extend (v_box_stones)
+			v_box_stones.extend (label_stones_value)
+			v_box_stones.extend (label_stones_name)
+			v_box_stones.extend (l_ev_horizontal_separator_1)
+			v_box_container_extra.extend (v_box_extra_buttons)
+			v_box_extra_buttons.extend (button_hint)
+			v_box_extra_buttons.extend (button_solve)
+			v_box_extra_buttons.extend (button_clockwise)
+			v_box_extra_buttons.extend (button_counter_clockwise)
+			v_box_extra_buttons.extend (button_log)
+			v_box_container_main_2.extend (text_log)
 
-			box_container_main.set_border_width (5)
-			integer_constant_set_procedures.extend (agent box_container_store_2.set_padding (?))
+			h_box_container_main.set_border_width (5)
+			integer_constant_set_procedures.extend (agent v_box_container_store_2.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent box_score_padding)
-			integer_constant_set_procedures.extend (agent box_container_store_2.set_border_width (?))
+			integer_constant_set_procedures.extend (agent v_box_container_store_2.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent box_score_padding)
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
@@ -236,9 +236,9 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent button_hole_width)
 			integer_constant_set_procedures.extend (agent button_hole_6.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent button_hole_height)
-			integer_constant_set_procedures.extend (agent box_container_store_1.set_padding (?))
+			integer_constant_set_procedures.extend (agent v_box_container_store_1.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent box_score_padding)
-			integer_constant_set_procedures.extend (agent box_container_store_1.set_border_width (?))
+			integer_constant_set_procedures.extend (agent v_box_container_store_1.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent box_score_padding)
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
@@ -250,8 +250,8 @@ feature {NONE}-- Initialization
 			label_store_1.set_text ("1")
 			integer_constant_set_procedures.extend (agent label_store_1.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent label_score_width)
-			box_container_extra.set_minimum_height (200)
-			box_container_extra.set_border_width (10)
+			v_box_container_extra.set_minimum_height (200)
+			v_box_container_extra.set_border_width (10)
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
@@ -267,7 +267,7 @@ feature {NONE}-- Initialization
 			integer_constant_set_procedures.extend (agent label_stones_name.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent generic_extra_width)
 			l_ev_horizontal_separator_1.set_minimum_height (10)
-			box_extra_buttons.set_minimum_height (100)
+			v_box_extra_buttons.set_minimum_height (100)
 			button_hint.set_text ("Hint")
 			integer_constant_set_procedures.extend (agent button_hint.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent generic_extra_width)
@@ -285,6 +285,8 @@ feature {NONE}-- Initialization
 			text_log.disable_edit
 			set_minimum_height (430)
 			set_title ("Solitaire Mode")
+
+			h_box_container_game.set_padding (40)
 
 			set_all_attributes_using_constants
 
@@ -319,35 +321,35 @@ feature {NONE}-- Initialization
 		do
 
 				-- Create all widgets.
-			create box_container_main
-			create box_container_main_2
-			create box_container_game
-			create box_container_store_2
+			create h_box_container_main
+			create v_box_container_main_2
+			create h_box_container_game
+			create v_box_container_store_2
 			create label_store_2
-			create box_container_hole
-			create box_top_row_hole
+			create v_box_container_hole
+			create h_box_top_row_hole
 			create button_hole_12
 			create button_hole_11
 			create button_hole_10
 			create button_hole_9
 			create button_hole_8
 			create button_hole_7
-			create box_bottom_row_hole
+			create h_box_bottom_row_hole
 			create button_hole_1
 			create button_hole_2
 			create button_hole_3
 			create button_hole_4
 			create button_hole_5
 			create button_hole_6
-			create box_container_store_1
+			create v_box_container_store_1
 			create label_store_1
 			create l_ev_vertical_separator_1
-			create box_container_extra
-			create box_stones
+			create v_box_container_extra
+			create v_box_stones
 			create label_stones_value
 			create label_stones_name
 			create l_ev_horizontal_separator_1
-			create box_extra_buttons
+			create v_box_extra_buttons
 			create button_hint
 			create button_solve
 			create button_clockwise
@@ -414,10 +416,10 @@ feature {NONE} -- Implementation, Close event
 
 feature -- Access
 
-	box_container_main, box_container_game, box_top_row_hole, box_bottom_row_hole: EV_HORIZONTAL_BOX
-	box_container_main_2,
-	box_container_store_2, box_container_hole, box_container_store_1, box_container_extra,
-	box_stones, box_extra_buttons: EV_VERTICAL_BOX
+	h_box_container_main, h_box_container_game, h_box_top_row_hole, h_box_bottom_row_hole: EV_HORIZONTAL_BOX
+	v_box_container_main_2,
+	v_box_container_store_2, v_box_container_hole, v_box_container_store_1, v_box_container_extra,
+	v_box_stones, v_box_extra_buttons: EV_VERTICAL_BOX
 	label_store_2, label_store_1, label_stones_value,
 	label_stones_name: EV_LABEL
 	button_hole_12, button_hole_11, button_hole_10, button_hole_9,

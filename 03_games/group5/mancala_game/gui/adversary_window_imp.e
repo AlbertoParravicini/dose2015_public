@@ -41,42 +41,44 @@ feature {NONE}-- Initialization
 
 
 				-- Build widget structure.
-			extend (box_container_main)
-			box_container_main.extend (box_container_main_2)
-			box_container_main_2.extend (box_container_game)
-			box_container_game.extend (box_container_ai)
-			box_container_ai.extend (label_store_2_value)
-			box_container_ai.extend (label_store_2_name)
-			box_container_game.extend (box_container_hole)
-			box_container_hole.extend (box_top_row_hole)
-			box_top_row_hole.extend (button_hole_12)
-			box_top_row_hole.extend (button_hole_11)
-			box_top_row_hole.extend (button_hole_10)
-			box_top_row_hole.extend (button_hole_9)
-			box_top_row_hole.extend (button_hole_8)
-			box_top_row_hole.extend (button_hole_7)
-			box_container_hole.extend (box_bottom_row_hole)
-			box_bottom_row_hole.extend (button_hole_1)
-			box_bottom_row_hole.extend (button_hole_2)
-			box_bottom_row_hole.extend (button_hole_3)
-			box_bottom_row_hole.extend (button_hole_4)
-			box_bottom_row_hole.extend (button_hole_5)
-			box_bottom_row_hole.extend (button_hole_6)
-			box_container_game.extend (box_container_player)
-			box_container_player.extend (label_store_1_value)
-			box_container_player.extend (label_store_1_name)
-			box_container_game.extend (box_container_extra)
-			box_container_extra.extend (avatar_pixmap)
-			box_container_extra.extend (label_player_name)
-			box_container_extra.extend (button_hint)
-			box_container_extra.extend (button_solve)
-			box_container_extra.extend (button_log)
-			box_container_main_2.extend (text_log)
+			extend (h_box_container_main)
+			h_box_container_main.extend (v_box_container_main_2)
+			v_box_container_main_2.extend (h_box_container_game)
+			h_box_container_game.extend (v_box_container_ai)
+			v_box_container_ai.extend (label_store_2_value)
+			v_box_container_ai.extend (label_store_2_name)
+			h_box_container_game.extend (v_box_container_hole)
+			v_box_container_hole.extend (h_box_top_row_hole)
+			h_box_top_row_hole.extend (button_hole_12)
+			h_box_top_row_hole.extend (button_hole_11)
+			h_box_top_row_hole.extend (button_hole_10)
+			h_box_top_row_hole.extend (button_hole_9)
+			h_box_top_row_hole.extend (button_hole_8)
+			h_box_top_row_hole.extend (button_hole_7)
+			v_box_container_hole.extend (h_box_bottom_row_hole)
+			h_box_bottom_row_hole.extend (button_hole_1)
+			h_box_bottom_row_hole.extend (button_hole_2)
+			h_box_bottom_row_hole.extend (button_hole_3)
+			h_box_bottom_row_hole.extend (button_hole_4)
+			h_box_bottom_row_hole.extend (button_hole_5)
+			h_box_bottom_row_hole.extend (button_hole_6)
 
-			box_container_main.set_border_width (5)
-			integer_constant_set_procedures.extend (agent box_container_ai.set_padding (?))
+			h_box_container_game.extend (v_box_container_player)
+			v_box_container_player.extend (label_store_1_value)
+			v_box_container_player.extend (label_store_1_name)
+			h_box_container_game.extend (v_separator)
+			h_box_container_game.extend (v_box_container_extra)
+			v_box_container_extra.extend (avatar_pixmap)
+			v_box_container_extra.extend (label_player_name)
+			v_box_container_extra.extend (button_hint)
+			v_box_container_extra.extend (button_solve)
+			v_box_container_extra.extend (button_log)
+			v_box_container_main_2.extend (text_log)
+
+			h_box_container_main.set_border_width (5)
+			integer_constant_set_procedures.extend (agent v_box_container_ai.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent box_score_padding)
-			integer_constant_set_procedures.extend (agent box_container_ai.set_border_width (?))
+			integer_constant_set_procedures.extend (agent v_box_container_ai.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent box_score_padding)
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
@@ -241,9 +243,9 @@ feature {NONE}-- Initialization
 			integer_constant_retrieval_functions.extend (agent button_hole_width)
 			integer_constant_set_procedures.extend (agent button_hole_6.set_minimum_height (?))
 			integer_constant_retrieval_functions.extend (agent button_hole_height)
-			integer_constant_set_procedures.extend (agent box_container_player.set_padding (?))
+			integer_constant_set_procedures.extend (agent v_box_container_player.set_padding (?))
 			integer_constant_retrieval_functions.extend (agent box_score_padding)
-			integer_constant_set_procedures.extend (agent box_container_player.set_border_width (?))
+			integer_constant_set_procedures.extend (agent v_box_container_player.set_border_width (?))
 			integer_constant_retrieval_functions.extend (agent box_score_padding)
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
@@ -258,7 +260,7 @@ feature {NONE}-- Initialization
 			label_store_1_name.set_text ("Player 1 Score")
 			integer_constant_set_procedures.extend (agent label_store_1_name.set_minimum_width (?))
 			integer_constant_retrieval_functions.extend (agent label_score_width)
-			box_container_extra.set_border_width (10)
+			v_box_container_extra.set_border_width (10)
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
@@ -275,6 +277,7 @@ feature {NONE}-- Initialization
 			text_log.disable_edit
 			set_title ("Adversary Mode")
 			set_minimum_height (430)
+			h_box_container_game.set_padding (40)
 
 			set_all_attributes_using_constants
 
@@ -307,37 +310,38 @@ feature {NONE}-- Initialization
 		do
 
 				-- Create all widgets.
-			create box_container_main
-			create box_container_main_2
-			create box_container_game
-			create box_container_ai
+			create h_box_container_main
+			create v_box_container_main_2
+			create h_box_container_game
+			create v_box_container_ai
 			create label_store_2_value
 			create label_store_2_name
-			create box_container_hole
-			create box_top_row_hole
+			create v_box_container_hole
+			create h_box_top_row_hole
 			create button_hole_12
 			create button_hole_11
 			create button_hole_10
 			create button_hole_9
 			create button_hole_8
 			create button_hole_7
-			create box_bottom_row_hole
+			create h_box_bottom_row_hole
 			create button_hole_1
 			create button_hole_2
 			create button_hole_3
 			create button_hole_4
 			create button_hole_5
 			create button_hole_6
-			create box_container_player
+			create v_box_container_player
 			create label_store_1_value
 			create label_store_1_name
-			create box_container_extra
+			create v_box_container_extra
 			create avatar_pixmap
 			create label_player_name
 			create button_hint
 			create button_solve
 			create button_log
 			create text_log
+			create v_separator
 
 			create string_constant_set_procedures.make (10)
 			create string_constant_retrieval_functions.make (10)
@@ -396,9 +400,9 @@ feature {NONE} -- Implementation, Close event
 
 feature -- Access
 
-	box_container_main, box_container_game, box_top_row_hole, box_bottom_row_hole: EV_HORIZONTAL_BOX
-	box_container_main_2,
-	box_container_ai, box_container_hole, box_container_player, box_container_extra: EV_VERTICAL_BOX
+	h_box_container_main, h_box_container_game, h_box_top_row_hole, h_box_bottom_row_hole: EV_HORIZONTAL_BOX
+	v_box_container_main_2,
+	v_box_container_ai, v_box_container_hole, v_box_container_player, v_box_container_extra: EV_VERTICAL_BOX
 	label_store_2_value,
 	label_store_2_name, label_store_1_value, label_store_1_name, label_player_name: EV_LABEL
 	button_hole_12,
@@ -408,6 +412,7 @@ feature -- Access
 	text_log: EV_TEXT
 	list_button_hole: LINKED_LIST[EV_BUTTON]
 	avatar_pixmap: EV_PIXMAP
+	v_separator: EV_VERTICAL_SEPARATOR
 
 feature {NONE} -- Implementation
 
