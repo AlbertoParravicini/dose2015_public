@@ -74,10 +74,10 @@ feature {NONE}-- Initialization
 			label_arg_2.set_text ("Lanzoni Lucas Fermin")
 			label_arg_3.set_text ("Castagneris Nazareno")
 			l_ev_pixmap_1.set_with_named_file ("./extra/dummy.png")
-			--l_ev_pixmap_1.hide
+			l_ev_pixmap_1.hide
 			set_minimum_width (400)
 			set_minimum_height (400)
-			set_title ("Display window")
+			set_title ("Help")
 
 			set_all_attributes_using_constants
 

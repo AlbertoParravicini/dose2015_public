@@ -30,6 +30,7 @@ feature {NONE} -- Initialization
 			create adversary_algorithms.make
 			create solitaire_algorithms.make
 			create help_window
+			help_window.destroy
 		end
 
 	user_initialization

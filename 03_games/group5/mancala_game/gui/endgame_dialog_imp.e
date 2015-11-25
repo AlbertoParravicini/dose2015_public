@@ -41,7 +41,7 @@ feature {NONE}-- Initialization
 			retry_button.set_text ("RETRY?")
 			menu_button.set_text ("GO TO MENU")
 			disable_user_resize
-			set_title ("Display window")
+			set_title ("End Game")
 
 			set_all_attributes_using_constants
 

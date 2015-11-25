@@ -35,13 +35,11 @@ feature -- Initialization
 				engine := create {BOUNDED_DEPTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]}.make (problem)
 				if attached {BOUNDED_DEPTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]} engine as engine_dfs then
 					engine_dfs.enable_cycle_checking
-					print("%N%Ndesired depth: " + selected_depth.out)
 					if selected_depth >= 0 then
 						engine_dfs.set_max_depth (selected_depth)
 					else
 						engine_dfs.set_max_depth (5)
 					end
-					print ("%N%Nobtainded depth: " + engine_dfs.maximum_depth.out)
 				end
 			elseif selected_algorithm.is_equal ("depth_first_with_cycle_checking") then
 				engine := create {CYCLE_CHECKING_DEPTH_FIRST_SEARCH_ENGINE [ACTION, SOLITAIRE_STATE, SOLITAIRE_PROBLEM]}.make (problem)

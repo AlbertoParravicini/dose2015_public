@@ -66,7 +66,10 @@ feature {NONE}-- Initialization
 			box_container_player.extend (label_store_1_value)
 			box_container_player.extend (label_store_1_name)
 			box_container_game.extend (box_container_extra)
+			box_container_extra.extend (avatar_pixmap)
+			box_container_extra.extend (label_player_name)
 			box_container_extra.extend (button_hint)
+			box_container_extra.extend (button_solve)
 			box_container_extra.extend (button_log)
 			box_container_main_2.extend (text_log)
 
@@ -262,13 +265,16 @@ feature {NONE}-- Initialization
 			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
 			internal_font.set_height_in_points (20)
 			internal_font.preferred_families.extend ("Ubuntu")
-			button_hint.set_font (internal_font)
+			avatar_pixmap.set_minimum_size (100, 80)
+			label_player_name.set_text ("Player")
+			label_player_name.set_minimum_width (150)
 			button_hint.set_text ("Hint")
-			button_hint.set_minimum_height (90)
+			button_solve.set_text ("Solve")
 			button_log.set_text ("Hide Log")
 			text_log.set_minimum_height (80)
 			text_log.disable_edit
-			set_title ("Display window")
+			set_title ("Adversary Mode")
+			set_minimum_height (430)
 
 			set_all_attributes_using_constants
 
@@ -286,6 +292,7 @@ feature {NONE}-- Initialization
 			button_hole_5.select_actions.extend (agent action_hole_click(5))
 			button_hole_6.select_actions.extend (agent action_hole_click(6))
 			button_hint.select_actions.extend (agent action_hint_click)
+			button_solve.select_actions.extend (agent action_solve_click)
 			button_log.select_actions.extend (agent action_log_click)
 				-- Close the application when an interface close
 				-- request is received on `Current'. i.e. the cross is clicked.
@@ -325,7 +332,10 @@ feature {NONE}-- Initialization
 			create label_store_1_value
 			create label_store_1_name
 			create box_container_extra
+			create avatar_pixmap
+			create label_player_name
 			create button_hint
+			create button_solve
 			create button_log
 			create text_log
 
@@ -390,13 +400,14 @@ feature -- Access
 	box_container_main_2,
 	box_container_ai, box_container_hole, box_container_player, box_container_extra: EV_VERTICAL_BOX
 	label_store_2_value,
-	label_store_2_name, label_store_1_value, label_store_1_name: EV_LABEL
+	label_store_2_name, label_store_1_value, label_store_1_name, label_player_name: EV_LABEL
 	button_hole_12,
 	button_hole_11, button_hole_10, button_hole_9, button_hole_8, button_hole_7, button_hole_1,
-	button_hole_2, button_hole_3, button_hole_4, button_hole_5, button_hole_6, button_hint,
+	button_hole_2, button_hole_3, button_hole_4, button_hole_5, button_hole_6, button_hint,button_solve,
 	button_log: EV_BUTTON
 	text_log: EV_TEXT
-	list_button_hole:LINKED_LIST[EV_BUTTON]
+	list_button_hole: LINKED_LIST[EV_BUTTON]
+	avatar_pixmap: EV_PIXMAP
 
 feature {NONE} -- Implementation
 
@@ -423,6 +434,11 @@ feature {NONE} -- Implementation
 
 	action_hint_click
 			-- Called by `select_actions' of `button_hint'.
+		deferred
+		end
+
+	action_solve_click
+			-- Called by `select_actions' of `button_solve'.
 		deferred
 		end
 

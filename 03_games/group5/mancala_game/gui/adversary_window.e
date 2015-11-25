@@ -14,7 +14,15 @@ inherit
 
 feature {NONE} -- Initialization
 
-	default_button_color : EV_COLOR
+	avatar_human1: STRING
+	avatar_human2: STRING
+	avatar_human: STRING
+	avatar_ai: STRING
+	avatar_tie: STRING
+	avatar_hint1: STRING
+	avatar_hint2: STRING
+	avatar_hint: STRING
+	avatar_solve: STRING
 
 	user_create_interface_objects
 			-- Create any auxilliary objects needed for ADVERSARY_WINDOW.
@@ -28,23 +36,64 @@ feature {NONE} -- Initialization
 			-- and from within current class itself.
 		do
 				-- Initialize types defined in current class
-			default_button_color := list_button_hole.i_th (1).background_color
+			avatar_human1 := "./extra/avatar/star_wars/human1.png"
+			avatar_human2 := "./extra/avatar/star_wars/human2.png"
+			avatar_human := "./extra/avatar/star_wars/human.png"
+			avatar_ai := "./extra/avatar/star_wars/ai.png"
+			avatar_tie := "./extra/avatar/star_wars/tie.png"
+			avatar_hint1 := "./extra/avatar/star_wars/hint1.png"
+			avatar_hint2 := "./extra/avatar/star_wars/hint2.png"
+			avatar_hint := avatar_hint1
+			avatar_solve := "./extra/avatar/star_wars/solve.png"
 		end
 
 feature {NONE} -- Implementation
+
+	is_solve_processing: BOOLEAN
+	is_two_player_mode: BOOLEAN
+	player1_name: STRING
+	player2_name: STRING
 
 	action_hole_click(a_hole:INTEGER)
 		do
 				-- Create a new 'ACTION_SELECT' with the selected
 				-- hole as a parameter
 				send_action_to_game_manager(create {ACTION_SELECT}.make (a_hole))
+				refresh_now
 		end
 
 	action_hint_click
 		do
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
 				-- as a parameter
+				activate_player_buttons(1,false)
+				avatar_pixmap.set_with_named_file (avatar_hint)
+				label_player_name.set_text ("Hint")
+
+				if avatar_hint.is_equal (avatar_hint1) then
+					avatar_hint := avatar_hint2
+				else
+					avatar_hint := avatar_hint1
+				end
+
+				button_hint.disable_sensitive
+				button_solve.disable_sensitive
 				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+				refresh_now
+		end
+
+	action_solve_click
+		do
+				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
+				-- as a parameter
+				is_solve_processing := true
+				activate_player_buttons(1,false)
+				avatar_pixmap.set_with_named_file (avatar_solve)
+				label_player_name.set_text ("Solve")
+				button_hint.disable_sensitive
+				button_solve.disable_sensitive
+				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve))
+				refresh_now
 		end
 
 	action_log_click
@@ -60,6 +109,7 @@ feature {NONE} -- Implementation
 					text_log.show
 					button_log.set_text ("Hide Log")
 				end
+				refresh_now
 		end
 
 	activate_player_buttons(a_index_of_current_player: INTEGER; a_enable: BOOLEAN)
@@ -87,13 +137,26 @@ feature {NONE} -- Implementation
 		do
 
 			if attached {ADVERSARY_STATE} a_current_state as adv_state then
-				if attached {HUMAN_PLAYER} a_current_state.current_player then
+				if not is_solve_processing and attached {HUMAN_PLAYER} a_current_state.current_player then
 					activate_player_buttons(adv_state.index_of_current_player, true)
 					activate_player_buttons((adv_state.index_of_current_player \\ 2) + 1, false)
+					button_hint.enable_sensitive
+					button_solve.enable_sensitive
+					if adv_state.index_of_current_player = 1 then
+						avatar_pixmap.set_with_named_file (avatar_human)
+					else
+						avatar_pixmap.set_with_named_file (avatar_ai)
+					end
 				else
 					activate_player_buttons(1, false)
 					activate_player_buttons(2, false)
+					button_hint.disable_sensitive
+					button_solve.disable_sensitive
+					if not is_solve_processing then
+						avatar_pixmap.set_with_named_file (avatar_ai)
+					end
 				end
+				label_player_name.set_text (capitalize_string(a_current_state.current_player.name))
 			end
 
 		end
@@ -111,9 +174,9 @@ feature {NONE} -- Implementation
 					if (attached {ADVERSARY_STATE} a_current_state as adv_state) and then adv_state.parent /= VOID then
 
 						if counter = adv_state.rule_applied.get_selection then
-							list_button_hole.i_th (counter).set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (150, 150, 150))
+							list_button_hole.i_th (counter).set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (193, 203, 213))
 						else
-							list_button_hole.i_th (counter).set_background_color (default_button_color)
+							list_button_hole.i_th (counter).set_default_colors
 						end
 
 					end
@@ -122,52 +185,83 @@ feature {NONE} -- Implementation
 
 			end
 
+			show_game_over (a_current_state: GAME_STATE)
+				local
+					game_over_message: STRING
+					game_over_avatar: STRING
+					end_game_dialog : ENDGAME_DIALOG
+				do
+
+					if attached {ADVERSARY_STATE} a_current_state as adv_state and then adv_state.is_game_over then
+						create end_game_dialog
+
+							-- Player 1 wins
+						if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
+							game_over_message := player2_name + " Wins!"
+							game_over_avatar := avatar_human
+
+						-- Player 2 wins
+						elseif adv_state.map.get_store_value (1) < adv_state.map.get_store_value (2) then
+							game_over_message := player1_name + " Wins!"
+							game_over_avatar := avatar_ai
+
+						-- Tie	
+						else
+							game_over_message := "Tie!"
+							game_over_avatar := avatar_tie
+						end
+
+
+						avatar_pixmap.set_with_named_file (game_over_avatar)
+						label_player_name.set_text (game_over_message)
+						show_message(game_over_message + "%N")
+						end_game_dialog.set_label(game_over_message)
+						end_game_dialog.set_window(current)
+						end_game_dialog.show
+					end
+				end
+
 feature -- Inherited from VIEW
 	start_view (a_game_manager: GAME_MANAGER)
 		do
 			game_manager := a_game_manager
-			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
-			if game_manager.algorithm_selected.is_equal ("two_players") then
-				button_hint.hide
+			is_solve_processing := false
+
+			if attached {ADVERSARY_RULE_SET} game_manager.rules_set as adv_rule_set then
+				-- Two Players
+				if adv_rule_set.engine = VOID then
+					is_two_player_mode := true
+					button_hint.hide
+					button_solve.hide
+					avatar_human := avatar_human1
+					avatar_ai := avatar_human2
+				else
+					is_two_player_mode := false
+				end
+
+				-- Players Name
+				player1_name := capitalize_string(adv_rule_set.current_state.players.i_th (1).name)
+				player2_name := capitalize_string(adv_rule_set.current_state.players.i_th (2).name)
+				label_store_1_name.set_text (player1_name + "%NScore")
+				label_store_2_name.set_text (player2_name + "%NScore")
+
 			end
+
+			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
+
+			refresh_now
 		end
 
 	show_state (a_current_state: GAME_STATE)
 			-- Used to show a representation of the current state:
 			-- the GUI updates its values (labels text, etc...), the CLI can print the state;
-		local
-			end_game_dialog : ENDGAME_DIALOG
 		do
-			activate_current_player_buttons (a_current_state)
-			show_last_move (a_current_state)
 			update_holes (a_current_state)
 			update_stores (a_current_state)
-			if game_manager.rules_set.is_game_over then
-				if a_current_state.map.get_store_value (1).is_equal (a_current_state.map.get_store_value (2)) then
-					show_message ("Tie!")
-					create end_game_dialog
-					end_game_dialog.set_label("Tie!")
-					end_game_dialog.set_window(current)
-					end_game_dialog.show
-
-				end
-				if a_current_state.map.get_store_value (1) > a_current_state.map.get_store_value (2) then
-					show_message ("Player 1 win!")
-					create end_game_dialog
-					end_game_dialog.set_window(current)
-					end_game_dialog.set_label("Player 1 win!")
-					end_game_dialog.show
-
-				else
-					show_message ("Player 2 win!")
-					create end_game_dialog
-					end_game_dialog.set_window(current)
-					end_game_dialog.set_label("Player 2 win!")
-					end_game_dialog.show
-					
-
-				end
-			end
+			activate_current_player_buttons (a_current_state)
+			show_last_move (a_current_state)
+			show_game_over (a_current_state)
+			refresh_now
 		end
 
 	show_message (a_message: STRING)
@@ -176,6 +270,7 @@ feature -- Inherited from VIEW
 		do
 			text_log.append_text (a_message)
 			text_log.scroll_to_end
+			refresh_now
 		end
 
 
@@ -203,5 +298,40 @@ feature {NONE} -- Auxiliary features
 			label_store_2_value.set_text ((a_current_state.map.get_store_value (2)).out)
 		end
 
+	capitalize_string (a_string: STRING): STRING
+		local
+			l_string: STRING
+			l_substring: STRING
+		do
+
+			from
+				l_string := a_string.as_lower
+			until
+				l_string.substring_index ("_",1) = 0
+			loop
+				l_substring := l_string.substring (1,l_string.substring_index ("_",1) - 1)
+				l_string := l_substring + " " + first_letter_up (l_string.substring (l_string.substring_index ("_",1) + 1, l_string.count))
+			end
+
+			l_string := first_letter_up (l_string)
+
+			Result := l_string
+		end
+
+		first_letter_up (a_string: STRING): STRING
+			local
+				l_string: STRING
+				l_first_letter_of_substring: STRING
+			do
+				l_string := a_string
+				if l_string.count /= 0 then
+					l_first_letter_of_substring := l_string.substring (1,1)
+					l_string := l_first_letter_of_substring.as_upper + l_string.substring (2,l_string.count)
+				end
+				Result := l_string
+			end
+
+Invariant
+	adversary_state: game_manager /= VOID implies (attached {ADVERSARY_RULE_SET} game_manager.rules_set)
 
 end

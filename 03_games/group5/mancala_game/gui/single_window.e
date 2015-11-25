@@ -21,7 +21,7 @@ feature {NONE} -- Initialization
 			-- Initialization for these objects must be performed in `user_initialization'.
 		do
 				-- Create attached types defined in class here, initialize them in `user_initialization'.
-				create default_button_selected_color.make_with_8_bit_rgb (0, 255, 0)
+				create default_button_selected_color.make_with_8_bit_rgb (193, 203, 213)
 		end
 
 	user_initialization
@@ -39,6 +39,7 @@ feature {NONE} -- Implementation
 				-- Create a new 'ACTION_SELECT' with the selected
 				-- hole as a parameter
 				send_action_to_game_manager(create {ACTION_SELECT}.make (a_hole))
+				refresh_now
 		end
 
 	action_hint_click
@@ -46,6 +47,7 @@ feature {NONE} -- Implementation
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
 				-- as a parameter
 				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+				refresh_now
 		end
 
 	action_solve_click
@@ -53,6 +55,7 @@ feature {NONE} -- Implementation
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.solve'
 				-- as a parameter
 				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve))
+				refresh_now
 		end
 
 	action_clockwise_click
@@ -60,6 +63,7 @@ feature {NONE} -- Implementation
 				-- Create a new 'ACTION_ROTATE' with '{ENUM_ROTATE}.clockwise'
 				-- as a parameter
 				send_action_to_game_manager (create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
+				refresh_now
 		end
 
 	action_counter_clockwise_click
@@ -67,6 +71,7 @@ feature {NONE} -- Implementation
 				-- Create a new 'ACTION_ROTATE' with '{ENUM_ROTATE}.counter_clockwise'
 				-- as a parameter
 				send_action_to_game_manager (create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
+				refresh_now
 		end
 
 	action_log_click
@@ -82,6 +87,7 @@ feature {NONE} -- Implementation
 					text_log.show
 					button_log.set_text ("Hide Log")
 				end
+				refresh_now
 		end
 
 feature -- Inherited from VIEW
@@ -90,6 +96,7 @@ feature -- Inherited from VIEW
 		do
 			game_manager := a_game_manager
 			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
+			refresh_now
 		end
 
 	show_state (a_current_state: GAME_STATE)
@@ -101,6 +108,7 @@ feature -- Inherited from VIEW
 			update_stones (a_current_state)
 			update_selected_hole (a_current_state)
 			update_rotation_buttons (a_current_state)
+			refresh_now
 		end
 
 	show_message (a_message: STRING)
@@ -109,6 +117,7 @@ feature -- Inherited from VIEW
 		do
 			text_log.append_text (a_message)
 			text_log.scroll_to_end
+			refresh_now
 		end
 
 feature {NONE} -- Auxiliary features
