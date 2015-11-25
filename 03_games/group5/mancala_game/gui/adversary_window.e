@@ -39,8 +39,6 @@ feature {NONE} -- Initialization
 			-- and from within current class itself.
 		do
 				-- Initialize types defined in current class
-				set_avatar_folder
-				log_counter := 0
 		end
 
 	set_avatar_folder
@@ -62,6 +60,11 @@ feature {NONE} -- Initialization
 			avatar_hint2 := "./extra/avatar/" + avatar_folder + "/hint2.png"
 			avatar_hint := avatar_hint1
 			avatar_solve := "./extra/avatar/" + avatar_folder + "/solve.png"
+
+			if attached {ADVERSARY_RULE_SET} game_manager.rules_set as adv_rule_set and then adv_rule_set.engine = VOID then
+				avatar_human := avatar_human1
+				avatar_ai := avatar_human2
+			end
 		end
 
 feature {NONE} -- Implementation
@@ -253,7 +256,7 @@ feature {NONE} -- Implementation
 				end
 
 
-	initialize_players_and_avatar
+	initialize_players
 		do
 			is_solve_processing := false
 
@@ -263,8 +266,6 @@ feature {NONE} -- Implementation
 					is_two_player_mode := true
 					button_hint.hide
 					button_solve.hide
-					avatar_human := avatar_human1
-					avatar_ai := avatar_human2
 				else
 					is_two_player_mode := false
 				end
@@ -283,7 +284,9 @@ feature -- Inherited from VIEW
 		do
 			action_log_click
 			game_manager := a_game_manager
-			initialize_players_and_avatar
+			set_avatar_folder
+			log_counter := 0
+			initialize_players
 			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
 
 			refresh_now
