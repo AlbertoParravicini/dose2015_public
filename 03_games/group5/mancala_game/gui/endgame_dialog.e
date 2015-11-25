@@ -54,16 +54,23 @@ feature {NONE} -- Implementation
 	end
 
 	action_exit_click
+			-- Process user request to close the window.
+		local
+			question_dialog: EV_CONFIRMATION_DIALOG
 		do
+			create question_dialog.make_with_text ("You are about close this window. %NClick OK to proceed.")
+			question_dialog.show_modal_to_window (Current)
 
-				-- Destroy the window.
-			destroy
+			if question_dialog.selected_button ~ (create {EV_DIALOG_CONSTANTS}).ev_ok then
+					-- Destroy the window.
+				destroy
 
-				-- End the application.
-				--| TODO: Remove next instruction if you don't want the application
-				--|       to end when the first window is closed..
-			if attached (create {EV_ENVIRONMENT}).application as a then
-			a.destroy
+					-- End the application.
+					--| TODO: Remove next instruction if you don't want the application
+					--|       to end when the first window is closed..
+				if attached (create {EV_ENVIRONMENT}).application as a then
+					a.destroy
+				end
 			end
 		end
 
