@@ -30,7 +30,7 @@ feature
 	split_factor: REAL_64 = 0.1
 		-- If the mean difference between two weights is lower than this value, the weights should start to converge;
 
-	starting_variance: REAL_64 = 0.05
+	starting_variance: REAL_64 = 0.08
 		-- The variance of the starting weights list;
 
 
@@ -239,15 +239,15 @@ feature
 				mean_diff := dabs(better_weight - worse_weight)
 
 				-- 2-Way entanglement:
-				if (better_weight < worse_variance + worse_weight) and (better_weight > - worse_variance + worse_weight) and
-					(worse_weight < better_variance + better_weight) and (worse_weight > - better_variance + better_weight) then
+--				if (better_weight < worse_variance + worse_weight) and (better_weight > - worse_variance + worse_weight) and
+--					(worse_weight < better_variance + better_weight) and (worse_weight > - better_variance + better_weight) then
 
-					bred_variance := mean_diff
-				else
-					print ("diverging")
-					bred_variance := (breeding_factor * better_variance) + ((1.0 - breeding_factor) * worse_variance)
-				end
-
+--					bred_variance := mean_diff
+--				else
+--					print ("diverging")
+--					bred_variance := (breeding_factor * better_variance) + ((1.0 - breeding_factor) * worse_variance)
+--				end
+				bred_variance := (breeding_factor * better_variance) + ((1.0 - breeding_factor) * worse_variance)
 
 				bred_vector.extend ([bred_mean, bred_variance])
 				i := i + 1
