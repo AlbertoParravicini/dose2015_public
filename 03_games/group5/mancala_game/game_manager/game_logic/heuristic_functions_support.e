@@ -181,21 +181,34 @@ feature
 			bred_mean: REAL_64
 			bred_variance: REAL_64
 
+			better_weight: REAL_64
+			worse_weight: REAL_64
+			better_variance: REAL_64
+			worse_variance: REAL_64
+
 			mean_diff: REAL_64
 		do
 			create bred_vector.make (num_of_weights)
+
 			from
 				i := 1
 			until
 				i > num_of_weights
 			loop
-				bred_mean := breeding_factor * better_weights.i_th (i).weight + (1.0 - breeding_factor) * worse_weigths.i_th (i).weight
+				better_weight := better_weights.i_th (i).weight
+				worse_weight := worse_weigths.i_th (i).weight
+				better_variance := better_weights.i_th (i).variance
+				worse_variance := worse_weigths.i_th (i).variance
 
-				mean_diff := dabs(better_weights.i_th (i).weight - worse_weigths.i_th (i).weight)
+				bred_mean := breeding_factor * better_weight + (1.0 - breeding_factor) * worse_weight
 
-				bred_variance := (breeding_factor * (better_weights.i_th (i).variance + better_weights.i_th (i).weight.power(2)) + (1.0 - breeding_factor) * (worse_weigths.i_th (i).variance + worse_weigths.i_th (i).weight.power(2))) - bred_mean.power (2)
+				--mean_diff := dabs(better_weight - worse_weight)
+
+				--bred_variance := (breeding_factor * (better_weights.i_th (i).variance + better_weights.i_th (i).weight.power(2)) + (1.0 - breeding_factor) * (worse_weigths.i_th (i).variance + worse_weigths.i_th (i).weight.power(2))) - bred_mean.power (2)
 
 				--bred_variance := better_weights.i_th (i).variance * (mean_diff / split_factor).power(1/3)
+
+				bred_variance := better_variance
 
 
 				bred_vector.extend ([bred_mean, bred_variance])
