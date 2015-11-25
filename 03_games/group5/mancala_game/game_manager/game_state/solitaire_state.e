@@ -233,6 +233,16 @@ feature -- Status report
 			Result := (placed_in_empty_hole and no_score_increase) or (selected_hole > 0 and then (map.get_hole_value (selected_hole) = 0 and (map.num_of_stones - map.sum_of_stores_token > 0)))
 		end
 
+	is_won : BOOLEAN
+		do
+			Result := is_game_over and (selected_hole > 0 and then (map.get_hole_value (selected_hole) = 0 and (map.num_of_stones - map.sum_of_stores_token > 0)))
+		end
+
+	is_lost : BOOLEAN
+		do
+			Result := is_game_over and not is_won
+		end
+
 	selected_hole: INTEGER
 			-- Target of the next move, it's the ending position after having moved in the previous state;
 

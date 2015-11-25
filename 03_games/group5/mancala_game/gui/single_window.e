@@ -113,6 +113,7 @@ feature -- Inherited from VIEW
 			update_stones (a_current_state)
 			update_selected_hole (a_current_state)
 			update_rotation_buttons (a_current_state)
+			show_game_over (a_current_state)
 			refresh_now
 		end
 
@@ -124,6 +125,27 @@ feature -- Inherited from VIEW
 			text_log.scroll_to_end
 			refresh_now
 		end
+
+feature {NONE}
+
+	show_game_over (a_current_state: GAME_STATE)
+	local
+		end_game_dialog : ENDGAME_DIALOG
+		game_over_message: STRING
+	do
+		if attached {SOLITAIRE_STATE} a_current_state as solitaire_state and then solitaire_state.is_game_over then
+			current.disable_sensitive
+
+			if solitaire_state.is_won then
+				game_over_message := " You won! "
+			else
+				game_over_message := " You lost! "
+			end
+			create end_game_dialog
+			end_game_dialog.set_label(game_over_message)
+			end_game_dialog.show
+		end
+	end
 
 feature {NONE} -- Auxiliary features
 
