@@ -135,11 +135,39 @@ feature -- Inherited from VIEW
 	show_state (a_current_state: GAME_STATE)
 			-- Used to show a representation of the current state:
 			-- the GUI updates its values (labels text, etc...), the CLI can print the state;
+		local
+			end_game_dialog : ENDGAME_DIALOG
 		do
 			activate_current_player_buttons (a_current_state)
 			show_last_move (a_current_state)
 			update_holes (a_current_state)
 			update_stores (a_current_state)
+			if game_manager.rules_set.is_game_over then
+				if a_current_state.map.get_store_value (1).is_equal (a_current_state.map.get_store_value (2)) then
+					show_message ("Tie!")
+					create end_game_dialog
+					end_game_dialog.set_label("Tie!")
+					end_game_dialog.set_window(current)
+					end_game_dialog.show
+
+				end
+				if a_current_state.map.get_store_value (1) > a_current_state.map.get_store_value (2) then
+					show_message ("Player 1 win!")
+					create end_game_dialog
+					end_game_dialog.set_window(current)
+					end_game_dialog.set_label("Player 1 win!")
+					end_game_dialog.show
+
+				else
+					show_message ("Player 2 win!")
+					create end_game_dialog
+					end_game_dialog.set_window(current)
+					end_game_dialog.set_label("Player 2 win!")
+					end_game_dialog.show
+					
+
+				end
+			end
 		end
 
 	show_message (a_message: STRING)
@@ -149,6 +177,7 @@ feature -- Inherited from VIEW
 			text_log.append_text (a_message)
 			text_log.scroll_to_end
 		end
+
 
 feature {NONE} -- Auxiliary features
 
