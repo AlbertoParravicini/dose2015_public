@@ -146,6 +146,7 @@ feature {NONE}
 			end_game_dialog.set_label(game_over_message)
 			end_game_dialog.show
 		end
+		refresh_now
 	end
 
 feature {NONE} -- Auxiliary features
@@ -163,6 +164,7 @@ feature {NONE} -- Auxiliary features
 				list_button_hole.i_th (counter).set_text ((a_current_state.map.get_hole_value (counter).out))
 				counter := counter + 1
 			end
+			refresh_now
 		end
 
 	update_stores (a_current_state: GAME_STATE)
@@ -170,12 +172,14 @@ feature {NONE} -- Auxiliary features
 		do
 			label_store_1.set_text ((a_current_state.map.get_store_value (1)).out)
 			label_store_2.set_text ((a_current_state.map.get_store_value (2)).out)
+			refresh_now
 		end
 
 	update_stones (a_current_state: GAME_STATE)
 			-- Update remaining stones
 		do
 			label_stones_value.set_text ((a_current_state.map.num_of_stones - a_current_state.map.get_store_value (1)-a_current_state.map.get_store_value (2)).out)
+			refresh_now
 		end
 
 	update_selected_hole (a_current_state: GAME_STATE)
@@ -218,6 +222,7 @@ feature {NONE} -- Auxiliary features
 					end
 				end
 			end
+			refresh_now
 		end
 	update_rotation_buttons (a_current_state: GAME_STATE)
 		-- Enable or disable according to the selected hole
@@ -231,5 +236,6 @@ feature {NONE} -- Auxiliary features
 					button_counter_clockwise.enable_sensitive
 				end
 			end
+			refresh_now
 		end
 end

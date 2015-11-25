@@ -67,26 +67,30 @@ feature
 			else -- This is not the first state, i.e the first hole was already selected;
 
 					-- Two successors must be created: one for the clockwise move, another for the counter-clockwise movement;
+				if (not game_over_a_priori (a_state, (create {ENUM_ROTATE}).clockwise)) then
 
-					-- Rotate clockwise;
-					-- Create a new state whose map is equal to the one of the current state;
-				create successor_1.make_from_parent_and_rule (a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
+						-- Rotate clockwise;
+						-- Create a new state whose map is equal to the one of the current state;
+					create successor_1.make_from_parent_and_rule (a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
 
-					-- Clockwise movement;
-					-- Empties the current_hole, distributes the stones clockwise, updates the score, updates the current_hole;
-				successor_1.move_clockwise
-
-					-- Rotate counter-clockwise;
-					-- Create a new state whose map is equal to the one of the current state;
-				create successor_2.make_from_parent_and_rule (a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
-
-					-- Counter-clockwise movement;
-					-- Empties the current_hole, distributes the stones counter-clockwise, updates the score, updates the current_hole;
-				successor_2.move_counter_clockwise
+						-- Clockwise movement;
+						-- Empties the current_hole, distributes the stones clockwise, updates the score, updates the current_hole;
+					successor_1.move_clockwise
+					successors.extend (successor_1)
+				end
+				if (not game_over_a_priori (a_state, (create {ENUM_ROTATE}).counter_clockwise)) then
 
 
-				successors.extend (successor_1)
-				successors.extend (successor_2)
+						-- Rotate counter-clockwise;
+						-- Create a new state whose map is equal to the one of the current state;
+					create successor_2.make_from_parent_and_rule (a_state, create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
+
+						-- Counter-clockwise movement;
+						-- Empties the current_hole, distributes the stones counter-clockwise, updates the score, updates the current_hole;
+					successor_2.move_counter_clockwise
+					successors.extend (successor_2)
+				end
+				
 			end -- End external if
 
 			Result := successors
@@ -129,6 +133,75 @@ feature
 			end
 		ensure then
 			result_is_consistent: (Result = 0 implies state.parent = void) and (state.parent = void implies Result = 0)
+		end
+
+feature
+	-- Auxiliary functions
+
+	game_over_a_priori (state: SOLITAIRE_STATE; rotation: ENUM_ROTATE): BOOLEAN
+			-- This function tells if the state that is going to be generated is a gameover state before generating it
+		local
+			l_starting_hole, l_value, l_target_hole, l_counter: INTEGER
+			l_game_over: BOOLEAN
+		do
+			l_game_over := false
+			l_starting_hole := state.selected_hole
+			l_value := state.map.get_hole_value (l_starting_hole)
+			if (rotation = (create {ENUM_ROTATE}).clockwise) then
+
+				-- Calculate target hole
+				from
+					l_counter := l_value
+					l_target_hole := l_starting_hole
+				until
+					l_counter = 0
+				loop
+					-- clockwise -> subtract
+					if (l_target_hole = 1) then
+						l_target_hole := {GAME_CONSTANTS}.num_of_holes
+						l_counter := l_counter - 1
+					else
+						l_target_hole := l_target_hole - 1
+						l_counter := l_counter - 1
+					end
+				end
+
+
+
+
+				if ((l_value = {GAME_CONSTANTS}.num_of_holes) and then (not (l_target_hole = (({GAME_CONSTANTS}.num_of_holes / 2)+1)) and not (l_target_hole = 1))) then
+						-- Moved back to starting position, not after a store, the hole is empty
+					l_game_over := true
+				elseif ((l_value < {GAME_CONSTANTS}.num_of_holes) and then ((l_target_hole = (({GAME_CONSTANTS}.num_of_holes / 2)+1) and state.map.is_hole_empty (({GAME_CONSTANTS}.num_of_holes / 2).floor)) or ((l_target_hole = 1 and state.map.is_hole_empty ({GAME_CONSTANTS}.num_of_holes)))) and state.map.sum_of_stores_token=({GAME_CONSTANTS}.num_of_stones-1)) then
+						-- Moved to a hole after the store, i need to check if the hole before the store is empty
+					l_game_over := true
+				end
+			else
+				-- Calculate target hole
+				from
+					l_counter := l_value
+					l_target_hole := l_starting_hole
+				until
+					l_counter = 0
+				loop
+					-- counterclockwise -> add
+					if (l_target_hole = {GAME_CONSTANTS}.num_of_holes) then
+						l_target_hole := 1
+						l_counter := l_counter - 1
+					else
+						l_target_hole := l_target_hole + 1
+						l_counter := l_counter - 1
+					end
+				end
+				if ((l_value = {GAME_CONSTANTS}.num_of_holes) and then (not (l_target_hole = ({GAME_CONSTANTS}.num_of_holes / 2) ) and not (l_target_hole = {GAME_CONSTANTS}.num_of_holes))) then
+						-- Moved back to starting position, not after a store, the hole is empty
+					l_game_over := true
+				elseif ((l_value < {GAME_CONSTANTS}.num_of_holes) and then ((l_target_hole = ({GAME_CONSTANTS}.num_of_holes / 2)  and state.map.is_hole_empty (({GAME_CONSTANTS}.num_of_holes / 2).floor +1)) or ((l_target_hole = {GAME_CONSTANTS}.num_of_holes) and state.map.is_hole_empty (1)))  and state.map.sum_of_stores_token=({GAME_CONSTANTS}.num_of_stones-1)) then
+						-- Moved to a hole after a store, i need to check if the hole before the store is empty
+					l_game_over := true
+				end
+			end
+			Result := l_game_over
 		end
 
 end
