@@ -159,8 +159,8 @@ feature {NONE} -- Implementation, Close event
 			question_dialog: EV_CONFIRMATION_DIALOG
 		do
 			create question_dialog.make_with_text ("You are about close this window. %NClick OK to proceed.")
+			current.disable_sensitive
 			question_dialog.show_modal_to_window (Current)
-
 			if question_dialog.selected_button ~ (create {EV_DIALOG_CONSTANTS}).ev_ok then
 					-- Destroy the window.
 				destroy
@@ -171,6 +171,8 @@ feature {NONE} -- Implementation, Close event
 				if attached (create {EV_ENVIRONMENT}).application as a then
 					a.destroy
 				end
+			else
+				current.enable_sensitive
 			end
 		end
 

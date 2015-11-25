@@ -280,6 +280,8 @@ feature {NONE} -- Implementation
 			end
 
 		end
+
+
 feature -- Inherited from VIEW
 	start_view (a_game_manager: GAME_MANAGER)
 		do
