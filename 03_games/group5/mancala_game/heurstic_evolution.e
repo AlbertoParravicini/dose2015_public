@@ -62,9 +62,11 @@ feature
 			print_weights (weights_1)
 
 				-- Initialize the second weights list based on the first one;
-			--create	weights_2.make_from_array (<<[0.11, 0.1], [0.1, 0.1], [0.086, 0.1], [0.3, 0.1], [0.15, 0.1], [0.24, 0.1]>>)
-			weights_2 := math.generate_gaussian_weights (weights_2)
-			weights_2 := math.log_normal_weights (weights_2)
+			--create	weights_2.make_from_array (<<[3.0, 2.0], [2.0, 2.0], [1.0, 2.0], [4.0, 2.0], [1.0, 2.0], [6.0, 2.0]>>)
+			--weights_2 := math.generate_gaussian_weights (weights_2)
+			--weights_2 := math.log_normal_weights (weights_2)+
+
+			weights_2 := math.generate_uniform_weights (weights_2)
 			weights_2 := math.normalize_weights (weights_2)
 
 			print ("v2: ")
@@ -101,19 +103,19 @@ feature
 				inspect overall_winner
 				when 1 then
 					-- Weights_1 is the winner
-					weights_2 := math.breed_weights (weights_1, weights_2)
+					weights_2 := math.breed_uniform_weights (weights_1, weights_2)
 					print_results (weights_1, weights_2)
 				when 2 then
-					weights_1 := math.breed_weights (weights_2, weights_1)
+					weights_1 := math.breed_uniform_weights (weights_2, weights_1)
 					print_results (weights_2, weights_1)
 				when 0 then
 
 
 					if random_winner = 1 then
-						weights_2 := math.breed_weights (weights_1, weights_2)
+						weights_2 := math.breed_uniform_weights (weights_1, weights_2)
 						print_results (weights_1, weights_2)
 					else
-						weights_1 := math.breed_weights (weights_2, weights_1)
+						weights_1 := math.breed_uniform_weights (weights_2, weights_1)
 						print_results (weights_2, weights_1)
 					end
 
