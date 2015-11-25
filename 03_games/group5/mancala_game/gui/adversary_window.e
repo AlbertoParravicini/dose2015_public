@@ -231,17 +231,17 @@ feature {NONE} -- Implementation
 
 							-- Player 1 wins
 						if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
-							game_over_message := player1_name + " Wins!"
+							game_over_message := " " + player1_name + " Wins! "
 							game_over_avatar := avatar_human
 
 						-- Player 2 wins
 						elseif adv_state.map.get_store_value (1) < adv_state.map.get_store_value (2) then
-							game_over_message := player2_name + " Wins!"
+							game_over_message := " " + player2_name + " Wins! "
 							game_over_avatar := avatar_ai
 
 						-- Tie	
 						else
-							game_over_message := "Tie!"
+							game_over_message := " Tie! "
 							game_over_avatar := avatar_tie
 						end
 
