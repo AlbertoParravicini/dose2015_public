@@ -114,6 +114,9 @@ feature -- Status report
 	algorithm_selected: STRING
 		-- The current view of the game;
 
+	algorithm_depth : INTEGER
+		-- The current depth
+
 	view: VIEW
 		-- The current view of the game;
 

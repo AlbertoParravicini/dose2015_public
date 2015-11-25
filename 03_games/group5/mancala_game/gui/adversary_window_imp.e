@@ -425,7 +425,7 @@ feature {NONE} -- Implementation, Close event
 			menu : MAIN_WINDOW
 			windows : LINEAR[EV_WINDOW]
 		do
-			create question_dialog.make_with_text ("You really want to return to the menu?. %NClick YES to proceed.")
+			create question_dialog.make_with_text ("You really want to return to the menu?. %NClick OK to proceed.")
 			current.disable_sensitive
 			question_dialog.show_modal_to_window (Current)
 			if question_dialog.selected_button ~ (create {EV_DIALOG_CONSTANTS}).ev_ok then
@@ -438,8 +438,24 @@ feature {NONE} -- Implementation, Close event
 		end
 
 	request_retry (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER)
+		local
+			question_dialog: EV_CONFIRMATION_DIALOG
+			l_adversary_window : ADVERSARY_WINDOW
+			windows : LINEAR[EV_WINDOW]
+			l_game_manager : GAME_MANAGER
 		do
-
+			create question_dialog.make_with_text ("You really want to restart the game?. %NClick OK to proceed.")
+			current.disable_sensitive
+			question_dialog.show_modal_to_window (Current)
+			if question_dialog.selected_button ~ (create {EV_DIALOG_CONSTANTS}).ev_ok then
+				create l_adversary_window
+				create l_game_manager.make (game_manager.algorithm_selected, game_manager.algorithm_depth, l_adversary_window)
+				l_adversary_window.start_view (l_game_manager)
+				l_adversary_window.show
+				destroy
+			else
+				current.enable_sensitive
+			end
 		end
 
 feature -- Access

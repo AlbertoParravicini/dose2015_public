@@ -297,7 +297,6 @@ feature -- Inherited from VIEW
 			log_counter := 0
 			initialize_players
 			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
-
 			refresh_now
 		end
 
