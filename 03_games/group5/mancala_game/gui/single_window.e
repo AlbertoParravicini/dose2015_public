@@ -82,14 +82,14 @@ feature {NONE} -- Implementation
 					-- Hide log
 					text_log.hide
 					button_log.set_text ("Show Log")
-					set_minimum_height (298)
-					set_height (298)
+					set_minimum_height (330)
+					set_height (330)
 				else
 					-- Show log
 					text_log.show
 					button_log.set_text ("Hide Log")
-					set_minimum_height (430)
-					set_height (430)
+					set_minimum_height (470)
+					set_height (470)
 				end
 				refresh_now
 		end
