@@ -53,9 +53,8 @@ feature {NONE}-- Initialization
 			restart_pixmap.set_with_named_file ("./extra/icons/reset.png")
 			menu_button.set_pixmap (menu_pixmap)
 			restart_button.set_pixmap (restart_pixmap)
-			menu_button.pointer_button_press_actions.extend (agent request_goto_menu (?, ?, ?, ?, ?, ?, ?, ?))
-			restart_button.pointer_button_press_actions.extend (agent request_restart (?, ?, ?, ?, ?, ?, ?, ?))
-
+			menu_button.select_actions.extend (agent request_goto_menu)
+			restart_button.select_actions.extend (agent request_restart)
 			extend (h_box_container_main)
 			h_box_container_main.extend (v_box_container_main_2)
 			v_box_container_main_2.extend (h_box_container_game)
@@ -419,7 +418,7 @@ feature {NONE} -- Implementation, Close event
 			end
 		end
 
-	request_goto_menu (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER)
+	request_goto_menu
 		local
 			question_dialog: EV_CONFIRMATION_DIALOG
 			menu : MAIN_WINDOW
@@ -437,7 +436,7 @@ feature {NONE} -- Implementation, Close event
 			end
 		end
 
-	request_restart (a_x, a_y, a_button: INTEGER; a_x_tilt, a_y_tilt, a_pressure: DOUBLE; a_screen_x, a_screen_y: INTEGER)
+	request_restart
 		local
 			question_dialog: EV_CONFIRMATION_DIALOG
 			l_adversary_window : ADVERSARY_WINDOW
