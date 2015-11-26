@@ -39,6 +39,7 @@ feature {NONE} -- Implementation
 		menu : MAIN_WINDOW
 	    windows : LINEAR[EV_WINDOW]
 	do
+		current.destroy
 		windows := current.ev_application.windows
 		from
 			windows.start
