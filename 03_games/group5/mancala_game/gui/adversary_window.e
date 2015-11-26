@@ -256,6 +256,7 @@ feature {NONE} -- Implementation
 					show_message(game_over_message + "%N")
 					current.disable_sensitive
 					create end_game_dialog
+					end_game_dialog.set_game_manager (game_manager)
 					end_game_dialog.end_avatar_pixmap.set_with_named_file (game_over_avatar)
 					end_game_dialog.set_label (game_over_message)
 					end_game_dialog.show_relative_to_window (current)

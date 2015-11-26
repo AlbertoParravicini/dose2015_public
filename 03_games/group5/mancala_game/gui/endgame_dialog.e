@@ -31,7 +31,33 @@ feature {NONE} -- Initialization
 feature {NONE} -- Implementation
 
 	action_retry_click
+	local
+		l_adversary_window : ADVERSARY_WINDOW
+		l_single_window : SINGLE_WINDOW
+		windows : LINEAR[EV_WINDOW]
+		l_game_manager : GAME_MANAGER
 	do
+		current.destroy
+		windows := current.ev_application.windows
+		from
+			windows.start
+		until
+			windows.exhausted
+		loop
+			windows.item.destroy
+			windows.forth
+		end
+		if attached {ADVERSARY_WINDOW}game_manager.view then
+			create l_adversary_window
+			create l_game_manager.make (game_manager.algorithm_selected, game_manager.algorithm_depth, l_adversary_window)
+			l_adversary_window.start_view (l_game_manager)
+			l_adversary_window.show
+		else
+			create l_single_window
+			create l_game_manager.make (game_manager.algorithm_selected, game_manager.algorithm_depth, l_single_window)
+			l_single_window.start_view (l_game_manager)
+			l_single_window.show
+		end
 	end
 
 	action_menu_click
@@ -76,9 +102,17 @@ feature {NONE} -- Implementation
 		end
 
 feature {ANY}
+
+	game_manager : GAME_MANAGER
+
 	set_label (text : STRING)
 	do
 		l_ev_label_1.set_text (text)
+	end
+
+	set_game_manager (manager : GAME_MANAGER)
+	do
+		game_manager := manager
 	end
 
 end
