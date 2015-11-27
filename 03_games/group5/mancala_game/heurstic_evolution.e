@@ -61,10 +61,10 @@ feature
 			weights_1 := math.initialize_weights
 
 			weights_2 := math.initialize_weights
-			create weights_1.make_from_array (<<[0.41, 2.0], [0.0, 2.0], [0.22, 2.0], [0.11, 2.0], [0.0, 2.0], [0.25, 2.0]>>)
+			--create weights_1.make_from_array (<<[0.41, 2.0], [0.0, 2.0], [0.22, 2.0], [0.11, 2.0], [0.0, 2.0], [0.25, 2.0]>>)
 
-			print ("v1: ")
-			print_weights (weights_1)
+			--print ("v1: ")
+			--print_weights (weights_1)
 
 				-- Initialize the second weights list based on the first one;
 
@@ -80,15 +80,15 @@ feature
 			--print ("v2: ")
 			--print_weights (weights_2)
 
---			weights_list.extend (weights_1)
---			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.41, 2.0], [0.0, 2.0], [0.22, 2.0], [0.11, 2.0], [0.0, 2.0], [0.25, 2.0]>>))
---			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
---			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.19, 2.0], [0.0, 2.0], [0.22, 2.0], [0.47, 2.0], [0.10, 2.0], [0.0, 2.0]>>))
---			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.08, 2.0], [0.27, 2.0], [0.07, 2.0], [0.28, 2.0], [0.12, 2.0], [0.14, 2.0]>>))
+			weights_list.extend (weights_1)
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.41, 2.0], [0.0, 2.0], [0.22, 2.0], [0.11, 2.0], [0.0, 2.0], [0.25, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.19, 2.0], [0.0, 2.0], [0.22, 2.0], [0.47, 2.0], [0.10, 2.0], [0.0, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.08, 2.0], [0.27, 2.0], [0.07, 2.0], [0.28, 2.0], [0.12, 2.0], [0.14, 2.0]>>))
 
 
 
---			round_robin (weights_list)
+			round_robin (weights_list)
 
 
 
