@@ -93,49 +93,55 @@ feature -- Search execution
 				-- Initializes random generator using current time seed.
 			create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
 			random_number_generator.start
-			if max_depth = 0 then
-					-- Select a random move from the successors of the current state;
-				if current_successors.count > 0 then
-					obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
-					obtained_value := problem.value (obtained_successor)
-				else
-					obtained_successor := Void
-					obtained_value := problem.value (initial_state)
-				end
+
+			if problem.is_end (initial_state) then
+				obtained_successor := void
+				obtained_value := problem.value (initial_state)
 			else
-				if not current_successors.is_empty then
-					from
-						current_successors.start
-						obtained_successor := current_successors.item
-						obtained_value := compute_value (obtained_successor, 1)
-						current_successors.forth
-					until
-						current_successors.exhausted
-					loop
-						value_to_compare := compute_value (current_successors.item, 1)
-						if initial_state.is_max then
-							if (value_to_compare > obtained_value) then
-								obtained_successor := current_successors.item
-								obtained_value := value_to_compare
-							end
-						else
-							if (value_to_compare < obtained_value) then
-								obtained_successor := current_successors.item
-								obtained_value := value_to_compare
-							end
-						end
-						if value_to_compare = obtained_value and (random_number_generator.item \\ 2) = 1 then
-								-- If the values are equal, the same successor is maintained with a 50% chance
+				if max_depth = 0 then
+						-- Select a random move from the successors of the current state;
+					if current_successors.count > 0 then
+						obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
+						obtained_value := problem.value (obtained_successor)
+					else
+						obtained_successor := Void
+						obtained_value := problem.value (initial_state)
+					end
+				else
+					if not current_successors.is_empty then
+						from
+							current_successors.start
 							obtained_successor := current_successors.item
-							obtained_value := value_to_compare
+							obtained_value := compute_value (obtained_successor, 1)
+							current_successors.forth
+						until
+							current_successors.exhausted
+						loop
+							value_to_compare := compute_value (current_successors.item, 1)
+							if initial_state.is_max then
+								if (value_to_compare > obtained_value) then
+									obtained_successor := current_successors.item
+									obtained_value := value_to_compare
+								end
+							else
+								if (value_to_compare < obtained_value) then
+									obtained_successor := current_successors.item
+									obtained_value := value_to_compare
+								end
+							end
+							if value_to_compare = obtained_value and (random_number_generator.item \\ 2) = 1 then
+									-- If the values are equal, the same successor is maintained with a 50% chance
+								obtained_successor := current_successors.item
+								obtained_value := value_to_compare
+							end
+							current_successors.forth
 						end
-						current_successors.forth
 					end
 				end
 			end
 			search_performed := True
 		ensure then
-			search_performed implies obtained_successor /= void
+			result_consistent: problem.is_end(initial_state) = false implies (search_performed implies obtained_successor /= void)
 			obtained_value_is_consistent: problem.min_value <= obtained_value and obtained_value <= problem.max_value
 			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
 		end
@@ -207,8 +213,6 @@ feature -- Status report
 
 invariant
 		-- List of all class invariants
-	consistent_result: search_performed implies obtained_successor /= void
 	consistent_obtained_value: problem.min_value <= obtained_value and obtained_value <= problem.max_value
-	consisten_max_depth: max_depth >= 0
-
+	consistent_max_depth: max_depth >= 0
 end
