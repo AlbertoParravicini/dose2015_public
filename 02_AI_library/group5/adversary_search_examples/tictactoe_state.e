@@ -6,7 +6,7 @@ note
 	author: "DOSE 2015 Teams"
 	date: "$Date: 2015-08-30 19:20:00 -0300$"
 	revision: "$Revision: 0.1 $"
-	
+
 class
 	TICTACTOE_STATE
 
