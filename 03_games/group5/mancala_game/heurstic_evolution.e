@@ -7,21 +7,22 @@ note
 class
 	HEURISTIC_EVOLUTION
 
+inherit
+	THREAD_CONTROL
 
 create
 	make
 
 feature -- Attributes
-	problem: ADVERSARY_PROBLEM
-	math: HEURISTIC_FUNCTIONS_SUPPORT
-	engine: MINIMAX_AB_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
 
-	current_state: ADVERSARY_STATE
-	initial_state: ADVERSARY_STATE
+	math: HEURISTIC_FUNCTIONS_SUPPORT
+
+
+
 
 	i: INTEGER
 
-	players: ARRAYED_LIST [PLAYER]
+
 
 	weights_1: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
 	weights_2: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
@@ -32,8 +33,10 @@ feature -- Attributes
 	max_num_of_epochs: INTEGER = 100
 		-- Number of iterations of the breeding process;
 
-	engine_depth: INTEGER = 2
-		-- Depth of the engine;
+	thread_1: HEURISTIC_THREAD
+	thread_2: HEURISTIC_THREAD
+
+
 
 feature
 	make
@@ -45,12 +48,6 @@ feature
 			random_winner: INTEGER
 			sum: REAL_64
 		do
-			create problem.make
-			create players.make (2)
-			players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("PLAYER", 0))
-			players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("PLAYER", 0))
-			create initial_state.make (players)
-			create engine.make_with_depth (problem, engine_depth)
 
 			create math.make
 
@@ -58,15 +55,19 @@ feature
 			weights_1 := math.initialize_weights
 			weights_2 := math.initialize_weights
 
+			create thread_1.make_with_weights (weights_1, weights_2)
+			create thread_2.make_with_weights (weights_2, weights_1)
+
 			print ("v1: ")
 			print_weights (weights_1)
 
 				-- Initialize the second weights list based on the first one;
 			--create weights_2.make_from_array (<<[0.173409, 2.0], [0.551606, 2.0], [0.209192, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0657929, 2.0]>>)
-			weights_2 := math.generate_gaussian_weights (weights_2)
-			weights_2 := math.log_normal_weights (weights_2)
 
-			--weights_2 := math.generate_uniform_weights (weights_2)
+			--weights_2 := math.generate_gaussian_weights (weights_2)
+			--weights_2 := math.log_normal_weights (weights_2)
+
+			weights_2 := math.generate_uniform_weights (weights_2)
 			weights_2 := math.normalize_weights (weights_2)
 
 			print ("v2: ")
@@ -81,9 +82,15 @@ feature
 				print ("%N--------------------------------------------%N")
 				print ("EPOCH NUMBER: " + epoch.out + "%N")
 					-- Play two games: each game has a different starting player;
-				winner_player_game_1 := play_game (weights_1, weights_2)
 
-				winner_player_game_2 := play_game (weights_2, weights_1)
+				thread_1.execute
+				thread_2.execute
+				print("waiting")
+				join_all
+
+				winner_player_game_1 := thread_1.winner
+
+				winner_player_game_2 := thread_2.winner
 
 					-- Get the best weights list among the two;
 				overall_winner := evaluate_overall_winner (winner_player_game_1, winner_player_game_2)
@@ -104,25 +111,25 @@ feature
 				inspect overall_winner
 				when 1 then
 					-- Weights_1 is the winner
-					weights_2 := math.breed_weights (weights_1, weights_2)
-					--weights_2 := math.breed_uniform_weights (weights_1, weights_2)
+					--weights_2 := math.breed_weights (weights_1, weights_2)
+					weights_2 := math.breed_uniform_weights (weights_1, weights_2)
 					print_results (weights_1, weights_2)
 
 
 				when 2 then
-					weights_1 := math.breed_weights (weights_2, weights_1)
-					--weights_1 := math.breed_uniform_weights (weights_2, weights_1)
+					--weights_1 := math.breed_weights (weights_2, weights_1)
+					weights_1 := math.breed_uniform_weights (weights_2, weights_1)
 					print_results (weights_2, weights_1)
 				when 0 then
 
 
 					if random_winner = 1 then
-						weights_2 := math.breed_weights (weights_1, weights_2)
-						--weights_2 := math.breed_uniform_weights (weights_1, weights_2)
+						--weights_2 := math.breed_weights (weights_1, weights_2)
+						weights_2 := math.breed_uniform_weights (weights_1, weights_2)
 						print_results (weights_1, weights_2)
 					else
-						weights_1 := math.breed_weights (weights_2, weights_1)
-						--weights_1 := math.breed_uniform_weights (weights_2, weights_1)
+						--weights_1 := math.breed_weights (weights_2, weights_1)
+						weights_1 := math.breed_uniform_weights (weights_2, weights_1)
 						print_results (weights_2, weights_1)
 					end
 
@@ -134,49 +141,7 @@ feature
 			end
 		end
 
-	play_game (player_1_weights: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]; player_2_weights:  ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]): INTEGER
-			-- Automatic fight between two players with weigths equal to weights_1 and weights_2, respectively;
-		do
 
-			from
-				engine.reset_engine
-				problem.set_weights (player_1_weights)
-
-				engine.perform_search (initial_state)
-				current_state := engine.obtained_successor
-				until
-				problem.is_end (current_state)
-			loop
-				if current_state.index_of_current_player = 2 then
-					problem.set_weights (player_2_weights)
-				elseif current_state.index_of_current_player = 1 then
-					problem.set_weights (player_1_weights)
-				end
-				engine.reset_engine
-				engine.perform_search (current_state)
-				current_state := engine.obtained_successor
-			end
-
-			Result := evaluate_result
-		end
-
-	evaluate_result: INTEGER
-			-- Given an end-game state, return the index of the winning player, 0 if the state is a tie or -1 if it isn't a final state;
-		do
-			if problem.is_end (current_state) then
-				if current_state.players.i_th (1).score > current_state.players.i_th (2).score then
-					Result := 1
-				elseif
-					current_state.players.i_th (1).score < current_state.players.i_th (2).score
-				then
-					Result := 2
-				else
-					Result := 0
-				end
-			else
-				Result := -1
-			end
-		end
 
 	evaluate_overall_winner (game_1_winner: INTEGER; game_2_winner: INTEGER): INTEGER
 			-- Calculate the overall winner, if any, of the two games that were played.
