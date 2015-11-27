@@ -21,7 +21,8 @@ feature {NONE} -- Initialization
 			-- Initialization for these objects must be performed in `user_initialization'.
 		do
 				-- Create attached types defined in class here, initialize them in `user_initialization'.
-				create default_button_selected_color.make_with_8_bit_rgb (193, 203, 213)
+				default_button_selected_color := color_gray
+
 		end
 
 	user_initialization
@@ -38,7 +39,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_SELECT' with the selected
 				-- hole as a parameter
+				button_log.set_background_color (color_gray)
 				send_action_to_game_manager(create {ACTION_SELECT}.make (a_hole))
+				button_log.set_background_color (color_dark_brown)
 				refresh_now
 		end
 
@@ -46,7 +49,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
 				-- as a parameter
+				button_log.set_background_color (color_gray)
 				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+				button_log.set_background_color (color_dark_brown)
 				refresh_now
 		end
 
@@ -54,7 +59,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.solve'
 				-- as a parameter
+				button_log.set_background_color (color_gray)
 				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve))
+				button_log.set_background_color (color_dark_brown)
 				refresh_now
 		end
 
@@ -62,7 +69,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_ROTATE' with '{ENUM_ROTATE}.clockwise'
 				-- as a parameter
+				button_log.set_background_color (color_gray)
 				send_action_to_game_manager (create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
+				button_log.set_background_color (color_dark_brown)
 				refresh_now
 		end
 
@@ -70,7 +79,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_ROTATE' with '{ENUM_ROTATE}.counter_clockwise'
 				-- as a parameter
+				button_log.set_background_color (color_gray)
 				send_action_to_game_manager (create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
+				button_log.set_background_color (color_dark_brown)
 				refresh_now
 		end
 
@@ -84,12 +95,14 @@ feature {NONE} -- Implementation
 					button_log.set_text ("Show Log")
 					set_minimum_height (330)
 					set_height (330)
+					button_log.set_background_color (color_dark_brown)
 				else
 					-- Show log
 					text_log.show
 					button_log.set_text ("Hide Log")
 					set_minimum_height (470)
 					set_height (470)
+					button_log.set_background_color (color_gray)
 				end
 				refresh_now
 		end
