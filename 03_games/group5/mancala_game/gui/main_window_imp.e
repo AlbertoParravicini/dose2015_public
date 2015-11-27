@@ -96,6 +96,25 @@ feature {NONE}-- Initialization
 			set_maximum_height (300)
 			set_title ("Mancala")
 
+
+			--COLORS:
+			box_container_main.set_background_color (color_gray)
+			title_label.set_background_color (color_gray)
+			box_table_engines.set_background_color (color_gray)
+			box_frame_parameters.set_background_color (color_gray)
+			radio_button_solitaire.set_background_color (color_gray)
+			radio_button_adversary.set_background_color (color_gray)
+			l_ev_horizontal_box_1.set_background_color (color_gray)
+			label_max_depth.set_background_color (color_gray)
+			l_ev_cell_1.set_background_color (color_gray)
+			box_table_buttons.set_background_color (color_gray)
+			l_ev_cell_2.set_background_color (color_gray)
+			button_start.set_background_color (color_gray)
+			l_ev_cell_3.set_background_color (color_gray)
+			l_ev_cell_4.set_background_color (color_gray)
+			button_help.set_background_color (color_gray)
+			l_ev_cell_5.set_background_color (color_gray)
+
 			set_all_attributes_using_constants
 
 				-- Connect events.

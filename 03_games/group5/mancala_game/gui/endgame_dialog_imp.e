@@ -34,6 +34,7 @@ feature {NONE}-- Initialization
 
 				-- Build widget structure.
 			extend (l_ev_vertical_box_1)
+			l_ev_vertical_box_1.set_border_width (10)
 			l_ev_vertical_box_1.extend (end_avatar_pixmap)
 			l_ev_vertical_box_1.extend (l_ev_label_1)
 			l_ev_vertical_box_1.extend (retry_button)
