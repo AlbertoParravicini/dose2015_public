@@ -49,8 +49,8 @@ feature {NONE}-- Initialization
 			restart_button.set_text ("Restart")
 			create menu_pixmap
 			create restart_pixmap
-			menu_pixmap.set_with_named_file ("./extra/icons/back.png")
-			restart_pixmap.set_with_named_file ("./extra/icons/reset.png")
+			menu_pixmap.set_with_named_file ("./extra/icons/back_black.png")
+			restart_pixmap.set_with_named_file ("./extra/icons/reset_black.png")
 			menu_button.set_pixmap (menu_pixmap)
 			restart_button.set_pixmap (restart_pixmap)
 			menu_button.select_actions.extend (agent request_goto_menu)
