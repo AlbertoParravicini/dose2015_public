@@ -102,9 +102,14 @@ feature {NONE} -- Implementation
 					avatar_hint := avatar_hint1
 				end
 
+				button_hint.set_background_color (color_gray)
+
 				button_hint.disable_sensitive
 				button_solve.disable_sensitive
+				button_log.disable_sensitive
 				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+				button_hint.set_background_color (color_dark_brown)
+
 				refresh_now
 		end
 
@@ -115,10 +120,14 @@ feature {NONE} -- Implementation
 				is_solve_processing := true
 				activate_player_buttons(1,false)
 				avatar_pixmap.set_with_named_file (avatar_solve)
+				button_solve.set_background_color (color_gray)
 				label_player_name.set_text ("Solve")
 				button_hint.disable_sensitive
 				button_solve.disable_sensitive
+				button_log.disable_sensitive
 				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve))
+				button_solve.set_background_color (color_dark_brown)
+
 				refresh_now
 		end
 
@@ -131,14 +140,16 @@ feature {NONE} -- Implementation
 					-- Hide log
 					text_log.hide
 					button_log.set_text ("Show Log")
-					set_minimum_height (298)
-					set_height (298)
+					button_log.set_background_color (color_dark_brown)
+					set_minimum_height (330)
+					set_height (330)
 				else
 					-- Show log
 					text_log.show
 					button_log.set_text ("Hide Log")
-					set_minimum_height (430)
-					set_height (430)
+					button_log.set_background_color (color_gray)
+					set_minimum_height (470)
+					set_height (470)
 				end
 
 				log_counter := log_counter + 1
@@ -182,6 +193,7 @@ feature {NONE} -- Implementation
 					activate_player_buttons((adv_state.index_of_current_player \\ 2) + 1, false)
 					button_hint.enable_sensitive
 					button_solve.enable_sensitive
+					button_log.enable_sensitive
 					if adv_state.index_of_current_player = 1 then
 						avatar_pixmap.set_with_named_file (avatar_human)
 					else
@@ -192,6 +204,7 @@ feature {NONE} -- Implementation
 					activate_player_buttons(2, false)
 					button_hint.disable_sensitive
 					button_solve.disable_sensitive
+					button_log.disable_sensitive
 					if not is_solve_processing then
 						avatar_pixmap.set_with_named_file (avatar_ai)
 					end
@@ -204,6 +217,7 @@ feature {NONE} -- Implementation
 	show_last_move (a_current_state: GAME_STATE)
 		local
 			counter: INTEGER
+			curr_color: EV_COLOR
 		do
 			from
 				counter := 1
@@ -214,9 +228,9 @@ feature {NONE} -- Implementation
 				if (attached {ADVERSARY_STATE} a_current_state as adv_state) and then adv_state.parent /= VOID then
 
 					if counter = adv_state.rule_applied.get_selection then
-						list_button_hole.i_th (counter).set_background_color (create {EV_COLOR}.make_with_8_bit_rgb (193, 203, 213))
+						list_button_hole.i_th (counter).set_background_color (color_gray)
 					else
-						list_button_hole.i_th (counter).set_default_colors
+						list_button_hole.i_th (counter).set_background_color (color_dark_brown)
 					end
 
 				end

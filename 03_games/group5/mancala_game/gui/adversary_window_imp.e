@@ -248,7 +248,7 @@ feature {NONE}-- Initialization
 			create internal_font
 			internal_font.set_family ({EV_FONT_CONSTANTS}.Family_sans)
 			internal_font.set_weight ({EV_FONT_CONSTANTS}.Weight_regular)
-			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
+			internal_font.set_shape ({EV_FONT_CONSTANTS}.shape_regular)
 			internal_font.set_height_in_points (32)
 			internal_font.preferred_families.extend ("Ubuntu")
 			button_hole_6.set_font (internal_font)
@@ -281,17 +281,66 @@ feature {NONE}-- Initialization
 			internal_font.set_shape ({EV_FONT_CONSTANTS}.Shape_regular)
 			internal_font.set_height_in_points (20)
 			internal_font.preferred_families.extend ("Ubuntu")
+
 			avatar_pixmap.set_minimum_size (100, 80)
 			label_player_name.set_text ("Player")
 			label_player_name.set_minimum_width (150)
 			button_hint.set_text ("Hint")
 			button_solve.set_text ("Solve")
+
+			button_solve.font.set_height_in_points (13)
+			button_hint.font.set_height_in_points (13)
+			button_log.font.set_height_in_points (13)
+
+			button_solve.set_minimum_height (20)
+			button_hint.set_minimum_height (20)
+			button_log.set_minimum_height (20)
 			button_log.set_text ("Hide Log")
 			text_log.set_minimum_height (80)
 			text_log.disable_edit
 			set_title ("Adversary Mode")
 			set_minimum_height (430)
 			h_box_container_game.set_padding (40)
+
+
+			-- COLORS:
+			Current.set_background_color (color_green)
+
+			button_hole_1.set_background_color (color_dark_brown)
+			button_hole_2.set_background_color (color_dark_brown)
+			button_hole_3.set_background_color (color_dark_brown)
+			button_hole_4.set_background_color (color_dark_brown)
+			button_hole_5.set_background_color (color_dark_brown)
+			button_hole_6.set_background_color (color_dark_brown)
+			button_hole_7.set_background_color (color_dark_brown)
+			button_hole_8.set_background_color (color_dark_brown)
+			button_hole_9.set_background_color (color_dark_brown)
+			button_hole_10.set_background_color (color_dark_brown)
+			button_hole_11.set_background_color (color_dark_brown)
+			button_hole_12.set_background_color (color_dark_brown)
+
+			h_box_container_main.set_background_color (color_green)
+			v_box_container_main_2.set_background_color (color_green)
+			h_box_container_game.set_background_color (color_green)
+			v_box_container_ai.set_background_color (color_green)
+			label_store_2_value.set_background_color (color_green)
+			label_store_2_name.set_background_color (color_green)
+			v_box_container_hole.set_background_color (color_green)
+			h_box_top_row_hole.set_background_color (color_green)
+			h_box_bottom_row_hole.set_background_color (color_green)
+			v_box_container_player.set_background_color (color_green)
+			label_store_1_value.set_background_color (color_green)
+			label_store_1_name.set_background_color (color_green)
+			v_box_container_extra.set_background_color (color_green)
+			label_player_name.set_background_color (color_green)
+			button_hint.set_background_color (color_dark_brown)
+			button_solve.set_background_color (color_dark_brown)
+			button_log.set_background_color (color_dark_brown)
+			text_log.set_background_color (color_green)
+			v_separator.set_background_color (color_green)
+			text_log.set_background_color (color_gray)
+
+
 
 			set_all_attributes_using_constants
 
@@ -374,6 +423,8 @@ feature {NONE}-- Initialization
 			create color_constant_set_procedures.make (10)
 			create color_constant_retrieval_functions.make (10)
 			user_create_interface_objects
+
+
 
 			--- I added this
 			create list_button_hole.make
