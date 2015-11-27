@@ -30,7 +30,7 @@ feature
 	split_factor: REAL_64 = 0.1
 		-- If the mean difference between two weights is lower than this value, the weights should start to converge;
 
-	starting_variance: REAL_64 = 0.04
+	starting_variance: REAL_64 = 0.08
 		-- The variance of the starting weights list;
 
 
@@ -266,12 +266,13 @@ feature
 				i := i + 1
 			end
 
-			bred_vector.i_th (4).weight := 0
-			bred_vector.i_th (5).weight := 0
-			bred_vector.i_th (6).weight := 0
-			bred_vector.i_th (4).variance := 0
-			bred_vector.i_th (5).variance := 0
-			bred_vector.i_th (6).variance := 0
+				-- Uncomment this to use only the first 3 heuristics
+--			bred_vector.i_th (4).weight := 0
+--			bred_vector.i_th (5).weight := 0
+--			bred_vector.i_th (6).weight := 0
+--			bred_vector.i_th (4).variance := 0
+--			bred_vector.i_th (5).variance := 0
+--			bred_vector.i_th (6).variance := 0
 
 
 			bred_vector := generate_uniform_weights (bred_vector)

@@ -30,7 +30,7 @@ feature -- Attributes
 	epoch: INTEGER
 		-- Current epoch of the breeding process;
 
-	max_num_of_epochs: INTEGER = 1
+	max_num_of_epochs: INTEGER = 200
 		-- Number of iterations of the breeding process;
 
 	thread_1: HEURISTIC_THREAD
@@ -45,27 +45,33 @@ feature
 			winner_player_game_2: INTEGER
 			overall_winner: INTEGER
 
+			winner_list: LINKED_LIST[INTEGER]
+
 			random_winner: INTEGER
 			sum: REAL_64
 		do
 
 			create math.make
+			create winner_list.make
 
 				-- Initialize the first weights list as default;
 			weights_1 := math.initialize_weights
-			weights_2 := math.initialize_weights
 
+			weights_2 := math.initialize_weights
+			--create weights_1.make_from_array (<<[0.41, 2.0], [0.0, 2.0], [0.22, 2.0], [0.11, 2.0], [0.0, 2.0], [0.25, 2.0]>>)
 
 			print ("v1: ")
 			print_weights (weights_1)
 
 				-- Initialize the second weights list based on the first one;
-			--create weights_2.make_from_array (<<[0.173409, 2.0], [0.551606, 2.0], [0.209192, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0657929, 2.0]>>)
+
+			--create weights_2.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>)
 
 			--weights_2 := math.generate_gaussian_weights (weights_2)
 			--weights_2 := math.log_normal_weights (weights_2)
 
 			weights_2 := math.generate_uniform_weights (weights_2)
+			weights_1 := math.normalize_weights (weights_1)
 			weights_2 := math.normalize_weights (weights_2)
 
 			print ("v2: ")
@@ -90,6 +96,8 @@ feature
 					-- Use "launch" otherwise;
 				thread_1.execute
 				thread_2.execute
+
+
 				join_all
 
 				winner_player_game_1 := thread_1.winner
