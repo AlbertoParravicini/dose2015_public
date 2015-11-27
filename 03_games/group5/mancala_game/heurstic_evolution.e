@@ -32,7 +32,7 @@ feature -- Attributes
 	max_num_of_epochs: INTEGER = 100
 		-- Number of iterations of the breeding process;
 
-	engine_depth: INTEGER = 3
+	engine_depth: INTEGER = 2
 		-- Depth of the engine;
 
 feature
@@ -105,20 +105,24 @@ feature
 				when 1 then
 					-- Weights_1 is the winner
 					weights_2 := math.breed_weights (weights_1, weights_2)
+					--weights_2 := math.breed_uniform_weights (weights_1, weights_2)
 					print_results (weights_1, weights_2)
 
 
 				when 2 then
 					weights_1 := math.breed_weights (weights_2, weights_1)
+					--weights_1 := math.breed_uniform_weights (weights_2, weights_1)
 					print_results (weights_2, weights_1)
 				when 0 then
 
 
 					if random_winner = 1 then
 						weights_2 := math.breed_weights (weights_1, weights_2)
+						--weights_2 := math.breed_uniform_weights (weights_1, weights_2)
 						print_results (weights_1, weights_2)
 					else
 						weights_1 := math.breed_weights (weights_2, weights_1)
+						--weights_1 := math.breed_uniform_weights (weights_2, weights_1)
 						print_results (weights_2, weights_1)
 					end
 
