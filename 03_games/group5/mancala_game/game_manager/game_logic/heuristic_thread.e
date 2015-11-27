@@ -25,7 +25,7 @@ feature -- Attributes
 
 	players: ARRAYED_LIST [PLAYER]
 
-	engine_depth: INTEGER = 3
+	engine_depth: INTEGER = 1
 		-- Depth of the engine;
 
 	weights_1, weights_2: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
@@ -64,15 +64,31 @@ feature -- Execution
 			until
 				problem.is_end (current_state)
 			loop
+				print(current_state.index_of_current_player.out + ": ")
+				from
+					problem.weights.start
+				until
+					problem.weights.exhausted
+				loop
+					print(	problem.weights.item.truncated_to_real.out + ", ")
+					problem.weights.forth
+				end
+				print("%N")
+
+
+
 				engine.perform_search (current_state)
+
+				if engine.obtained_successor /= void then
+					current_state := engine.obtained_successor
+					engine.reset_engine
+				end
 				if current_state.index_of_current_player = 2 then
 					problem.set_weights (weights_2)
 				elseif current_state.index_of_current_player = 1 then
 					problem.set_weights (weights_1)
-				end
-				if engine.obtained_successor /= void then
-					current_state := engine.obtained_successor
-					engine.reset_engine
+				else
+					print("asda")
 				end
 			end
 

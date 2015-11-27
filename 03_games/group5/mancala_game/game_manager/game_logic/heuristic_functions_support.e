@@ -260,11 +260,19 @@ feature
 --					print ("diverging")
 --					bred_variance := (breeding_factor * better_variance) + ((1.0 - breeding_factor) * worse_variance)
 --				end
-				bred_variance := (breeding_factor * better_variance) + ((1.0 - breeding_factor) * worse_variance)
+				bred_variance := better_variance
 
 				bred_vector.extend ([bred_mean, bred_variance])
 				i := i + 1
 			end
+
+			bred_vector.i_th (4).weight := 0
+			bred_vector.i_th (5).weight := 0
+			bred_vector.i_th (6).weight := 0
+			bred_vector.i_th (4).variance := 0
+			bred_vector.i_th (5).variance := 0
+			bred_vector.i_th (6).variance := 0
+
 
 			bred_vector := generate_uniform_weights (bred_vector)
 			bred_vector := normalize_weights (bred_vector)

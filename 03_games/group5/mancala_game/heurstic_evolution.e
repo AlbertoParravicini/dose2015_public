@@ -30,7 +30,7 @@ feature -- Attributes
 	epoch: INTEGER
 		-- Current epoch of the breeding process;
 
-	max_num_of_epochs: INTEGER = 100
+	max_num_of_epochs: INTEGER = 1
 		-- Number of iterations of the breeding process;
 
 	thread_1: HEURISTIC_THREAD
@@ -84,8 +84,12 @@ feature
 				print ("EPOCH NUMBER: " + epoch.out + "%N")
 					-- Play two games: each game has a different starting player;
 
-				thread_1.launch
-				thread_2.launch
+
+					-- Use "execute" to start the threads as normal classes, without multi-threading:
+					-- this is necessary to avoid conflicts in I/O operations.
+					-- Use "launch" otherwise;
+				thread_1.execute
+				thread_2.execute
 				join_all
 
 				winner_player_game_1 := thread_1.winner
