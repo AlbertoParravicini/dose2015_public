@@ -139,7 +139,7 @@ feature -- Search execution
 			end
 			search_performed := True
 		ensure then
-			result_consistent: problem.is_end(initial_state) = false implies (search_performed implies obtained_successor /= void)
+			result_consistent: (problem.is_end (initial_state) = false) implies (search_performed implies obtained_successor /= void)
 			obtained_value_is_consistent: problem.min_value <= obtained_value and obtained_value <= problem.max_value
 			routine_invariant: max_depth = old max_depth and equal (problem, old problem)
 		end

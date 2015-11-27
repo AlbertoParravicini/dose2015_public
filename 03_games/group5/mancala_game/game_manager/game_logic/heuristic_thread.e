@@ -52,7 +52,6 @@ feature -- Initialization
 			weights_2.deep_copy(a_weights_2)
 
 			winner := -1
-			launch
 		end
 
 
@@ -60,22 +59,21 @@ feature -- Execution
 	execute
 		do
 			from
-				engine.reset_engine
 				problem.set_weights (weights_1)
-
-				engine.perform_search (initial_state)
-				current_state := engine.obtained_successor
-				until
+				current_state := initial_state
+			until
 				problem.is_end (current_state)
 			loop
+				engine.perform_search (current_state)
 				if current_state.index_of_current_player = 2 then
 					problem.set_weights (weights_2)
 				elseif current_state.index_of_current_player = 1 then
 					problem.set_weights (weights_1)
 				end
-				engine.reset_engine
-				engine.perform_search (current_state)
-				current_state := engine.obtained_successor
+				if engine.obtained_successor /= void then
+					current_state := engine.obtained_successor
+					engine.reset_engine
+				end
 			end
 
 			winner := evaluate_result

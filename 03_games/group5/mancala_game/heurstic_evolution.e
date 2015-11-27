@@ -55,8 +55,6 @@ feature
 			weights_1 := math.initialize_weights
 			weights_2 := math.initialize_weights
 
-			create thread_1.make_with_weights (weights_1, weights_2)
-			create thread_2.make_with_weights (weights_2, weights_1)
 
 			print ("v1: ")
 			print_weights (weights_1)
@@ -79,13 +77,15 @@ feature
 			until
 				epoch = max_num_of_epochs
 			loop
+				create thread_1.make_with_weights (weights_1, weights_2)
+				create thread_2.make_with_weights (weights_2, weights_1)
+
 				print ("%N--------------------------------------------%N")
 				print ("EPOCH NUMBER: " + epoch.out + "%N")
 					-- Play two games: each game has a different starting player;
 
-				thread_1.execute
-				thread_2.execute
-				print("waiting")
+				thread_1.launch
+				thread_2.launch
 				join_all
 
 				winner_player_game_1 := thread_1.winner
