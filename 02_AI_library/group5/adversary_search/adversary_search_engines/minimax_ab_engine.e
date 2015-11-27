@@ -127,11 +127,11 @@ feature -- Search execution
 									obtained_value := value_to_compare
 								end
 							end
---							if value_to_compare = obtained_value and (random_number_generator.item \\ 2) = 1 then
---									-- If the values are equal, the same successor is maintained with a 50% chance
---								obtained_successor := current_successors.item
---								obtained_value := value_to_compare
---							end
+							if value_to_compare = obtained_value and (random_number_generator.item \\ 2) = 1 then
+									-- If the values are equal, the same successor is maintained with a 50% chance
+								obtained_successor := current_successors.item
+								obtained_value := value_to_compare
+							end
 							current_successors.forth
 						end
 					end
