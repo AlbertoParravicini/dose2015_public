@@ -46,7 +46,7 @@ feature {NONE}-- Initialization
 			exit_button.set_text ("EXIT")
 			disable_user_resize
 			set_title ("End Game")
-			set_minimum_width (400)
+			set_minimum_width (420)
 
 			set_all_attributes_using_constants
 
