@@ -39,9 +39,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_SELECT' with the selected
 				-- hole as a parameter
-				button_log.set_background_color (color_gray)
+				disable_buttons
 				send_action_to_game_manager(create {ACTION_SELECT}.make (a_hole))
-				button_log.set_background_color (color_dark_brown)
+				enable_buttons
 				refresh_now
 		end
 
@@ -49,9 +49,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
 				-- as a parameter
-				button_log.set_background_color (color_gray)
+				disable_buttons
 				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
-				button_log.set_background_color (color_dark_brown)
+				enable_buttons
 				refresh_now
 		end
 
@@ -59,9 +59,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.solve'
 				-- as a parameter
-				button_log.set_background_color (color_gray)
+				disable_buttons
 				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve))
-				button_log.set_background_color (color_dark_brown)
+				enable_buttons
 				refresh_now
 		end
 
@@ -69,9 +69,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_ROTATE' with '{ENUM_ROTATE}.clockwise'
 				-- as a parameter
-				button_log.set_background_color (color_gray)
+				disable_buttons
 				send_action_to_game_manager (create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).clockwise))
-				button_log.set_background_color (color_dark_brown)
+				enable_buttons
 				refresh_now
 		end
 
@@ -79,9 +79,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_ROTATE' with '{ENUM_ROTATE}.counter_clockwise'
 				-- as a parameter
-				button_log.set_background_color (color_gray)
+				disable_buttons
 				send_action_to_game_manager (create {ACTION_ROTATE}.make ((create {ENUM_ROTATE}).counter_clockwise))
-				button_log.set_background_color (color_dark_brown)
+				enable_buttons
 				refresh_now
 		end
 
@@ -251,5 +251,23 @@ feature {NONE} -- Auxiliary features
 				end
 			end
 			refresh_now
+		end
+
+	disable_buttons
+			-- Disable the buttons when necessary;
+		do
+			button_hint.disable_sensitive
+			button_solve.disable_sensitive
+			button_log.disable_sensitive
+			button_clockwise.disable_sensitive
+			button_counter_clockwise.disable_sensitive
+		end
+
+	enable_buttons
+			-- Enable all the buttons when necessary:
+		do
+			button_hint.enable_sensitive
+			button_solve.enable_sensitive
+			button_log.enable_sensitive
 		end
 end
