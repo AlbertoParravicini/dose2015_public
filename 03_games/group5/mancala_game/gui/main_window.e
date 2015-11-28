@@ -142,7 +142,7 @@ feature {NONE} -- Implementation
 					create l_game_manager.make (l_selected_algorithm, l_algorithm_depth, l_view)
 					l_view.start_view (l_game_manager)
 					l_gui.show
-					current.destroy
+					current.hide
 				else
 					-- Error while casting
 					(create {EV_ERROR_DIALOG}.make_with_text ("Error in creating the game!")).show
