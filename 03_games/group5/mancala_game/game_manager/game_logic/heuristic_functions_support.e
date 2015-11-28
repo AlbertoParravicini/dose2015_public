@@ -27,9 +27,6 @@ feature
 	breeding_factor: REAL_64 = 0.7
 		-- How much the better weights list should be valued over the worse list when breeding a new weights list;
 
-	split_factor: REAL_64 = 0.1
-		-- If the mean difference between two weights is lower than this value, the weights should start to converge;
-
 	starting_variance: REAL_64 = 0.02
 		-- The variance of the starting weights list;
 
@@ -205,10 +202,11 @@ feature
 
 				--mean_diff := dabs(better_weight - worse_weight)
 
-				--bred_variance := (better_weight*worse_variance + worse_weight*better_variance)/(worse_variance + better_variance) - better_weight*worse_weight
+				covariance := (better_weight*worse_variance + worse_weight*better_variance)/(worse_variance + better_variance) - better_weight*worse_weight
 
+				bred_variance := breeding_factor.power (2) * better_variance + (1.0 - breeding_factor).power(2) * worse_variance + 2.0 * breeding_factor * (1.0 - breeding_factor) * covariance
 
-				bred_vector.extend ([bred_mean, better_variance])
+				bred_vector.extend ([bred_mean, bred_variance])
 				i := i + 1
 			end
 

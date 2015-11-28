@@ -25,7 +25,7 @@ feature -- Attributes
 
 	players: ARRAYED_LIST [PLAYER]
 
-	engine_depth: INTEGER = 3
+	engine_depth: INTEGER = 5
 		-- Depth of the engine;
 
 	weights_1, weights_2: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
