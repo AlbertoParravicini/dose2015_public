@@ -351,25 +351,35 @@ feature
 			-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
 
 		do
-			if max_depth = 0 then
-				create time_seed_for_random_generator.make_now
-					-- Initializes random generator using current time seed.
-				create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
-				random_number_generator.start
-
-					-- Select a random move from the successors of the current state;
-				current_successors := problem.get_successors (initial_state)
-				obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
-				obtained_value := problem.value (obtained_successor)
+			if problem.is_end (initial_state) then
+						obtained_successor := void
+						obtained_value := problem.value (initial_state)
 			else
-					-- If max_depth > 0, perform a real negascout search;
-				negascout_solution := negascout (initial_state, max_depth, problem.min_value, problem.max_value)
-				obtained_successor := find_next_move (negascout_solution.state, initial_state)
-				obtained_value := negascout_solution.value
+				if max_depth = 0 then
+					create time_seed_for_random_generator.make_now
+						-- Initializes random generator using current time seed.
+					create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
+					random_number_generator.start
+
+						-- Select a random move from the successors of the current state;
+					current_successors := problem.get_successors (initial_state)
+					if current_successors.count > 0 then
+						obtained_successor := current_successors.at ((random_number_generator.item \\ current_successors.count) + 1)
+						obtained_value := problem.value (obtained_successor)
+					else
+						obtained_successor := Void
+						obtained_value := problem.value (initial_state)
+					end
+				else
+						-- If max_depth > 0, perform a real negascout search;
+					negascout_solution := negascout (initial_state, max_depth, problem.min_value, problem.max_value)
+					obtained_successor := find_next_move (negascout_solution.state, initial_state)
+					obtained_value := negascout_solution.value
+				end
 			end
 			search_performed := true
 		ensure then
-			search_performed implies obtained_successor /= void
+			result_consistent: problem.is_end(initial_state) = false implies (search_performed implies obtained_successor /= void)
 			obtained_value_is_consistent: problem.min_value <= obtained_value and obtained_value <= problem.max_value
 			routine_invariant: max_depth = old max_depth and equal (problem, old problem) and old order_moves = order_moves and old start_from_best = start_from_best
 		end
@@ -404,7 +414,7 @@ feature -- Status setting
 		do
 			start_from_best := choice
 		ensure
-			order_moves_set: order_moves = choice
+			order_moves_set: start_from_best = choice
 			routine_invariant: equal (problem, old problem) and old max_depth = max_depth and old order_moves = order_moves
 		end
 
@@ -437,7 +447,6 @@ feature -- Status report
 			-- "start_from_best" is the only one considered;
 
 invariant
-	consistent_result: search_performed implies obtained_successor /= void
 	consistent_obtained_value: problem.min_value <= obtained_value and obtained_value <= problem.max_value
-	consisten_max_depth: max_depth >= 0
+	consistent_max_depth: max_depth >= 0
 end

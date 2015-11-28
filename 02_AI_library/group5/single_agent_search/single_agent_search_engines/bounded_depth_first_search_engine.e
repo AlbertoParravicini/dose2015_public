@@ -38,7 +38,6 @@ feature -- Creation
 			stack.compare_objects
 			search_performed := false
 			is_search_successful := false
-			set_max_depth (0)
 			nr_of_visited_states := 0
 			cycle_checking := false
 		ensure
@@ -46,7 +45,6 @@ feature -- Creation
 			search_performed_is_false: not search_performed
 			is_search_successful_is_false: not is_search_successful
 			stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal(stack.item.state, problem.initial_state))
-			maximum_depth_is_zero: maximum_depth = 0
 			nr_of_visited_states_is_zero: nr_of_visited_states = 0
 			cycle_checking_is_false:cycle_checking=false
 		end
@@ -141,7 +139,6 @@ feature -- Search Execution
 			stack.put (0, problem.initial_state)
 			search_performed := false
 			is_search_successful := false
-			set_max_depth (0)
 			nr_of_visited_states := 0
 			stack.compare_objects
 			cycle_checking:=false
@@ -149,7 +146,6 @@ feature -- Search Execution
 			search_performed_is_false: not search_performed
 			is_search_successful_is_false: not is_search_successful
 			stack_is_not_void_and_with_1_element: stack /= void and then (stack.count = 1 and equal(stack.item.state, problem.initial_state))
-			maximum_depth_is_zero: maximum_depth = 0
 			nr_of_visited_states_is_zero: nr_of_visited_states = 0
 			cycle_checking_is_false:cycle_checking=false
 		end
