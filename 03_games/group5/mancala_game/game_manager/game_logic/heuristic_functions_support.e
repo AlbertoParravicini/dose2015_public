@@ -170,6 +170,24 @@ feature
 			Result := a_weights
 		end
 
+	truncate_weights (a_weights:  ARRAYED_LIST [TUPLE [weight: REAL_64; variance: REAL_64]]): ARRAYED_LIST [TUPLE [weight: REAL_64; variance: REAL_64]]
+			-- Used to truncate the weights created by a gaussian distribution
+		do
+			from
+				a_weights.start
+			until
+				a_weights.exhausted
+			loop
+				if a_weights.item.weight > 1.0 then
+					a_weights.item.weight := 1.0
+				elseif a_weights.item.weight < 0.0 then
+					a_weights.item.weight := 0.0
+				end
+				a_weights.forth
+			end
+			Result := a_weights
+		end
+
 	breed_weights (better_weights:  ARRAYED_LIST [TUPLE [weight: REAL_64; variance: REAL_64]]; worse_weigths:  ARRAYED_LIST [TUPLE [weight: REAL_64; variance: REAL_64]]): ARRAYED_LIST [TUPLE [weight: REAL_64; variance: REAL_64]]
 			-- Given two lists of weights, breeds a new list of weights by giving priority to the better weights;
 		local
@@ -198,15 +216,24 @@ feature
 				better_variance := better_weights.i_th (i).variance
 				worse_variance := worse_weigths.i_th (i).variance
 
-				bred_mean := (better_weight*worse_variance + worse_weight*better_variance) / (1/better_variance + 1/worse_variance)
+				bred_mean := (better_weight/better_variance + worse_weight*worse_variance) / (1/better_variance + 1/worse_variance)
 
-				--mean_diff := dabs(better_weight - worse_weight)
+				mean_diff := dabs(better_weight - worse_weight)
 
 				covariance := (better_weight*worse_variance + worse_weight*better_variance)/(worse_variance + better_variance) - better_weight*worse_weight
 
-				bred_variance := breeding_factor.power (2) * better_variance + (1.0 - breeding_factor).power(2) * worse_variance + 2.0 * breeding_factor * (1.0 - breeding_factor) * covariance
 
-				bred_vector.extend ([bred_mean, bred_variance])
+					-- Function 1
+				--bred_variance := breeding_factor.power (2) * better_variance + (1.0 - breeding_factor).power(2) * worse_variance + 2.0 * breeding_factor * (1.0 - breeding_factor) * covariance
+
+					-- Function 2
+				--bred_variance := breeding_factor * better_variance + (1.0 - breeding_factor) * worse_variance + breeding_factor * (1.0 - breeding_factor) * mean_diff.power (2)
+
+					-- Function 3
+				--bred_variance := (1.0/2.0) * (log (breeding_factor * (better_variance / worse_variance).power(1.0 - breeding_factor) + (1.0 - breeding_factor) * (worse_variance / better_variance).power(breeding_factor)
+						 --+ breeding_factor * (1.0 - breeding_factor) * mean_diff.power (2) / (better_variance.power (breeding_factor) * worse_variance.power (1.0 - breeding_factor))))
+
+				bred_vector.extend ([bred_mean, better_variance])
 				i := i + 1
 			end
 
