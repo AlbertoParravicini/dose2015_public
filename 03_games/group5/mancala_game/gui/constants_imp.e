@@ -172,7 +172,7 @@ feature -- Access
 
 	color_dark_brown_cell: CELL[EV_COLOR]
 		once
-			create Result.put (create {EV_COLOR}.make_with_8_bit_rgb (126, 108, 96))
+			create Result.put (create {EV_COLOR}.make_with_8_bit_rgb (156, 112, 92))
 		end
 
 	color_gray: EV_COLOR
