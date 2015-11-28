@@ -61,30 +61,25 @@ feature
 			weights_2 := math.initialize_weights
 			--create weights_1.make_from_array (<<[0.41, 2.0], [0.0, 2.0], [0.22, 2.0], [0.11, 2.0], [0.0, 2.0], [0.25, 2.0]>>)
 
-			--print ("v1: ")
-			--print_weights (weights_1)
+			print ("v1: ")
+			print_weights (weights_1)
 
 				-- Initialize the second weights list based on the first one;
 
-			create weights_2.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>)
+			--create weights_2.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>)
 
-			--weights_2 := math.generate_gaussian_weights (weights_2)
-			--weights_2 := math.log_normal_weights (weights_2)
+			weights_2 := math.generate_gaussian_weights (weights_2)
+			weights_2 := math.log_normal_weights (weights_2)
 
 			--weights_2 := math.generate_uniform_weights (weights_2)
 			weights_1 := math.normalize_weights (weights_1)
 			weights_2 := math.normalize_weights (weights_2)
 
-			--print ("v2: ")
-			--print_weights (weights_2)
-
-
+			print ("v2: ")
+			print_weights (weights_2)
 
 
 			round_robin
-
-
-
 
 
 			from
@@ -132,25 +127,25 @@ feature
 				inspect overall_winner
 				when 1 then
 					-- Weights_1 is the winner
-					--weights_2 := math.breed_weights (weights_1, weights_2)
-					weights_2 := math.breed_uniform_weights (weights_1, weights_2)
+					weights_2 := math.breed_weights (weights_1, weights_2)
+					--weights_2 := math.breed_uniform_weights (weights_1, weights_2)
 					print_results (weights_1, weights_2)
 
 
 				when 2 then
-					--weights_1 := math.breed_weights (weights_2, weights_1)
-					weights_1 := math.breed_uniform_weights (weights_2, weights_1)
+					weights_1 := math.breed_weights (weights_2, weights_1)
+					--weights_1 := math.breed_uniform_weights (weights_2, weights_1)
 					print_results (weights_2, weights_1)
 				when 0 then
 
 
 					if random_winner = 1 then
-						--weights_2 := math.breed_weights (weights_1, weights_2)
-						weights_2 := math.breed_uniform_weights (weights_1, weights_2)
+						weights_2 := math.breed_weights (weights_1, weights_2)
+						--weights_2 := math.breed_uniform_weights (weights_1, weights_2)
 						print_results (weights_1, weights_2)
 					else
-						--weights_1 := math.breed_weights (weights_2, weights_1)
-						weights_1 := math.breed_uniform_weights (weights_2, weights_1)
+						weights_1 := math.breed_weights (weights_2, weights_1)
+						--weights_1 := math.breed_uniform_weights (weights_2, weights_1)
 						print_results (weights_2, weights_1)
 					end
 
@@ -232,6 +227,8 @@ feature
 			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
 			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.19, 2.0], [0.0, 2.0], [0.22, 2.0], [0.47, 2.0], [0.10, 2.0], [0.0, 2.0]>>))
 			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.08, 2.0], [0.27, 2.0], [0.07, 2.0], [0.28, 2.0], [0.12, 2.0], [0.14, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[1.0, 2.0], [0.0, 2.0], [1.0, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[1.0, 2.0], [1.0, 2.0], [1.0, 2.0], [1.0, 2.0], [0.0, 2.0], [1.0, 2.0]>>))
 
 
 			from
@@ -260,8 +257,10 @@ feature
 						print_weights (weights_list.i_th (k))
 						print (" VS ")
 						print_weights (weights_list.i_th (j))
-						thread_1.execute
-						thread_2.execute
+						thread_1.launch
+						thread_2.launch
+
+						join_all
 
 							-- Get the best weights list among the two;
 						curr_winner := evaluate_overall_winner (thread_1.winner, thread_2.winner)

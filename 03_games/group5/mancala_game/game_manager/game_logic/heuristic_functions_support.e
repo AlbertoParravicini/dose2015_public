@@ -30,7 +30,7 @@ feature
 	split_factor: REAL_64 = 0.1
 		-- If the mean difference between two weights is lower than this value, the weights should start to converge;
 
-	starting_variance: REAL_64 = 0.08
+	starting_variance: REAL_64 = 0.02
 		-- The variance of the starting weights list;
 
 
@@ -186,6 +186,7 @@ feature
 			better_variance: REAL_64
 			worse_variance: REAL_64
 
+			covariance: REAL_64
 			mean_diff: REAL_64
 		do
 			create bred_vector.make (num_of_weights)
@@ -204,14 +205,10 @@ feature
 
 				--mean_diff := dabs(better_weight - worse_weight)
 
-				--bred_variance := (breeding_factor * (better_weights.i_th (i).variance + better_weights.i_th (i).weight.power(2)) + (1.0 - breeding_factor) * (worse_weigths.i_th (i).variance + worse_weigths.i_th (i).weight.power(2))) - bred_mean.power (2)
-
-				--bred_variance := better_weights.i_th (i).variance * (mean_diff / split_factor).power(1/3)
-
-				bred_variance := (better_weight*worse_variance + worse_weight*better_variance)/(worse_variance + better_variance) + better_weight*worse_weight
+				--bred_variance := (better_weight*worse_variance + worse_weight*better_variance)/(worse_variance + better_variance) - better_weight*worse_weight
 
 
-				bred_vector.extend ([bred_mean, bred_variance])
+				bred_vector.extend ([bred_mean, better_variance])
 				i := i + 1
 			end
 
@@ -251,15 +248,6 @@ feature
 				bred_mean := breeding_factor * better_weight + (1.0 - breeding_factor) * worse_weight
 				mean_diff := dabs(better_weight - worse_weight)
 
-				-- 2-Way entanglement:
---				if (better_weight < worse_variance + worse_weight) and (better_weight > - worse_variance + worse_weight) and
---					(worse_weight < better_variance + better_weight) and (worse_weight > - better_variance + better_weight) then
-
---					bred_variance := mean_diff
---				else
---					print ("diverging")
---					bred_variance := (breeding_factor * better_variance) + ((1.0 - breeding_factor) * worse_variance)
---				end
 				bred_variance := better_variance
 
 				bred_vector.extend ([bred_mean, bred_variance])
