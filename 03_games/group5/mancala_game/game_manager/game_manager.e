@@ -150,6 +150,7 @@ feature -- Status setting
 							loop
 								solitaire_move(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
 							end
+							show_solitaire_turn_state_and_message
 						end
 					end
  				end
