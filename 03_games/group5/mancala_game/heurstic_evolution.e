@@ -50,12 +50,10 @@ feature
 			random_winner: INTEGER
 			sum: REAL_64
 			n: INTEGER
-			weights_list: LINKED_LIST[ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]]
 		do
 
 			create math.make
 			create winner_list.make
-			create weights_list.make
 
 				-- Initialize the first weights list as default;
 			weights_1 := math.initialize_weights
@@ -80,15 +78,10 @@ feature
 			--print ("v2: ")
 			--print_weights (weights_2)
 
-			weights_list.extend (weights_1)
-			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.41, 2.0], [0.0, 2.0], [0.22, 2.0], [0.11, 2.0], [0.0, 2.0], [0.25, 2.0]>>))
-			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
-			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.19, 2.0], [0.0, 2.0], [0.22, 2.0], [0.47, 2.0], [0.10, 2.0], [0.0, 2.0]>>))
-			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.08, 2.0], [0.27, 2.0], [0.07, 2.0], [0.28, 2.0], [0.12, 2.0], [0.14, 2.0]>>))
 
 
 
-			round_robin (weights_list)
+			round_robin
 
 
 
@@ -110,33 +103,18 @@ feature
 					-- Use "execute" to start the threads as normal classes, without multi-threading:
 					-- this is necessary to avoid conflicts in I/O operations.
 					-- Use "launch" otherwise;
-				from
-					n := 0
-				until
-					n = 3
-				loop
-					create thread_1.make_with_weights (weights_1, weights_2)
-					create thread_2.make_with_weights (weights_2, weights_1)
+				create thread_1.make_with_weights (weights_1, weights_2)
+				create thread_2.make_with_weights (weights_2, weights_1)
 
-					thread_1.execute
-					thread_2.execute
-					join_all
+				thread_1.execute
+				thread_2.execute
+				join_all
 
-					winner_player_game_1 := thread_1.winner
-					winner_player_game_2 := thread_2.winner
+				winner_player_game_1 := thread_1.winner
+				winner_player_game_2 := thread_2.winner
 
 						-- Get the best weights list among the two;
-					winner_list.extend(evaluate_overall_winner (winner_player_game_1, winner_player_game_2))
-					print(winner_list.last.out)
-					n := n + 1
-				end
-				if winner_list.occurrences (2) > winner_list.occurrences (1) then
-					overall_winner := 2
-				elseif winner_list.occurrences (2) < winner_list.occurrences (1) then
-					overall_winner := 1
-				else
-					overall_winner := 0
-				end
+				overall_winner := evaluate_overall_winner (winner_player_game_1, winner_player_game_2)
 
 
 				--print ("SCORE: " + winner_player_game_1.out + ", " + winner_player_game_2.out + "%N")
@@ -239,39 +217,49 @@ feature
 			math.print_weights (bred_weights)
 		end
 
-	round_robin (a_weights: LINKED_LIST[ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]])
+	round_robin
+			-- Execute a round-robin tournament between a certain number of weights, specified below;
 		local
 			k: INTEGER
 			j: INTEGER
 			victories: LINKED_LIST[INTEGER]
 			curr_winner: INTEGER
+			weights_list: LINKED_LIST[ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]]
 		do
+			create weights_list.make
+			weights_list.extend (math.initialize_weights)
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.41, 2.0], [0.0, 2.0], [0.22, 2.0], [0.11, 2.0], [0.0, 2.0], [0.25, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.19, 2.0], [0.0, 2.0], [0.22, 2.0], [0.47, 2.0], [0.10, 2.0], [0.0, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.08, 2.0], [0.27, 2.0], [0.07, 2.0], [0.28, 2.0], [0.12, 2.0], [0.14, 2.0]>>))
+
+
 			from
 				create victories.make
-				a_weights.start
+				weights_list.start
 			until
-				a_weights.exhausted
+				weights_list.exhausted
 			loop
 				victories.extend (0)
-				a_weights.forth
+				weights_list.forth
 			end
 
 			from
 				k := 1
 			until
-				k > a_weights.count
+				k > weights_list.count
 			loop
 				from
 					j := k
 				until
-					j > a_weights.count
+					j > weights_list.count
 				loop
 					if k /= j then
-						create thread_1.make_with_weights (a_weights.i_th (k), a_weights.i_th (j))
-						create thread_2.make_with_weights (a_weights.i_th (j), a_weights.i_th (k))
-						print_weights (a_weights.i_th (k))
+						create thread_1.make_with_weights (weights_list.i_th (k), weights_list.i_th (j))
+						create thread_2.make_with_weights (weights_list.i_th (j), weights_list.i_th (k))
+						print_weights (weights_list.i_th (k))
 						print (" VS ")
-						print_weights (a_weights.i_th (j))
+						print_weights (weights_list.i_th (j))
 						thread_1.execute
 						thread_2.execute
 
@@ -292,16 +280,14 @@ feature
 
 
 			from
-				a_weights.start
+				weights_list.start
 			until
-				a_weights.exhausted
+				weights_list.exhausted
 			loop
 				print ("victories: " + victories.item.out + "%N")
-				print_weights (a_weights.item)
-				a_weights.forth
+				print_weights (weights_list.item)
+				weights_list.forth
 				victories.forth
 			end
 		end
-invariant
-	not weights_1.is_equal (weights_2)
 end
