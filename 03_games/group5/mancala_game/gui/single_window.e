@@ -186,6 +186,7 @@ feature {NONE}
 			create end_game_dialog
 			end_game_dialog.set_game_manager (game_manager)
 			end_game_dialog.end_avatar_pixmap.hide
+			end_game_dialog.replay_button.hide
 			end_game_dialog.set_label (game_over_message)
 			end_game_dialog.show_relative_to_window (current)
 		end
