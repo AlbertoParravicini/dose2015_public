@@ -252,22 +252,34 @@ feature {NONE} -- Implementation
 
 						-- Player 1 wins
 					if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
-						game_over_message := " " + player1_name + " Wins! "
-						game_over_avatar := avatar_human
+						if (adv_state.map.get_store_value (1) - adv_state.map.get_store_value (2) > 10) and  avatar_folder.is_equal ("star_wars") then
+							game_over_message := " The Force is strong with this one! "
+							game_over_avatar := avatar_ai
+						else
+							game_over_message := " " + player1_name + " Wins! "
+							game_over_avatar := avatar_human
+						end
+						label_player_name.set_text (" " + player1_name + " Wins! ")
 
-					-- Player 2 wins
+						-- Player 2 wins
 					elseif adv_state.map.get_store_value (1) < adv_state.map.get_store_value (2) then
-						game_over_message := " " + player2_name + " Wins! "
-						game_over_avatar := avatar_ai
+						if ((adv_state.map.get_store_value (2) - adv_state.map.get_store_value (1)) > 15) and avatar_folder.is_equal ("marvel") then
+							game_over_message := " Why do we fall? %N So that we can learn to pick ourselves up. "
+							game_over_avatar := avatar_human1
+						else
+							game_over_message := " " + player2_name + " Wins! "
+							game_over_avatar := avatar_ai
+						end
+						label_player_name.set_text (" " + player2_name + " Wins! ")
 
 					-- Tie	
 					else
 						game_over_message := " Tie! "
 						game_over_avatar := avatar_tie
+						label_player_name.set_text (game_over_message)
 					end
 
 					avatar_pixmap.set_with_named_file (game_over_avatar)
-					label_player_name.set_text (game_over_message)
 					show_message(game_over_message + "%N")
 					current.disable_sensitive
 					create end_game_dialog
