@@ -27,7 +27,7 @@ feature
 	breeding_factor: REAL_64 = 0.7
 		-- How much the better weights list should be valued over the worse list when breeding a new weights list;
 
-	starting_variance: REAL_64 = 0.02
+	starting_variance: REAL_64 = 0.00005
 		-- The variance of the starting weights list;
 
 
@@ -233,12 +233,15 @@ feature
 				--bred_variance := (1.0/2.0) * (log (breeding_factor * (better_variance / worse_variance).power(1.0 - breeding_factor) + (1.0 - breeding_factor) * (worse_variance / better_variance).power(breeding_factor)
 						 --+ breeding_factor * (1.0 - breeding_factor) * mean_diff.power (2) / (better_variance.power (breeding_factor) * worse_variance.power (1.0 - breeding_factor))))
 
-				bred_vector.extend ([bred_mean, better_variance])
+					-- Function 4
+				bred_variance := (breeding_factor * better_variance + (1.0 - breeding_factor) * worse_variance) * (mean_diff / covariance)
+
+				bred_vector.extend ([bred_mean, bred_variance])
 				i := i + 1
 			end
 
 			bred_vector := generate_gaussian_weights (bred_vector)
-			bred_vector := log_normal_weights (bred_vector)
+			bred_vector := truncate_weights (bred_vector)
 			bred_vector := normalize_weights (bred_vector)
 			Result := bred_vector
 		end
