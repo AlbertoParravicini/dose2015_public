@@ -252,7 +252,10 @@ feature {NONE} -- Implementation
 
 						-- Player 1 wins
 					if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
-						if (adv_state.map.get_store_value (1) - adv_state.map.get_store_value (2) > 10) and  avatar_folder.is_equal ("star_wars") then
+						if (adv_state.map.get_store_value (1) - adv_state.map.get_store_value (2) > 17) and  avatar_folder.is_equal ("star_wars") then
+							game_over_message := " Nooooooooooooooooooooooooooooooooo!!!! "
+							game_over_avatar := avatar_ai
+						elseif (adv_state.map.get_store_value (1) - adv_state.map.get_store_value (2) > 13) and  avatar_folder.is_equal ("star_wars")  then
 							game_over_message := " The Force is strong with this one! "
 							game_over_avatar := avatar_ai
 						else
