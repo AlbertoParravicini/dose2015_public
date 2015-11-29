@@ -7,21 +7,22 @@ note
 class
 	HEURISTIC_EVOLUTION
 
+inherit
+	THREAD_CONTROL
 
 create
 	make
 
 feature -- Attributes
-	problem: ADVERSARY_PROBLEM
-	math: HEURISTIC_FUNCTIONS_SUPPORT
-	engine: MINIMAX_AB_ENGINE [ACTION_SELECT, ADVERSARY_STATE, ADVERSARY_PROBLEM]
 
-	current_state: ADVERSARY_STATE
-	initial_state: ADVERSARY_STATE
+	math: HEURISTIC_FUNCTIONS_SUPPORT
+
+
+
 
 	i: INTEGER
 
-	players: ARRAYED_LIST [PLAYER]
+
 
 	weights_1: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
 	weights_2: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
@@ -29,11 +30,13 @@ feature -- Attributes
 	epoch: INTEGER
 		-- Current epoch of the breeding process;
 
-	max_num_of_epochs: INTEGER = 100
+	max_num_of_epochs: INTEGER = 300
 		-- Number of iterations of the breeding process;
 
-	engine_depth: INTEGER = 2
-		-- Depth of the engine;
+	thread_1: HEURISTIC_THREAD
+	thread_2: HEURISTIC_THREAD
+
+
 
 feature
 	make
@@ -42,55 +45,80 @@ feature
 			winner_player_game_2: INTEGER
 			overall_winner: INTEGER
 
+			winner_list: LINKED_LIST[INTEGER]
+
 			random_winner: INTEGER
 			sum: REAL_64
+			n: INTEGER
 		do
-			create problem.make
-			create players.make (2)
-			players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("PLAYER", 0))
-			players.extend (create {HUMAN_PLAYER}.make_with_initial_values ("PLAYER", 0))
-			create initial_state.make (players)
-			create engine.make_with_depth (problem, engine_depth)
 
 			create math.make
+			create winner_list.make
 
 				-- Initialize the first weights list as default;
-			weights_1 := math.initialize_weights
-			weights_2 := math.initialize_weights
-
 			print ("v1: ")
-			print_weights (weights_1)
+			weights_1 := math.initialize_weights
+			weights_1 := math.log_normal_weights (weights_1)
+			weights_1 := math.normalize_weights (weights_1)
+
+
+			--create weights_1.make_from_array (<<[0.19, 0.02], [0.0, 0.02], [0.22, 0.02], [0.47, 0.02], [0.10, 0.02], [0.0, 0.02]>>)
+
+			math.print_weights (weights_1)
 
 				-- Initialize the second weights list based on the first one;
-			--create weights_2.make_from_array (<<[0.173409, 2.0], [0.551606, 2.0], [0.209192, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0657929, 2.0]>>)
+
+			--create weights_2.make_from_array (<<[0.19, 0.02], [0.0, 0.02], [0.22, 0.02], [0.47, 0.02], [0.10, 0.02], [0.0, 0.02]>>)
+			print ("v2: ")
+			weights_2 := math.initialize_weights
+			weights_2 := math.log_normal_weights (weights_2)
 			weights_2 := math.generate_gaussian_weights (weights_2)
 			weights_2 := math.log_normal_weights (weights_2)
 
 			--weights_2 := math.generate_uniform_weights (weights_2)
 			weights_2 := math.normalize_weights (weights_2)
 
-			print ("v2: ")
-			print_weights (weights_2)
 
+			math.print_weights (weights_2)
+
+
+			round_robin
+			print ("%N--------------------------------------------%N")
+			print ("%N--------------------------------------------%N")
+			print ("%N--------------------------------------------%N")
 
 			from
 				epoch := 0
 			until
 				epoch = max_num_of_epochs
 			loop
+				create thread_1.make_with_weights (weights_1, weights_2)
+				create thread_2.make_with_weights (weights_2, weights_1)
+
 				print ("%N--------------------------------------------%N")
 				print ("EPOCH NUMBER: " + epoch.out + "%N")
 					-- Play two games: each game has a different starting player;
-				winner_player_game_1 := play_game (weights_1, weights_2)
 
-				winner_player_game_2 := play_game (weights_2, weights_1)
 
-					-- Get the best weights list among the two;
+					-- Use "execute" to start the threads as normal classes, without multi-threading:
+					-- this is necessary to avoid conflicts in I/O operations.
+					-- Use "launch" otherwise;
+				create thread_1.make_with_weights (weights_1, weights_2)
+				create thread_2.make_with_weights (weights_2, weights_1)
+
+				thread_1.execute
+				thread_2.execute
+				join_all
+
+				winner_player_game_1 := thread_1.winner
+				winner_player_game_2 := thread_2.winner
+
+						-- Get the best weights list among the two;
 				overall_winner := evaluate_overall_winner (winner_player_game_1, winner_player_game_2)
 
-				print ("SCORE: " + winner_player_game_1.out + ", " + winner_player_game_2.out + "%N")
+
+				--print ("SCORE: " + winner_player_game_1.out + ", " + winner_player_game_2.out + "%N")
 				if overall_winner = 1 or overall_winner = 2 then
-					print ("%N%NOVERALL WINNER: " + overall_winner.out + "%N%N")
 					print ("%N%NOVERALL WINNER: " + overall_winner.out + "%N%N")
 				else
 					random_winner := (math.random_number_generator.item \\ 2) + 1
@@ -134,49 +162,7 @@ feature
 			end
 		end
 
-	play_game (player_1_weights: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]; player_2_weights:  ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]): INTEGER
-			-- Automatic fight between two players with weigths equal to weights_1 and weights_2, respectively;
-		do
 
-			from
-				engine.reset_engine
-				problem.set_weights (player_1_weights)
-
-				engine.perform_search (initial_state)
-				current_state := engine.obtained_successor
-				until
-				problem.is_end (current_state)
-			loop
-				if current_state.index_of_current_player = 2 then
-					problem.set_weights (player_2_weights)
-				elseif current_state.index_of_current_player = 1 then
-					problem.set_weights (player_1_weights)
-				end
-				engine.reset_engine
-				engine.perform_search (current_state)
-				current_state := engine.obtained_successor
-			end
-
-			Result := evaluate_result
-		end
-
-	evaluate_result: INTEGER
-			-- Given an end-game state, return the index of the winning player, 0 if the state is a tie or -1 if it isn't a final state;
-		do
-			if problem.is_end (current_state) then
-				if current_state.players.i_th (1).score > current_state.players.i_th (2).score then
-					Result := 1
-				elseif
-					current_state.players.i_th (1).score < current_state.players.i_th (2).score
-				then
-					Result := 2
-				else
-					Result := 0
-				end
-			else
-				Result := -1
-			end
-		end
 
 	evaluate_overall_winner (game_1_winner: INTEGER; game_2_winner: INTEGER): INTEGER
 			-- Calculate the overall winner, if any, of the two games that were played.
@@ -231,6 +217,89 @@ feature
 			math.print_weights (bred_weights)
 		end
 
-invariant
-	not weights_1.is_equal (weights_2)
+	round_robin
+			-- Execute a round-robin tournament between a certain number of weights, specified below;
+		local
+			k: INTEGER
+			j: INTEGER
+			victories: LINKED_LIST[INTEGER]
+			curr_winner: INTEGER
+			weights_list: LINKED_LIST[ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]]
+		do
+			create weights_list.make
+			weights_list.extend (math.initialize_weights)
+
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.41, 2.0], [0.0, 2.0], [0.22, 2.0], [0.11, 2.0], [0.0, 2.0], [0.25, 2.0]>>))
+			--weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.19, 2.0], [0.0, 2.0], [0.22, 2.0], [0.47, 2.0], [0.10, 2.0], [0.0, 2.0]>>))
+--			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.36, 2.0], [0.17, 2.0], [0.12, 2.0], [0.05, 2.0], [0.14, 2.0], [0.13, 2.0]>>))
+--			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.17, 2.0], [0.04, 2.0], [0.29, 2.0], [0.30, 2.0], [0.04, 2.0], [0.12, 2.0]>>))
+--			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.4, 2.0], [0.23, 2.0], [0.21, 2.0], [0.14, 2.0], [0.001, 2.0], [0.0, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.24, 2.0], [0.23, 2.0], [0.20, 2.0], [0.16, 2.0], [0.07, 2.0], [0.07, 2.0]>>))
+--			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.25, 2.0], [0.1, 2.0], [0.1, 2.0], [0.06, 2.0], [0.16, 2.0], [0.29, 2.0]>>))
+--			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.15, 2.0], [0.12, 2.0], [0.14, 2.0], [0.12, 2.0], [0.14, 2.0], [0.29, 2.0]>>))
+
+
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[1.0, 2.0], [0.0, 2.0], [1.0, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
+			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[1.0, 2.0], [1.0, 2.0], [1.0, 2.0], [1.0, 2.0], [0.0, 2.0], [1.0, 2.0]>>))
+
+
+			from
+				create victories.make
+				weights_list.start
+			until
+				weights_list.exhausted
+			loop
+				victories.extend (0)
+				weights_list.forth
+			end
+
+			from
+				k := 1
+			until
+				k > weights_list.count
+			loop
+				from
+					j := k
+				until
+					j > weights_list.count
+				loop
+					if k /= j then
+						create thread_1.make_with_weights (weights_list.i_th (k), weights_list.i_th (j))
+						create thread_2.make_with_weights (weights_list.i_th (j), weights_list.i_th (k))
+						print_weights (weights_list.i_th (k))
+						print (" VS ")
+						print_weights (weights_list.i_th (j))
+						thread_1.launch
+						thread_2.launch
+
+						join_all
+
+							-- Get the best weights list among the two;
+						curr_winner := evaluate_overall_winner (thread_1.winner, thread_2.winner)
+						print ("OVERALL WINNER: " + curr_winner.out + "%N%N")
+
+						if curr_winner = 1 then
+							victories.i_th (k) := victories.i_th (k) + 1
+						elseif curr_winner = 2 then
+							victories.i_th (j) := victories.i_th (j) + 1
+						end
+					end
+					j := j + 1
+				end
+				k := k + 1
+			end
+
+
+			from
+				weights_list.start
+			until
+				weights_list.exhausted
+			loop
+				print ("victories: " + victories.item.out + "%N")
+				print_weights (weights_list.item)
+				weights_list.forth
+				victories.forth
+			end
+		end
 end

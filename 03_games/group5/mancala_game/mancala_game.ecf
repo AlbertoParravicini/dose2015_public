@@ -4,11 +4,14 @@
 
 		<root cluster="root_cluster" class="APPLICATION" feature="make"/>
 		<option profile="true" warning="true" cat_call_detection="none" void_safety="none">
-			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
+			<assertions/>
 		</option>
+		<setting name="concurrency" value="thread"/>
 		<library name="base" location="$ISE_LIBRARY\library\base\base.ecf"/>
+		<library name="base-mt" location="C:\Program Files\Eiffel Software\EiffelStudio 15.08 GPL\precomp\spec\win64\base-mt.ecf"/>
 		<library name="eiffel-ai-search" location="..\..\..\02_AI_library\group5\eiffel-ai-search.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing.ecf"/>
+		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
 		<library name="time" location="$ISE_LIBRARY\library\time\time.ecf"/>
 		<library name="vision2" location="$ISE_LIBRARY\library\vision2\vision2.ecf"/>
 		<cluster name="root_cluster" location=".\">

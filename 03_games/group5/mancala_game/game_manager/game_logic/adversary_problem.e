@@ -104,6 +104,7 @@ feature
 
 	set_weights (a_weights: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]])
 			-- Set the weights used by the heuristic functions given a weights list as input;
+			-- The variances should be set to 0 if no breeding has to be performed;
 		local
 			i: INTEGER
 		do
