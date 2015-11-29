@@ -143,6 +143,7 @@ feature -- Status setting
 					elseif other_action.action = (create {ENUM_OTHER}).hint then
 						view.show_message ("AI is looking for a possible move...%N")
 						solitaire_move (a_action)
+						view.show_message ("AI has finished.%N")
 
 						-- ACTION: SOLVE
 					elseif other_action.action = (create {ENUM_OTHER}).solve then
@@ -154,6 +155,7 @@ feature -- Status setting
 							loop
 								solitaire_move(create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
 							end
+							view.show_message ("AI has finished.%N")
 							show_solitaire_turn_state_and_message
 						end
 					end
