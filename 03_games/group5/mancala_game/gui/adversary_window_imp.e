@@ -348,6 +348,7 @@ feature {NONE}-- Initialization
 			label_store_1_value.set_background_color (color_green)
 			label_store_1_name.set_background_color (color_green)
 			v_box_container_extra.set_background_color (color_green)
+			avatar_pixmap.set_background_color (color_green)
 			label_player_name.set_background_color (color_green)
 			button_next_to_end_replay.set_background_color (color_dark_brown)
 			button_back_to_begin_replay.set_background_color (color_dark_brown)

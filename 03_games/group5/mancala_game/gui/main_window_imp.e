@@ -114,6 +114,8 @@ feature {NONE}-- Initialization
 			l_ev_cell_4.set_background_color (color_gray)
 			button_help.set_background_color (color_gray)
 			l_ev_cell_5.set_background_color (color_gray)
+			Current.set_background_color (color_gray)
+
 
 			set_all_attributes_using_constants
 
