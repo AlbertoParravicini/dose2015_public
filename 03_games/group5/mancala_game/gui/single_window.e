@@ -15,6 +15,7 @@ feature {NONE} -- Initialization
 
 	default_button_color : EV_COLOR
 	default_button_selected_color : EV_COLOR
+	solitaire_search_algorithm_dialog_shown : BOOLEAN
 
 	user_create_interface_objects
 			-- Create any auxilliary objects needed for SINGLE_WINDOW.
@@ -35,6 +36,29 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
+	solitaire_search_algorithm_dialog: BOOLEAN
+		local
+			question_dialog: EV_CONFIRMATION_DIALOG
+		do
+			create question_dialog.default_create
+
+			if game_manager.algorithm_selected.is_equal ("steepest_ascent_hill_climbing") or game_manager.algorithm_selected.is_equal ("hill_climbing") then
+				question_dialog.set_text ("Solitaire Mancala is an unsolvable problem.%NThe chosen algorithm can calculate a partial solution of the problem.%NDo you want to proceed?")
+			else
+				question_dialog.set_text ("Solitaire Mancala is an unsolvable problem.%NThe chosen algorithm could take a long time to explore the search tree and it cannot produce an acceptable result.%NDo you want to proceed?")
+			end
+
+
+			question_dialog.show_modal_to_window (Current)
+
+			if question_dialog.selected_button ~ (create {EV_DIALOG_CONSTANTS}).ev_ok then
+				solitaire_search_algorithm_dialog_shown := true
+				Result := true
+			else
+				Result := false
+			end
+		end
+
 	action_hole_click(a_hole:INTEGER)
 		do
 				-- Create a new 'ACTION_SELECT' with the selected
@@ -50,7 +74,9 @@ feature {NONE} -- Implementation
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.hint'
 				-- as a parameter
 				disable_buttons
-				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+				if solitaire_search_algorithm_dialog_shown or solitaire_search_algorithm_dialog then
+					send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).hint))
+				end
 				enable_buttons
 				refresh_now
 		end
@@ -60,7 +86,9 @@ feature {NONE} -- Implementation
 				-- Create a new 'ACTION_OTHER' with an '{ENUM_OTHER}.solve'
 				-- as a parameter
 				disable_buttons
-				send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve))
+				if solitaire_search_algorithm_dialog_shown or solitaire_search_algorithm_dialog then
+					send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).solve))
+				end
 				enable_buttons
 				refresh_now
 		end
@@ -113,6 +141,7 @@ feature -- Inherited from VIEW
 		do
 			action_log_click
 			game_manager := a_game_manager
+			solitaire_search_algorithm_dialog_shown := false
 			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
 			refresh_now
 		end
