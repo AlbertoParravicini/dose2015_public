@@ -56,26 +56,30 @@ feature
 			create winner_list.make
 
 				-- Initialize the first weights list as default;
+			print ("v1: ")
 			weights_1 := math.initialize_weights
+			weights_1 := math.log_normal_weights (weights_1)
+			weights_1 := math.normalize_weights (weights_1)
 
-			weights_2 := math.initialize_weights
+
 			--create weights_1.make_from_array (<<[0.19, 0.02], [0.0, 0.02], [0.22, 0.02], [0.47, 0.02], [0.10, 0.02], [0.0, 0.02]>>)
---			print ("v1: ")
---			print_weights (weights_1)
+
+			math.print_weights (weights_1)
 
 				-- Initialize the second weights list based on the first one;
 
 			--create weights_2.make_from_array (<<[0.19, 0.02], [0.0, 0.02], [0.22, 0.02], [0.47, 0.02], [0.10, 0.02], [0.0, 0.02]>>)
-
+			print ("v2: ")
+			weights_2 := math.initialize_weights
+			weights_2 := math.log_normal_weights (weights_2)
 			weights_2 := math.generate_gaussian_weights (weights_2)
-			weights_2 := math.truncate_weights (weights_2)
+			weights_2 := math.log_normal_weights (weights_2)
 
 			--weights_2 := math.generate_uniform_weights (weights_2)
-			weights_1 := math.normalize_weights (weights_1)
 			weights_2 := math.normalize_weights (weights_2)
 
---			print ("v2: ")
---			print_weights (weights_2)
+
+			math.print_weights (weights_2)
 
 
 			round_robin
@@ -226,12 +230,14 @@ feature
 			weights_list.extend (math.initialize_weights)
 
 			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.41, 2.0], [0.0, 2.0], [0.22, 2.0], [0.11, 2.0], [0.0, 2.0], [0.25, 2.0]>>))
-			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
+			--weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.53, 2.0], [0.21, 2.0], [0.24, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
 			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.19, 2.0], [0.0, 2.0], [0.22, 2.0], [0.47, 2.0], [0.10, 2.0], [0.0, 2.0]>>))
-			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.36, 2.0], [0.17, 2.0], [0.12, 2.0], [0.05, 2.0], [0.14, 2.0], [0.13, 2.0]>>))
-			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.17, 2.0], [0.04, 2.0], [0.29, 2.0], [0.30, 2.0], [0.04, 2.0], [0.12, 2.0]>>))
-			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.4, 2.0], [0.23, 2.0], [0.21, 2.0], [0.14, 2.0], [0.001, 2.0], [0.0, 2.0]>>))
+--			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.36, 2.0], [0.17, 2.0], [0.12, 2.0], [0.05, 2.0], [0.14, 2.0], [0.13, 2.0]>>))
+--			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.17, 2.0], [0.04, 2.0], [0.29, 2.0], [0.30, 2.0], [0.04, 2.0], [0.12, 2.0]>>))
+--			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.4, 2.0], [0.23, 2.0], [0.21, 2.0], [0.14, 2.0], [0.001, 2.0], [0.0, 2.0]>>))
 			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.24, 2.0], [0.23, 2.0], [0.20, 2.0], [0.16, 2.0], [0.07, 2.0], [0.07, 2.0]>>))
+--			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.25, 2.0], [0.1, 2.0], [0.1, 2.0], [0.06, 2.0], [0.16, 2.0], [0.29, 2.0]>>))
+--			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.15, 2.0], [0.12, 2.0], [0.14, 2.0], [0.12, 2.0], [0.14, 2.0], [0.29, 2.0]>>))
 
 
 			weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[1.0, 2.0], [0.0, 2.0], [1.0, 2.0], [0.0, 2.0], [0.0, 2.0], [0.0, 2.0]>>))
