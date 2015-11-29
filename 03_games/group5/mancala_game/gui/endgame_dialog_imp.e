@@ -38,10 +38,12 @@ feature {NONE}-- Initialization
 			l_ev_vertical_box_1.extend (end_avatar_pixmap)
 			l_ev_vertical_box_1.extend (l_ev_label_1)
 			l_ev_vertical_box_1.extend (retry_button)
+			l_ev_vertical_box_1.extend (replay_button)
 			l_ev_vertical_box_1.extend (menu_button)
 			l_ev_vertical_box_1.extend (exit_button)
 
 			end_avatar_pixmap.set_minimum_size (100, 80)
+			replay_button.set_text ("MATCH REPLAY")
 			retry_button.set_text ("RETRY?")
 			menu_button.set_text ("GO TO MENU")
 			exit_button.set_text ("EXIT")
@@ -52,6 +54,7 @@ feature {NONE}-- Initialization
 			set_all_attributes_using_constants
 
 				-- Connect events.
+			replay_button.select_actions.extend (agent action_replay_click)
 			retry_button.select_actions.extend (agent action_retry_click)
 			menu_button.select_actions.extend (agent action_menu_click)
 			exit_button.select_actions.extend (agent action_exit_click)
@@ -69,6 +72,7 @@ feature {NONE}-- Initialization
 			create end_avatar_pixmap
 			create l_ev_label_1
 			create retry_button
+			create replay_button
 			create menu_button
 			create exit_button
 
@@ -91,7 +95,7 @@ feature {NONE}-- Initialization
 
 feature -- Access
 
-	retry_button, menu_button, exit_button: EV_BUTTON
+	replay_button, retry_button, menu_button, exit_button: EV_BUTTON
 	end_avatar_pixmap: EV_PIXMAP
 
 feature {NONE} -- Implementation
@@ -121,6 +125,11 @@ feature {NONE} -- Implementation
 
 	user_initialization
 			-- Feature for custom initialization, called at end of `initialize'.
+		deferred
+		end
+
+	action_replay_click
+			-- Called by `select_actions' of `replay_button'.
 		deferred
 		end
 

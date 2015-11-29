@@ -30,6 +30,31 @@ feature {NONE} -- Initialization
 
 feature {NONE} -- Implementation
 
+	action_replay_click
+	local
+		l_adversary_window : ADVERSARY_WINDOW
+		windows : LINEAR[EV_WINDOW]
+		l_game_manager : GAME_MANAGER
+	do
+		current.destroy
+		windows := current.ev_application.windows
+		from
+			windows.start
+		until
+			windows.exhausted
+		loop
+			windows.item.destroy
+			windows.forth
+		end
+		if attached {ADVERSARY_WINDOW}game_manager.view then
+			create l_adversary_window
+			create l_game_manager.make (game_manager.algorithm_selected, game_manager.algorithm_depth, l_adversary_window)
+			l_adversary_window.start_view (l_game_manager)
+			l_adversary_window.start_match_replay (game_manager.rules_set.current_state)
+			l_adversary_window.show
+		end
+	end
+
 	action_retry_click
 	local
 		l_adversary_window : ADVERSARY_WINDOW

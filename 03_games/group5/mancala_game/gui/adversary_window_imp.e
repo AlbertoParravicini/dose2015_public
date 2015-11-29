@@ -84,6 +84,10 @@ feature {NONE}-- Initialization
 			h_box_container_game.extend (v_box_container_extra)
 			v_box_container_extra.extend (avatar_pixmap)
 			v_box_container_extra.extend (label_player_name)
+			v_box_container_extra.extend (button_back_to_begin_replay)
+			v_box_container_extra.extend (button_back_replay)
+			v_box_container_extra.extend (button_next_replay)
+			v_box_container_extra.extend (button_next_to_end_replay)
 			v_box_container_extra.extend (button_hint)
 			v_box_container_extra.extend (button_solve)
 			v_box_container_extra.extend (button_log)
@@ -285,13 +289,25 @@ feature {NONE}-- Initialization
 			avatar_pixmap.set_minimum_size (100, 80)
 			label_player_name.set_text ("Player")
 			label_player_name.set_minimum_width (150)
+			button_next_to_end_replay.set_text ("-->/")
+			button_next_replay.set_text ("-->")
+			button_back_replay.set_text ("<--")
+			button_back_to_begin_replay.set_text ("\<--")
 			button_hint.set_text ("Hint")
 			button_solve.set_text ("Solve")
 
+			button_next_to_end_replay.font.set_height_in_points (13)
+			button_back_to_begin_replay.font.set_height_in_points (13)
+			button_next_replay.font.set_height_in_points (13)
+			button_back_replay.font.set_height_in_points (13)
 			button_solve.font.set_height_in_points (13)
 			button_hint.font.set_height_in_points (13)
 			button_log.font.set_height_in_points (13)
 
+			button_next_to_end_replay.set_minimum_height (20)
+			button_back_to_begin_replay.set_minimum_height (20)
+			button_next_replay.set_minimum_height (20)
+			button_back_replay.set_minimum_height (20)
 			button_solve.set_minimum_height (20)
 			button_hint.set_minimum_height (20)
 			button_log.set_minimum_height (20)
@@ -333,6 +349,10 @@ feature {NONE}-- Initialization
 			label_store_1_name.set_background_color (color_green)
 			v_box_container_extra.set_background_color (color_green)
 			label_player_name.set_background_color (color_green)
+			button_next_to_end_replay.set_background_color (color_dark_brown)
+			button_back_to_begin_replay.set_background_color (color_dark_brown)
+			button_next_replay.set_background_color (color_dark_brown)
+			button_back_replay.set_background_color (color_dark_brown)
 			button_hint.set_background_color (color_dark_brown)
 			button_solve.set_background_color (color_dark_brown)
 			button_log.set_background_color (color_dark_brown)
@@ -341,6 +361,10 @@ feature {NONE}-- Initialization
 			text_log.set_background_color (color_gray)
 
 
+			button_next_replay.hide
+			button_back_replay.hide
+			button_next_to_end_replay.hide
+			button_back_to_begin_replay.hide
 
 			set_all_attributes_using_constants
 
@@ -357,6 +381,10 @@ feature {NONE}-- Initialization
 			button_hole_4.select_actions.extend (agent action_hole_click(4))
 			button_hole_5.select_actions.extend (agent action_hole_click(5))
 			button_hole_6.select_actions.extend (agent action_hole_click(6))
+			button_next_to_end_replay.select_actions.extend (agent action_next_to_end_replay)
+			button_back_to_begin_replay.select_actions.extend (agent action_back_to_begin_replay)
+			button_next_replay.select_actions.extend (agent action_next_replay)
+			button_back_replay.select_actions.extend (agent action_back_replay)
 			button_hint.select_actions.extend (agent action_hint_click)
 			button_solve.select_actions.extend (agent action_solve_click)
 			button_log.select_actions.extend (agent action_log_click)
@@ -403,6 +431,10 @@ feature {NONE}-- Initialization
 			create v_box_container_extra
 			create avatar_pixmap
 			create label_player_name
+			create button_next_to_end_replay
+			create button_back_to_begin_replay
+			create button_next_replay
+			create button_back_replay
 			create button_hint
 			create button_solve
 			create button_log
@@ -519,7 +551,7 @@ feature -- Access
 	button_hole_12,
 	button_hole_11, button_hole_10, button_hole_9, button_hole_8, button_hole_7, button_hole_1,
 	button_hole_2, button_hole_3, button_hole_4, button_hole_5, button_hole_6, button_hint,button_solve,
-	button_log: EV_BUTTON
+	button_log, button_next_replay, button_back_replay, button_back_to_begin_replay, button_next_to_end_replay: EV_BUTTON
 	text_log: EV_TEXT
 	list_button_hole: LINKED_LIST[EV_BUTTON]
 	avatar_pixmap: EV_PIXMAP
@@ -545,6 +577,22 @@ feature {NONE} -- Implementation
 
 	action_hole_click (a_hole:INTEGER)
 			-- Called by `select_actions' of `button_hole_12'.
+		deferred
+		end
+
+	action_next_to_end_replay
+		deferred
+		end
+
+	action_back_to_begin_replay
+		deferred
+		end
+
+	action_next_replay
+		deferred
+		end
+
+	action_back_replay
 		deferred
 		end
 

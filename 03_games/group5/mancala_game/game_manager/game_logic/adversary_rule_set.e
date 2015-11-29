@@ -94,8 +94,6 @@ feature -- Implementation
 				end
 			elseif l_is_valid and then attached {ACTION_OTHER} a_action as action_other then
 				if action_other.action = (create {ENUM_OTHER}).hint then
-					current_state.set_parent (Void)
-					current_state.set_rule_applied (Void)
 					engine.reset_engine
 					engine.perform_search (current_state)
 					current_state := engine.obtained_successor
