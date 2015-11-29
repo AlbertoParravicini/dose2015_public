@@ -29,6 +29,7 @@ feature {NONE} -- Creation
 
 			view := a_view
 			algorithm_selected := a_algorithm
+			algorithm_depth := a_algorithm_depth
 
 				-- SOLITAIRE
 			if is_valid_solitaire_algorithm(a_algorithm) then

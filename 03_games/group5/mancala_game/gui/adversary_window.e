@@ -84,7 +84,9 @@ feature {NONE} -- Implementation
 		do
 				-- Create a new 'ACTION_SELECT' with the selected
 				-- hole as a parameter
-				send_action_to_game_manager(create {ACTION_SELECT}.make (a_hole))
+				if not match_replay then
+					send_action_to_game_manager(create {ACTION_SELECT}.make (a_hole))
+				end
 				refresh_now
 		end
 
@@ -248,7 +250,6 @@ feature {NONE} -- Implementation
 
 				if attached {ADVERSARY_STATE} a_current_state as adv_state and then adv_state.is_game_over then
 
-
 						-- Player 1 wins
 					if adv_state.map.get_store_value (1) > adv_state.map.get_store_value (2) then
 						game_over_message := " " + player1_name + " Wins! "
@@ -310,6 +311,7 @@ feature -- Inherited from VIEW
 			game_manager := a_game_manager
 			set_avatar_folder
 			log_counter := 0
+			match_replay := false
 			initialize_players
 			send_action_to_game_manager (create {ACTION_OTHER}.make ((create {ENUM_OTHER}).start_game))
 			refresh_now
@@ -323,7 +325,9 @@ feature -- Inherited from VIEW
 			update_stores (a_current_state)
 			activate_current_player_buttons (a_current_state)
 			show_last_move (a_current_state)
-			show_game_over (a_current_state)
+			if not match_replay then
+				show_game_over (a_current_state)
+			end
 			refresh_now
 		end
 
@@ -392,6 +396,110 @@ feature {NONE} -- Auxiliary features
 				end
 				Result := l_string
 			end
+
+
+feature -- Match Replay
+
+	match_states: LINKED_LIST[GAME_STATE]
+	current_match_state_replay: INTEGER
+	match_replay: BOOLEAN
+
+	start_match_replay(a_final_state: GAME_STATE)
+		local
+			current_parent: ADVERSARY_STATE
+			counter: INTEGER
+		do
+			current_match_state_replay := 1
+			create match_states.make
+			match_replay := true
+			if attached {ADVERSARY_STATE} a_final_state as adv_final_state then
+				from
+					current_parent := adv_final_state
+				until
+					current_parent = VOID
+				loop
+					match_states.put_front (current_parent)
+					current_parent := current_parent.parent
+				end
+			end
+
+			button_hint.hide
+			button_solve.hide
+			button_log.hide
+			button_next_to_end_replay.show
+			button_back_to_begin_replay.show
+			button_next_replay.show
+			button_back_replay.show
+			show_state(match_states.i_th (current_match_state_replay))
+
+			from
+				counter := 1
+			until
+				counter > {GAME_CONSTANTS}.num_of_holes
+			loop
+				list_button_hole.i_th (counter).set_background_color (color_dark_brown)
+				counter := counter + 1
+			end
+		end
+
+	action_next_replay
+		do
+			if current_match_state_replay < match_states.count then
+				current_match_state_replay := current_match_state_replay + 1
+				show_state(match_states.i_th (current_match_state_replay))
+			end
+		end
+
+	action_back_replay
+		local
+			counter: INTEGER
+		do
+			if current_match_state_replay > 1 then
+				current_match_state_replay := current_match_state_replay - 1
+				show_state(match_states.i_th (current_match_state_replay))
+			end
+
+			if current_match_state_replay = 1 then
+				from
+					counter := 1
+				until
+					counter > {GAME_CONSTANTS}.num_of_holes
+				loop
+					list_button_hole.i_th (counter).set_background_color (color_dark_brown)
+					counter := counter + 1
+				end
+			end
+		end
+
+	action_next_to_end_replay
+		do
+			if current_match_state_replay < match_states.count then
+				current_match_state_replay := match_states.count
+				show_state(match_states.i_th (current_match_state_replay))
+			end
+		end
+
+	action_back_to_begin_replay
+		local
+			counter: INTEGER
+		do
+			if current_match_state_replay > 1 then
+				current_match_state_replay := 1
+				show_state(match_states.i_th (current_match_state_replay))
+			end
+
+			if current_match_state_replay = 1 then
+				from
+					counter := 1
+				until
+					counter > {GAME_CONSTANTS}.num_of_holes
+				loop
+					list_button_hole.i_th (counter).set_background_color (color_dark_brown)
+					counter := counter + 1
+				end
+			end
+		end
+
 
 Invariant
 	adversary_state: game_manager /= VOID implies (attached {ADVERSARY_RULE_SET} game_manager.rules_set)
