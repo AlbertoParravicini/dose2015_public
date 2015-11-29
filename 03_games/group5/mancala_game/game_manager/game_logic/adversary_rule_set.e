@@ -21,7 +21,7 @@ feature -- Initialization
 			current_state := a_initial_state
 
 			create problem.make
-			--problem.set_weights (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.19 , 0.0], [0.0 , 0.0], [0.22 , 0.0], [0.47 , 0.0], [0.10 , 0.0], [0.0 , 0.0]>>))
+			problem.set_weights (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.19 , 0.0], [0.0 , 0.0], [0.22 , 0.0], [0.47 , 0.0], [0.10 , 0.0], [0.0 , 0.0]>>))
 
 			if selected_algorithm.is_equal ("minimax") then
 				if selected_depth < 0 then

@@ -21,25 +21,45 @@ feature
 			-- The weights in the heuristic will all have value equal to 1;
 		local
 			i: INTEGER
+			selected_weight_list: ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]
 		do
+			create time_seed_for_random_generator.make_now
+					-- Initializes random generator using current time seed.
+			create random_number_generator.set_seed (((time_seed_for_random_generator.hour * 60 + time_seed_for_random_generator.minute) * 60 + time_seed_for_random_generator.second) * 1000 + time_seed_for_random_generator.milli_second)
+			random_number_generator.start
+
 			create weights.make({HEURISTIC_FUNCTIONS_SUPPORT}.num_of_weights)
+			create possible_weights_list.make
+
+				-- Randomly assign to the heuristic a list of weight, chosen among the following possibilities:
+			possible_weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.19, 2.0], [0.0, 2.0], [0.22, 2.0], [0.47, 2.0], [0.10, 2.0], [0.0, 2.0]>>))
+			possible_weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.24, 2.0], [0.23, 2.0], [0.20, 2.0], [0.16, 2.0], [0.07, 2.0], [0.07, 2.0]>>))
+			possible_weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[0.17, 2.0], [0.04, 2.0], [0.29, 2.0], [0.30, 2.0], [0.04, 2.0], [0.12, 2.0]>>))
+			possible_weights_list.extend (create {ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]}.make_from_array (<<[1.0, 2.0], [1.0, 2.0], [1.0, 2.0], [1.0, 2.0], [0.0, 2.0], [1.0, 2.0]>>))
+
+			selected_weight_list := possible_weights_list.i_th((random_number_generator.item \\ possible_weights_list.count) + 1)
 			from
 				i := 1
+				selected_weight_list.start
 			until
-				i > {HEURISTIC_FUNCTIONS_SUPPORT}.num_of_weights
+				(i > {HEURISTIC_FUNCTIONS_SUPPORT}.num_of_weights) or (selected_weight_list.exhausted)
 			loop
-				weights.extend (1.0)
+				weights.extend (selected_weight_list.item.weight)
+				selected_weight_list.forth
 				i := i + 1
 			end
 		end
 
-feature
+feature -- Status report
 
 	initial_state: ADVERSARY_STATE
 			-- The initial state of the problem;
 
 	weights: ARRAYED_LIST[REAL_64]
 			-- List of the weights used in the heuristic function;
+
+	possible_weights_list: LINKED_LIST[ARRAYED_LIST[TUPLE[weight: REAL_64; variance: REAL_64]]]
+			-- List of all the possible weights that might be used by the heuristic function;
 
 	get_successors (a_state: ADVERSARY_STATE): LIST [ADVERSARY_STATE]
 		local
@@ -202,6 +222,14 @@ feature {NONE} -- Heuristic functions
 			end
 			Result := (sum * (-1).power (state.is_max.to_integer)).floor
 		end
+
+feature {NONE} -- Random weights initialization routines
+
+	random_number_generator: RANDOM
+		-- Random numbers generator to have a random number;
+
+	time_seed_for_random_generator: TIME
+		-- Time variable in order to get new random numbers from random numbers generator every time the program runs.
 
 
 feature -- Constant values
