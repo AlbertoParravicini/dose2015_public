@@ -234,8 +234,22 @@ feature -- Status report
 		end
 
 	is_won : BOOLEAN
+		local
+			sum_of_holes_stones: INTEGER
+			current_hole: INTEGER
 		do
-			Result := is_game_over and (selected_hole > 0 and then (map.get_hole_value (selected_hole) = 0 and (map.num_of_stones - map.sum_of_stores_token > 0)))
+			
+			from
+				sum_of_holes_stones := 0
+				current_hole := 1
+			until
+				current_hole > {GAME_CONSTANTS}.num_of_holes
+			loop
+				sum_of_holes_stones := sum_of_holes_stones + map.get_hole_value (current_hole)
+				current_hole := current_hole + 1
+			end
+
+			Result := is_game_over and sum_of_holes_stones = 0
 		end
 
 	is_lost : BOOLEAN

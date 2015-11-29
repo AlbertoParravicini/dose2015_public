@@ -138,9 +138,13 @@ feature -- Status setting
 						view.show_message ("--------------------------------------%N")
 						view.show_message ("%N")
 						view.show_state (rules_set.current_state)
+
+						-- ACTION: HINT
 					elseif other_action.action = (create {ENUM_OTHER}).hint then
 						view.show_message ("AI is looking for a possible move...%N")
 						solitaire_move (a_action)
+
+						-- ACTION: SOLVE
 					elseif other_action.action = (create {ENUM_OTHER}).solve then
 						if attached {SOLITAIRE_RULE_SET} rules_set as sol_rules_set then
 							view.show_message ("AI is looking for a possible solution...%N")
@@ -184,9 +188,13 @@ feature -- Status setting
 						view.show_message ("--   STARTING ADVERSARY GAME   --%N")
 						view.show_message ("---------------------------------------%N")
 						show_adversary_turn_state_and_message
+
+						-- ACTION: HINT
 					elseif other_action.action = (create {ENUM_OTHER}).hint then
 						view.show_message ("Your AI is looking for a possible move...%N")
 						adversary_move (a_action)
+
+						-- ACTION: SOLVE
 					elseif other_action.action = (create {ENUM_OTHER}).solve then
 						view.show_message ("Your AI is looking for a possible solution...%N")
 						from
